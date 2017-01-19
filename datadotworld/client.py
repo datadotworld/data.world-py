@@ -18,4 +18,3 @@ class DataDotWorld:
                 }
         response = requests.get(statement, headers=headers)
         return(pd.read_csv(BytesIO(response.content)))
-        #return(response.content)
