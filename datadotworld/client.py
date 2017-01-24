@@ -18,7 +18,7 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 '''
 import os
 import re
-import urllib
+import six.moves.urllib as urllib
 import requests
 import pandas as pd
 from io import BytesIO

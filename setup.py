@@ -26,5 +26,5 @@ setup(  name='datadotworld',
         author_email='help@data.world',
         license='Apache 2.0',
         packages=['datadotworld'],
-        install_requires=['pandas'],
+        install_requires=['six','pandas'],
         zip_safe=False)
