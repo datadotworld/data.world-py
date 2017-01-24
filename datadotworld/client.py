@@ -20,8 +20,8 @@ import os
 import re
 import six.moves.urllib as urllib
 import requests
-import pandas as pd
-from io import BytesIO
+import csv
+from io import StringIO
 
 
 class DataDotWorld:
@@ -40,6 +40,27 @@ class DataDotWorld:
                 'you must either provide an API token to this constructor, or create a '
                 '.data.world file in your home directory with your API token'))
 
+    class Results:
+        def __init__(self, raw):
+            self.raw = raw
+
+        def asString(self):
+            return self.raw
+
+        def asStream(self):
+            return StringIO(self.raw)
+
+        def asDf(self):
+            try:
+                import pandas as pd
+            except ImportError:
+                raise RuntimeError("You need to have pandas installed to use .asDf()")
+            else:
+                return pd.read_csv(self.asStream())
+
+        def asCsv(self):
+            return csv.reader(self.asStream())
+
     def query(self, dataset, query, query_type="sql"):
         statement = 'https://query.data.world/' + query_type + '/' + dataset + '?query=' + urllib.parse.quote(query)
         headers = {
@@ -48,5 +69,5 @@ class DataDotWorld:
                 }
         response = requests.get(statement, headers=headers)
         if response.status_code == 200:
-            return pd.read_csv(BytesIO(response.content))
+            return DataDotWorld.Results(response.text)
         raise RuntimeError('error running query.')
