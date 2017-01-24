@@ -27,7 +27,9 @@ from io import StringIO
 class DataDotWorld:
     """A Python Client for Accessing data.world"""
 
-    def __init__(self, token=None, propsfile="~/.data.world"):
+    def __init__(self, token=None, propsfile="~/.data.world",
+                 protocol="https",
+                 queryHost="query.data.world"):
         regex = re.compile(r"^token\s*=\s*(\S.*)$")
         filename = os.path.expanduser(propsfile)
         self.token = token
@@ -39,6 +41,8 @@ class DataDotWorld:
             raise RuntimeError((
                 'you must either provide an API token to this constructor, or create a '
                 '.data.world file in your home directory with your API token'))
+        self.protocol = protocol
+        self.queryHost = queryHost
 
     class Results:
         def __init__(self, raw):
@@ -62,12 +66,16 @@ class DataDotWorld:
             return csv.reader(self.asStream())
 
     def query(self, dataset, query, query_type="sql"):
-        statement = 'https://query.data.world/' + query_type + '/' + dataset + '?query=' + urllib.parse.quote(query)
+        url = "{}://{}/{}/{}?query={}".format(self.protocol,
+                                              self.queryHost,
+                                              query_type,
+                                              dataset,
+                                              urllib.parse.quote(query))
         headers = {
                 'Accept': 'text/csv', 
                 'Authorization': 'Bearer ' + self.token
                 }
-        response = requests.get(statement, headers=headers)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return DataDotWorld.Results(response.text)
         raise RuntimeError('error running query.')
