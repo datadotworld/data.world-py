@@ -18,7 +18,6 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 '''
 import os
 import re
-import six.moves.urllib as urllib
 import requests
 import csv
 from io import StringIO
@@ -70,7 +69,7 @@ class DataDotWorld:
                                               self.queryHost,
                                               query_type,
                                               dataset,
-                                              urllib.parse.quote(query))
+                                              requests.utils.quote(query))
         headers = {
                 'Accept': 'text/csv', 
                 'Authorization': 'Bearer ' + self.token

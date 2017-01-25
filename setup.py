@@ -27,7 +27,7 @@ setup(  name='datadotworld',
         license='Apache 2.0',
         packages=['datadotworld'],
         install_requires=[
-                'six'
+                'requests'
         ],
         extras_require={
                 'PANDAS': ['pandas']
