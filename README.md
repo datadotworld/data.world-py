@@ -30,7 +30,7 @@ or you can insert your token into a `.data.world` file in your home
 directory, and the constructor will read it from there:
 
 ```
-cat 'token=YOUR_API_TOKEN' > ~/.data.world
+echo 'token=YOUR_API_TOKEN' > ~/.data.world
 ```
 then
 ```
