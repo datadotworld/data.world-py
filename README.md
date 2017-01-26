@@ -53,15 +53,15 @@ PANDAS installed, it is an optional dependency for this library.
 >>> results = client.query(dataset="bryon/odin-2015-2016", query="SELECT * FROM Tables")
 ```
 ```
->>> results.asString()
+>>> results.as_string()
 'tableId,tableName\r\nODIN-2015-2016-raw.csv/ODIN-2015-2016-raw,ODIN-2015-2016-raw\r\nODIN-2015-2016-standardized.csv/ODIN-2015-2016-standardized,ODIN-2015-2016-standardized\r\nODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted,ODIN-2015-2016-weighted\r\n'
 ```
 ```
->>> results.asStream()
+>>> results.as_stream()
 <_io.StringIO object at 0x104e899d8>
 ```
 ```
->>> for row in results.asCsv():
+>>> for row in results.as_csv():
 ...   print(", ".join(row))
 ...
 tableId, tableName
@@ -70,7 +70,7 @@ ODIN-2015-2016-standardized.csv/ODIN-2015-2016-standardized, ODIN-2015-2016-stan
 ODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted, ODIN-2015-2016-weighted
 ```
 ```
->>> results.asDf()
+>>> results.as_dataframe()
                                              tableId  \
 0          ODIN-2015-2016-raw.csv/ODIN-2015-2016-raw
 1  ODIN-2015-2016-standardized.csv/ODIN-2015-2016...
@@ -93,7 +93,7 @@ to execute a `SPARQL` query, you need to specify the `query_type` as
 ...   [ :Year ?year ; :Region ?region ; :Overall_subscore ?score ]
 ...   FILTER(?year = "2015")
 ...   } LIMIT 10''',
-... query_type="sparql").asDf()
+... query_type="sparql").as_dataframe(  )
 >>> df
    year          region  score
 0  2015  Eastern Africa    3.0

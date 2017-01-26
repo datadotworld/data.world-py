@@ -1,4 +1,4 @@
-'''
+"""
 data.world-py
 Copyright 2017 data.world, Inc.
 
@@ -15,7 +15,8 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
-'''
+"""
+
 import os
 import re
 import requests
@@ -47,34 +48,47 @@ class DataDotWorld:
         def __init__(self, raw):
             self.raw = raw
 
-        def asString(self):
+        def __unicode__(self):
+            return self.as_string()
+
+        def __repr__(self):
+            return "{0}\n...".format(self.as_string()[:250])
+
+        def as_string(self):
             return self.raw
 
-        def asStream(self):
+        def as_stream(self):
             return StringIO(self.raw)
 
-        def asDf(self):
+        def as_dataframe(self):
             try:
                 import pandas as pd
             except ImportError:
                 raise RuntimeError("You need to have pandas installed to use .asDf()")
             else:
-                return pd.read_csv(self.asStream())
+                return pd.read_csv(self.as_stream())
 
-        def asCsv(self):
-            return csv.reader(self.asStream())
+        def as_csv(self):
+            # TODO: support UTF-8 formatted CSV in Python 2.x
+            return csv.reader(self.as_stream())
 
     def query(self, dataset, query, query_type="sql"):
-        url = "{}://{}/{}/{}?query={}".format(self.protocol,
-                                              self.queryHost,
-                                              query_type,
-                                              dataset,
-                                              requests.utils.quote(query))
+        from . import __version__
+        # TODO: set useragent
+        params = {
+            "query": query
+        }
+        url = "{0}://{1}/{2}/{3}".format(self.protocol,
+                                         self.queryHost,
+                                         query_type,
+                                         dataset)
         headers = {
-                'Accept': 'text/csv', 
-                'Authorization': 'Bearer ' + self.token
-                }
-        response = requests.get(url, headers=headers)
+            'User-Agent': 'data.world-py - {0}'.format(__version__),
+            'Accept': 'text/csv',
+            'Authorization': 'Bearer {0}'.format(self.token)
+        }
+        print headers
+        response = requests.get(url, params=params, headers=headers)
         if response.status_code == 200:
             return DataDotWorld.Results(response.text)
         raise RuntimeError('error running query.')
