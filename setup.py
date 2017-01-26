@@ -23,7 +23,7 @@ import re
 
 def read(*paths):
     filename = path.join(path.abspath(path.dirname(__file__)), *paths)
-    with open(filename, encoding='utf-8') as f:
+    with open(filename) as f:
         return f.read()
 
 def find_version(*paths):
