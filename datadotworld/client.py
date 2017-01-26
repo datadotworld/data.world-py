@@ -74,7 +74,6 @@ class DataDotWorld:
 
     def query(self, dataset, query, query_type="sql"):
         from . import __version__
-        # TODO: set useragent
         params = {
             "query": query
         }
@@ -87,7 +86,6 @@ class DataDotWorld:
             'Accept': 'text/csv',
             'Authorization': 'Bearer {0}'.format(self.token)
         }
-        print headers
         response = requests.get(url, params=params, headers=headers)
         if response.status_code == 200:
             return DataDotWorld.Results(response.text)
