@@ -1,4 +1,4 @@
-'''
+"""
 data.world-py
 Copyright 2017 data.world, Inc.
 
@@ -15,21 +15,38 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
-'''
-from setuptools import setup
+"""
 
-setup(  name='datadotworld',
-        version='0.1',
-        description='Python client library for data.world',
-        url='http://github.com/datadotworld/data.world-py',
-        author='data.world',
-        author_email='help@data.world',
-        license='Apache 2.0',
-        packages=['datadotworld'],
-        install_requires=[
-                'requests>=2.9.2'
-        ],
-        extras_require={
-                'PANDAS': ['pandas']
-        }
-     )
+from setuptools import setup
+from os import path
+import re
+
+def read(*paths):
+    filename = path.join(path.abspath(path.dirname(__file__)), *paths)
+    with open(filename, encoding='utf-8') as f:
+        return f.read()
+
+def find_version(*paths):
+    contents = read(*paths)
+    match = re.search(r'^__version__ = [\'"]([^\'"]+)[\'"]', contents, re.M)
+    if not match:
+        raise RuntimeError('Unable to find version string.')
+    return match.group(1)
+
+setup(
+name='datadotworld',
+    version=find_version('datadotworld', '__init__.py'),
+    description='Python client library for data.world',
+    long_description=read('README.md'),
+    url='http://github.com/datadotworld/data.world-py',
+    author='data.world',
+    author_email='help@data.world',
+    license='Apache 2.0',
+    packages=['datadotworld'],
+    install_requires=[
+        'requests>=2.9.2'
+    ],
+    extras_require={
+        'PANDAS': ['pandas']
+    }
+)

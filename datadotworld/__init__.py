@@ -1,4 +1,4 @@
-'''
+"""
 data.world-py
 Copyright 2017 data.world, Inc.
 
@@ -15,5 +15,8 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
-'''
+"""
+
 from .client import DataDotWorld
+
+__version__ = '0.1.1'
