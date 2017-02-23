@@ -18,6 +18,5 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import
 
-from .client import DataDotWorld
-
-__version__ = '0.1.2'
+from .._rest.models import *
+from .query import Results

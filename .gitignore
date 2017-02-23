@@ -1,7 +1,14 @@
 __pycache__
 *.py[cod]
 *.egg-info
+.eggs
+.cache
 .tox
 build
 dist
 docs/_build
+
+# PyCharm files
+*.iml
+.idea
+!.idea/inspectionProfiles/Project_Default.xml

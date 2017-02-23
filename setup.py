@@ -17,14 +17,17 @@ permissions and limitations under the License.
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
 
-from setuptools import setup
-from os import path
 import re
+from os import path
+
+from setuptools import setup
+
 
 def read(*paths):
     filename = path.join(path.abspath(path.dirname(__file__)), *paths)
     with open(filename) as f:
         return f.read()
+
 
 def find_version(*paths):
     contents = read(*paths)
@@ -33,8 +36,9 @@ def find_version(*paths):
         raise RuntimeError('Unable to find version string.')
     return match.group(1)
 
+
 setup(
-name='datadotworld',
+    name='datadotworld',
     version=find_version('datadotworld', '__init__.py'),
     description='Python client library for data.world',
     long_description=read('README.md'),
@@ -44,7 +48,13 @@ name='datadotworld',
     license='Apache 2.0',
     packages=['datadotworld'],
     install_requires=[
-        'requests>=2.9.2'
+        'requests>=2.9.2', 'urllib3 >= 1.15', 'six >= 1.10', 'certifi', 'python-dateutil'
+    ],
+    setup_requires=[
+        'pytest-runner'
+    ],
+    tests_require=[
+        'pytest'
     ],
     extras_require={
         'PANDAS': ['pandas']

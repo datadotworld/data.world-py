@@ -50,7 +50,7 @@ read the CSV results line-by-line, or a PANDAS data frame (if you have
 PANDAS installed, it is an optional dependency for this library.
 
 ```
->>> results = client.query(dataset="bryon/odin-2015-2016", query="SELECT * FROM Tables")
+>>> results = client.query(dataset_key="bryon/odin-2015-2016", query="SELECT * FROM Tables")
 ```
 ```
 >>> results.as_string()
@@ -85,7 +85,7 @@ ODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted, ODIN-2015-2016-weighted
 to execute a `SPARQL` query, you need to specify the `query_type` as
 `sparql`:
 ```
->>> df = client.query(dataset="bryon/odin-2015-2016", query='''
+>>> df = client.query(dataset_key="bryon/odin-2015-2016", query='''
 ... PREFIX : <http://data.world/bryon/odin-2015-2016/ODIN-2015-2016-raw.csv/ODIN-2015-2016-raw#>
 ... PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 ...
@@ -107,3 +107,18 @@ to execute a `SPARQL` query, you need to specify the `query_type` as
 8  2015  Western Africa    0.0
 9  2015  Western Africa    0.0
 ```
+
+### Managing Datasets and Files
+
+The client supports various methods for creating and updating datasets and dataset files:
+
+- `create_dataset`
+- `patch_dataset`
+- `replace_dataset`
+- `get_dataset`
+- `add_files_via_url`
+- `sync_files`
+- `upload_files`
+- `delete_files`
+
+You can find more about those functions using `help()`
