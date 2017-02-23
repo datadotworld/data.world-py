@@ -1,0 +1,137 @@
+{
+  "name": "data-society_the-simpsons-by-the-data",
+  "homepage": "https://data.world/data-society/the-simpsons-by-the-data",
+  "resources": [
+    {
+      "path": "data/simpsons_characters.csv",
+      "name": "simpsons_characters",
+      "format": "csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer",
+            "title": "id"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "title": "name"
+          },
+          {
+            "name": "normalized_name",
+            "type": "string",
+            "title": "normalized_name"
+          },
+          {
+            "name": "gender",
+            "type": "string",
+            "title": "gender"
+          }
+        ]
+      }
+    },
+    {
+      "path": "data/simpsons_episodes.csv",
+      "name": "simpsons_episodes",
+      "format": "csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer",
+            "title": "id"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "title": "title"
+          },
+          {
+            "name": "original_air_date",
+            "type": "date",
+            "title": "original_air_date"
+          },
+          {
+            "name": "production_code",
+            "type": "string",
+            "title": "production_code"
+          },
+          {
+            "name": "season",
+            "type": "integer",
+            "title": "season"
+          },
+          {
+            "name": "number_in_season",
+            "type": "integer",
+            "title": "number_in_season"
+          },
+          {
+            "name": "number_in_series",
+            "type": "integer",
+            "title": "number_in_series"
+          },
+          {
+            "name": "us_viewers_in_millions",
+            "type": "number",
+            "title": "us_viewers_in_millions"
+          },
+          {
+            "name": "views",
+            "type": "integer",
+            "title": "views"
+          },
+          {
+            "name": "imdb_rating",
+            "type": "number",
+            "title": "imdb_rating"
+          },
+          {
+            "name": "imdb_votes",
+            "type": "integer",
+            "title": "imdb_votes"
+          },
+          {
+            "name": "image_url",
+            "type": "string",
+            "title": "image_url"
+          },
+          {
+            "name": "video_url",
+            "type": "string",
+            "title": "video_url"
+          }
+        ]
+      }
+    },
+    {
+      "path": "data/simpsons_locations.csv",
+      "name": "simpsons_locations",
+      "format": "csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer",
+            "title": "id"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "title": "name"
+          },
+          {
+            "name": "normalized_name",
+            "type": "string",
+            "title": "normalized_name"
+          }
+        ]
+      }
+    },
+    {
+      "path": "data/Homer_Simpson_2006.png",
+      "name": "Homer_Simpson_2006"
+    }
+  ]
+}
