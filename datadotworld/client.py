@@ -22,6 +22,7 @@ import re
 import requests
 import csv
 import time
+import json
 from io import StringIO
 
 
@@ -73,15 +74,31 @@ class DataDotWorld:
             # TODO: support UTF-8 formatted CSV in Python 2.x
             return csv.reader(self.as_stream())
 
-        def export_csv(self):
+        def export_csv(self, JSON=False):
             reader = csv.reader(self.as_stream())
-            filename = "csv" + str(int(time.time())) + ".csv"
+            filename = "csv" + str(int(time.time())) +".csv"
             oFile = open(filename, "wb")
             writer = csv.writer(oFile, delimiter=",")
             for row in reader:
                 writer.writerow(row)
-            print("File exported to: "+os.path.dirname(os.path.realpath(filename)))
             oFile.close()
+            if JSON:
+                csvfile = open(filename, 'r')
+                jsonfile = open(filename.replace('.csv', '.json'), 'w')
+                jsonfile.write('{"' + filename.replace('.csv', '') + '": [\n') # Write JSON parent of data list
+                fieldnames = csvfile.readline().replace('\n','').split(',') # Get fieldnames from first line of csv
+                num_lines = sum(1 for line in open(filename)) - 1 # Count total lines in csv minus header row
+
+                reader = csv.DictReader(csvfile, fieldnames)
+                i = 0
+                for row in reader:
+                    i += 1
+                    json.dump(row,jsonfile)
+                    if i < num_lines:
+                        jsonfile.write(',')
+                    jsonfile.write('\n')
+                jsonfile.write(']}')
+            print("File(s) exported to: "+os.path.dirname(os.path.realpath(filename)))
 
     def query(self, dataset, query, query_type="sql"):
         from . import __version__
