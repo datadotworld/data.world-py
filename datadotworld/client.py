@@ -80,6 +80,7 @@ class DataDotWorld:
             writer = csv.writer(oFile, delimiter=",")
             for row in reader:
                 writer.writerow(row)
+            print("File exported to: "+os.path.dirname(os.path.realpath(filename)))
             oFile.close()
 
     def query(self, dataset, query, query_type="sql"):
