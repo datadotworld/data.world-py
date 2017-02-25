@@ -81,6 +81,11 @@ ODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted, ODIN-2015-2016-weighted
 1  ODIN-2015-2016-standardized
 2      ODIN-2015-2016-weighted
 ```
+to export CSV to your current working directory, you can use this method:
+```
+results.export_csv() #exports csv file to current working directory
+results.export_csv(JSON=True) #exports both csv and json to working directory
+```
 
 to execute a `SPARQL` query, you need to specify the `query_type` as
 `sparql`:
