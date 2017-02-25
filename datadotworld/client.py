@@ -21,6 +21,7 @@ import os
 import re
 import requests
 import csv
+import time
 from io import StringIO
 
 
@@ -71,6 +72,15 @@ class DataDotWorld:
         def as_csv(self):
             # TODO: support UTF-8 formatted CSV in Python 2.x
             return csv.reader(self.as_stream())
+
+        def export_csv(self):
+            reader = csv.reader(self.as_stream())
+            filename = "csv" + str(int(time.time())) + ".csv"
+            oFile = open(filename, "wb")
+            writer = csv.writer(oFile, delimiter=",")
+            for row in reader:
+                writer.writerow(row)
+            oFile.close()
 
     def query(self, dataset, query, query_type="sql"):
         from . import __version__
