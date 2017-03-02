@@ -11,4 +11,3 @@ docs/_build
 # PyCharm files
 *.iml
 .idea
-!.idea/inspectionProfiles/Project_Default.xml

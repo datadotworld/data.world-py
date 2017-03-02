@@ -32,12 +32,12 @@ from datadotworld.models import (DatasetCreateRequest, DatasetPatchRequest, Data
 class DataDotWorld:
     """A Python Client for Accessing data.world"""
 
-    def __init__(self, token=None, propsfile="~/.data.world",
+    def __init__(self, token=None, props_file="~/.data.world",
                  protocol="https",
                  query_host="query.data.world", api_host="api.data.world"):
 
         regex = re.compile(r"^token\s*=\s*(\S.*)$")
-        filename = os.path.expanduser(propsfile)
+        filename = os.path.expanduser(props_file)
         self.token = token
         if self.token is None and os.path.isfile(filename):
             with open(filename, 'r') as props:
@@ -50,16 +50,17 @@ class DataDotWorld:
 
         self.protocol = protocol
         self.query_host = query_host
-        self.apiHost = api_host
 
         self._api_client = ApiClient(host="{}://{}/v0".format(protocol, api_host), header_name='Authorization',
                                      header_value='Bearer {}'.format(token))
         self._datasets_api = DatasetsApi(self._api_client)
         self._uploads_api = UploadsApi(self._api_client)
 
+        self._dataset_key_pattern = re.compile('[a-z0-9-]+/[a-z0-9-]+')  # Not the most comprehensive, for simplicity
+
     # Dataset Operations
 
-    def get_dataset(self, dataset_key=None):
+    def get_dataset(self, dataset_key):
         """Retrieve an existing dataset
 
         Parameters
@@ -84,10 +85,9 @@ class DataDotWorld:
         A dataset that serves as a quick introduction to data.world and some of our capabilities.  Follow along in \
         the summary!
         """
-        owner_id, dataset_id = dataset_key.split('/')
-        return self._datasets_api.get_dataset(owner_id, dataset_id)
+        return self._datasets_api.get_dataset(*(self._split_dataset_key(dataset_key)))
 
-    def create_dataset(self, owner_id=None, dataset=None):
+    def create_dataset(self, owner_id, dataset):
         """Create a new dataset
 
         Parameters
@@ -118,7 +118,7 @@ class DataDotWorld:
         """
         return self._datasets_api.create_dataset(owner_id, dataset)
 
-    def patch_dataset(self, dataset_key=None, dataset=None):
+    def patch_dataset(self, dataset_key, dataset):
         """Update an existing dataset
 
         Parameters
@@ -145,10 +145,10 @@ class DataDotWorld:
         >>> dw.patch_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_patch)
         {'message': 'Dataset updated successfully.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
+        owner_id, dataset_id = self._split_dataset_key(dataset_key)
         return self._datasets_api.patch_dataset(owner_id, dataset_id, dataset)
 
-    def replace_dataset(self, dataset_key=None, dataset=None):
+    def replace_dataset(self, dataset_key, dataset):
         """Replace an existing dataset
 
         *This method will completely overwrite an existing dataset.*
@@ -180,13 +180,13 @@ class DataDotWorld:
         >>> dw.replace_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_overwrite)
         {'message': 'Dataset replaced successfully.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
+        owner_id, dataset_id = self._split_dataset_key(dataset_key)
         return self._datasets_api.replace_dataset(owner_id, dataset_id, dataset)
 
     # File Operations
 
-    def add_files_via_url(self, dataset_key=None,
-                          files=None):
+    def add_files_via_url(self, dataset_key,
+                          files):
         """Add or update dataset files linked to source URLs
 
         Parameters
@@ -216,10 +216,10 @@ class DataDotWorld:
         >>>                      FileBatchUpdateRequest(files=[atx_basketball]))
         {'message': 'Dataset successfully updated with new sources. Sync in progress.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
+        owner_id, dataset_id = self._split_dataset_key(dataset_key)
         return self._datasets_api.add_files_by_source(owner_id, dataset_id, files)
 
-    def sync_files(self, dataset_key=None):
+    def sync_files(self, dataset_key):
         """Trigger synchronization process to update all dataset files linked to source URLs
 
         Parameters
@@ -242,10 +242,9 @@ class DataDotWorld:
         >>> dw.sync_files('jonloyens/an-intro-to-dataworld-dataset')
         {'message': 'Sync started.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
-        return self._datasets_api.sync(owner_id, dataset_id)
+        return self._datasets_api.sync(*(self._split_dataset_key(dataset_key)))
 
-    def upload_files(self, dataset_key=None, files=None):
+    def upload_files(self, dataset_key, files):
         """Upload dataset files
 
         Parameters
@@ -271,17 +270,17 @@ class DataDotWorld:
         >>>                 ['/Users/jon/DataDotWorldBBall/DataDotWorldBBallTeam.csv'])
         {'message': 'File(s) uploaded.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
+        owner_id, dataset_id = self._split_dataset_key(dataset_key)
         return self._uploads_api.upload_files(owner_id, dataset_id, files)
 
-    def delete_files(self, dataset_key=None, names=None):
+    def delete_files(self, dataset_key, names):
         """Delete dataset file(s)
 
         Parameters
         ----------
         dataset_key : str
             Dataset identifier, in the form of owner/id
-        files : list of str
+        names : list of str
             The list of names for files to be deleted
 
         Returns
@@ -296,37 +295,11 @@ class DataDotWorld:
 
         Examples
         --------
-        >>> dw.delete_files(''jonloyens/an-intro-to-dataworld-dataset'', ['atx_startup_league_ranking.csv'])
+        >>> dw.delete_files('jonloyens/an-intro-to-dataworld-dataset', ['atx_startup_league_ranking.csv'])
         {'message': 'Dataset file(s) have been successfully deleted.'}
         """
-        owner_id, dataset_id = dataset_key.split('/')
+        owner_id, dataset_id = self._split_dataset_key(dataset_key)
         return self._datasets_api.delete_files_and_sync_sources(owner_id, dataset_id, names)
-
-    def sync_files(self, dataset_key=None):
-        """Trigger synchronization process to update all dataset files linked to source URLs
-
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-
-        Returns
-        -------
-        SuccessMessage
-            Short message indicating success of the operation
-
-        Raises
-        ------
-        ApiException
-            If a server error occurs
-
-        Examples
-        --------
-        >>> dw.sync_files('jonloyens/an-intro-to-dataworld-dataset')
-        {'message': 'Sync started.'}
-        """
-        owner_id, dataset_id = dataset_key.split('/')
-        return self._datasets_api.sync(owner_id, dataset_id)
 
     # Query Operations
 
@@ -388,3 +361,10 @@ class DataDotWorld:
         if response.status_code == 200:
             return Results(response.text)
         raise RuntimeError('error running query.')
+
+    def _split_dataset_key(self, dataset_key):
+        if not re.match(self._dataset_key_pattern, dataset_key):
+            raise ValueError('Invalid dataset key. Key must include user and dataset names, separated by / '
+                             '(i.e. user/dataset).')
+        owner_id, dataset_id = dataset_key.split('/')
+        return owner_id, dataset_id
