@@ -52,7 +52,7 @@ class DataDotWorld:
         self.query_host = query_host
 
         self._api_client = ApiClient(host="{}://{}/v0".format(protocol, api_host), header_name='Authorization',
-                                     header_value='Bearer {}'.format(token))
+                                     header_value='Bearer {}'.format(self.token))
         self._datasets_api = DatasetsApi(self._api_client)
         self._uploads_api = UploadsApi(self._api_client)
 
