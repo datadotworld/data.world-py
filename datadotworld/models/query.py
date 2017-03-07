@@ -16,8 +16,9 @@ permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
-import csv
+from __future__ import absolute_import
 
+import csv
 from io import StringIO
 
 

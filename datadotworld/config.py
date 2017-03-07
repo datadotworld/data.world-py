@@ -17,24 +17,26 @@ permissions and limitations under the License.
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
 import configparser
+import os
 import re
-
 from os import path
 
 
 class Config:
     def __init__(self, profile='default', **kwargs):
-        config_file_path = kwargs.get('config_file_path') or path.expanduser('~/.datadotworld')
+        config_file_path = kwargs.get('config_file_path') or path.expanduser('~/.dw/config')
         legacy_file_path = kwargs.get('legacy_file_path') or path.expanduser('~/.data.world')
 
         if path.isfile(config_file_path):
             config_parser = configparser.ConfigParser()
             config_parser.read_file(open(config_file_path))
         elif path.isfile(legacy_file_path):
-            config_parser = self.__migrate_config(legacy_file_path, config_file_path)
+            config_parser = Config.__migrate_config(legacy_file_path, config_file_path)
         else:
             raise RuntimeError('Unable to locate configuration file {}. '
                                'To fix this issue, run dw configure'.format(config_file_path))
+
+        Config.__validate_config(config_parser, profile)
 
         self._config_file_path = config_file_path
         self._config_parser = config_parser
@@ -56,14 +58,24 @@ class Config:
         self._config_parser.write(open(self._config_file_path, 'w'))
 
     @staticmethod
+    def __validate_config(config_parser, profile):
+        if profile not in config_parser or 'auth_token' not in config_parser[profile]:
+            raise RuntimeError('The {0} profile is not properly configured. '
+                               'To fix this issue, run dw -p {0} configure'.format(profile))
+
+    @staticmethod
     def __migrate_config(legacy_file_path, target_file_path):
         config_parser = configparser.ConfigParser()
+
+        if not path.isdir(path.dirname(target_file_path)):
+            os.makedirs(path.dirname(target_file_path))
+
         with open(legacy_file_path, 'r') as legacy, open(target_file_path, 'w') as target:
             regex = re.compile(r"^token\s*=\s*(\S.*)$")
             token = next(iter([regex.match(line.strip()).group(1) for line in legacy if regex.match(line)]),
-                              None)
+                         None)
             config_parser['default'] = {'auth_token': token}
             config_parser.write(target)
+
+        os.remove(legacy_file_path)
         return config_parser
-
-

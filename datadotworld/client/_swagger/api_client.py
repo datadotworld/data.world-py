@@ -71,7 +71,7 @@ class ApiClient(object):
             self.host = host
         self.cookie = cookie
         # Set default User-Agent.
-        self.user_agent = 'data.world-py - 0.1.2'
+        self.user_agent = 'data.world-py'
 
     @property
     def user_agent(self):

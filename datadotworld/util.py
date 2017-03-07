@@ -16,6 +16,8 @@ permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
+from __future__ import absolute_import
+
 import re
 
 DATASET_KEY_PATTERN = re.compile('[a-z0-9-]+/[a-z0-9-]+')  # Not the most comprehensive, for simplicity
@@ -27,3 +29,8 @@ def split_dataset_key(dataset_key):
                          '(i.e. user/dataset).')
     owner_id, dataset_id = dataset_key.split('/')
     return owner_id, dataset_id
+
+def user_agent():
+    from datadotworld import __version__
+    return 'data.world-py - {}'.format(__version__)
+

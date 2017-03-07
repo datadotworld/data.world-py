@@ -1,13 +1,15 @@
+from __future__ import absolute_import
+
 import pytest
 
-from datadotworld.client.api import ApiClient
+from datadotworld.client.api import RestApiClient
 from datadotworld.client._swagger.models import *
 
 
 class TestApiClient:
     @pytest.fixture
     def api_client(self):
-        return ApiClient()
+        return RestApiClient()
 
     def test_get_dataset(self, api_client, monkeypatch):
         monkeypatch.setattr(api_client._datasets_api, 'get_dataset', lambda o, d: DatasetSummaryResponse(o, d))

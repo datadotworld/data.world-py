@@ -16,13 +16,14 @@ permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
+from __future__ import absolute_import
 
 from datadotworld.client import _swagger
 from datadotworld.config import Config
-from datadotworld.util import split_dataset_key
+from datadotworld.util import split_dataset_key, user_agent
 
 
-class ApiClient:
+class RestApiClient:
     """A Python Client for data.world's REST API"""
 
     def __init__(self, profile='default', **kwargs):
@@ -32,13 +33,10 @@ class ApiClient:
         protocol = kwargs.get('protocol', 'https')
         api_host = kwargs.get('api_host', 'api.data.world')
 
-        token = config.auth_token
-        if token is None:
-            raise RuntimeError('An API token is not configured for profile {}. '
-                               'To fix this issue, run dw configure'.format(profile))
-
         api_client = _swagger.ApiClient(host="{}://{}/v0".format(protocol, api_host), header_name='Authorization',
-                                        header_value='Bearer {}'.format(token))
+                                        header_value='Bearer {}'.format(config.auth_token))
+        api_client.user_agent = user_agent()
+
         self._datasets_api = _swagger.DatasetsApi(api_client)
         self._uploads_api = _swagger.UploadsApi(api_client)
 

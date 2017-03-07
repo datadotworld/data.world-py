@@ -17,7 +17,7 @@
 
 # All we want is the actual _rest subpackage, discarding everything else from:
 #  swagger-codegen generate -l python --git-repo-id=data.world-py --git-user-id=datadotworld \
-#      --http-user-agent="data.world-py - 0.1.2" --invoker-package=client \
+#      --http-user-agent="data.world-py" --invoker-package=client \
 #      -i swagger-dwapi-def.json -c swagger-codegen-config.json --release-note=""
 #
 

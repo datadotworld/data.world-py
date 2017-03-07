@@ -20,9 +20,10 @@ from __future__ import absolute_import
 
 import requests
 
-from .client.api import ApiClient
-from .config import Config
-from .models.query import Results
+from datadotworld.client.api import RestApiClient
+from datadotworld.config import Config
+from datadotworld.models.query import Results
+from datadotworld.util import user_agent
 
 
 class DataDotWorld:
@@ -35,7 +36,7 @@ class DataDotWorld:
         self._protocol = kwargs.get('protocol', 'https')
         self._query_host = kwargs.get('query_host', 'query.data.world')
 
-        self.api_client = ApiClient(profile)
+        self.api_client = RestApiClient(profile)
 
     def query(self, dataset_key, query, query_type="sql"):
         """Query an existing dataset
@@ -78,7 +79,6 @@ class DataDotWorld:
         dtypes: float64(2), object(4)
         memory usage: 456.0+ bytes
         """
-        from . import __version__
         params = {
             "query": query
         }
@@ -87,9 +87,9 @@ class DataDotWorld:
                                          query_type,
                                          dataset_key)
         headers = {
-            'User-Agent': 'data.world-py - {0}'.format(__version__),
+            'User-Agent': user_agent(),
             'Accept': 'text/csv',
-            'Authorization': 'Bearer {0}'.format(self.token)
+            'Authorization': 'Bearer {0}'.format(self._token)
         }
         response = requests.get(url, params=params, headers=headers)
         if response.status_code == 200:
