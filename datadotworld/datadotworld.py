@@ -18,23 +18,31 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import
 
+import os
+import shutil
+import uuid
+import zipfile
+from os.path import join, isdir
+from warnings import warn
+
+import progressbar
 import requests
 
 from datadotworld.client.api import RestApiClient
 from datadotworld.config import Config
+from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import Results
 from datadotworld.util import user_agent
 
 
 class DataDotWorld:
     def __init__(self, profile='default', **kwargs):
-        config = Config(profile)
-
-        self._token = config.auth_token
+        self._config = Config(profile)
 
         # Overrides, for testing
         self._protocol = kwargs.get('protocol', 'https')
         self._query_host = kwargs.get('query_host', 'query.data.world')
+        self._download_host = kwargs.get('download_host', 'download.data.world')
 
         self.api_client = RestApiClient(profile)
 
@@ -77,7 +85,7 @@ class DataDotWorld:
         Height            8 non-null object
         Handedness        8 non-null object
         dtypes: float64(2), object(4)
-        memory usage: 456.0+ bytes
+        memory usage: 456.0bytes
         """
         params = {
             "query": query
@@ -89,9 +97,73 @@ class DataDotWorld:
         headers = {
             'User-Agent': user_agent(),
             'Accept': 'text/csv',
-            'Authorization': 'Bearer {0}'.format(self._token)
+            'Authorization': 'Bearer {0}'.format(self._config.auth_token)
         }
         response = requests.get(url, params=params, headers=headers)
         if response.status_code == 200:
             return Results(response.text)
         raise RuntimeError('Error executing query: {}'.format(response.text))
+
+    def load_dataset(self, dataset_key):
+
+        url = "{0}://{1}/datapackage/{2}".format(self._protocol, self._download_host, dataset_key)
+        headers = {
+            'User-Agent': user_agent(),
+            'Authorization': 'Bearer {0}'.format(self._config.auth_token)
+        }
+
+        data_dir = join(self._config.cache_dir, dataset_key, 'latest')
+        descriptor_file = join(data_dir, 'datapackage.json')
+
+        try:
+            response = requests.get(url, headers=headers, stream=True)
+        except requests.RequestException as e:
+            if os.path.exists(descriptor_file):
+                warn('Unable to download datapackage for {}. Loaded from cache at {}'.format(
+                    dataset_key, data_dir))
+                return LocalDataset(descriptor_file)
+            else:
+                raise e
+
+        if response.status_code == 200:
+            unzip_dir = join(self._config.tmp_dir, str(uuid.uuid4()))
+            os.makedirs(unzip_dir)
+
+            zip_file = join(unzip_dir, 'dataset.zip')
+            content_length = len(response.content) if response.content is not None else progressbar.UnknownLength
+
+            with progressbar.ProgressBar(max_value=content_length) as bar, \
+                    open(zip_file, 'wb') as f:
+
+                for data in response.iter_content(chunk_size=4096):
+                    f.write(data)
+                    if bar.max_value == progressbar.UnknownLength or (bar.max_value - bar.value) > 4096:
+                        bar.update(bar.value + 4096)
+                    else:
+                        bar.update(bar.max_value)
+
+            z = zipfile.ZipFile(zip_file)  # extract to tmp
+            z.extractall(path=unzip_dir)
+            unzipped_dir = [join(unzip_dir, dir) for dir in os.listdir(unzip_dir) if isdir(join(unzip_dir, dir))][0]
+
+            # TODO: Calculate overwrite based on dataset last modified
+            overwrite = True
+            if os.path.exists(data_dir):
+                if overwrite:
+                    shutil.rmtree(data_dir)
+                shutil.move(unzipped_dir, data_dir)
+            else:
+                shutil.move(unzipped_dir, data_dir)
+
+            shutil.rmtree(unzip_dir, ignore_errors=True)
+
+            return LocalDataset(descriptor_file)
+
+        else:
+            if os.path.exists(descriptor_file):
+                warn('Unable to download datapackage for {} (HTTP error: {}). Loaded from cache at {}'.format(
+                    dataset_key, response.status_code, data_dir))
+                return LocalDataset(descriptor_file)
+            else:
+                raise RuntimeError(
+                    'Unable to download datapackage for {} (HTTP error: {})'.format(dataset_key, response.status_code))

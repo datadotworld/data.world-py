@@ -19,13 +19,14 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 import configparser
 import os
 import re
+import tempfile
 from os import path
 
 
 class Config:
     def __init__(self, profile='default', **kwargs):
-        config_file_path = kwargs.get('config_file_path') or path.expanduser('~/.dw/config')
-        legacy_file_path = kwargs.get('legacy_file_path') or path.expanduser('~/.data.world')
+        config_file_path = path.expanduser(kwargs.get('config_file_path') or '~/.dw/config')
+        legacy_file_path = path.expanduser(kwargs.get('legacy_file_path') or '~/.data.world')
 
         if path.isfile(config_file_path):
             config_parser = configparser.ConfigParser()
@@ -41,6 +42,12 @@ class Config:
         self._config_file_path = config_file_path
         self._config_parser = config_parser
         self._profile = profile
+
+        self.tmp_dir = path.expanduser(kwargs.get('tmp_dir') or tempfile.gettempdir())
+
+        self.cache_dir = path.expanduser(kwargs.get('cache_dir') or '~/.dw/cache')
+        if not path.isdir(path.dirname(self.cache_dir)):
+            os.makedirs(path.dirname(self.cache_dir))
 
     @property
     def auth_token(self):

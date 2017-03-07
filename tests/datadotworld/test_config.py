@@ -22,7 +22,7 @@ class TestConfig:
 
     @pytest.fixture()
     def config_directory(self, tmpdir):
-        return os.makedirs(tmpdir.join('.dw'))
+        return os.makedirs(str(tmpdir.join('.dw')))
 
     @pytest.fixture()
     def default_config_file(self, config_file_path):
