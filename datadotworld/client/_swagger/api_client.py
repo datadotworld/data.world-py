@@ -11,16 +11,14 @@
 
 from __future__ import absolute_import
 
-import os
-import re
 import json
 import mimetypes
+import os
+import re
 import tempfile
 import threading
-
 from datetime import date, datetime
 
-# python 2 and python 3 compatibility library
 from six import PY3, integer_types, iteritems, text_type
 from six.moves.urllib.parse import quote
 

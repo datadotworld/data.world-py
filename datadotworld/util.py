@@ -16,3 +16,14 @@ permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
+import re
+
+DATASET_KEY_PATTERN = re.compile('[a-z0-9-]+/[a-z0-9-]+')  # Not the most comprehensive, for simplicity
+
+
+def split_dataset_key(dataset_key):
+    if not re.match(DATASET_KEY_PATTERN, dataset_key):
+        raise ValueError('Invalid dataset key. Key must include user and dataset names, separated by / '
+                         '(i.e. user/dataset).')
+    owner_id, dataset_id = dataset_key.split('/')
+    return owner_id, dataset_id

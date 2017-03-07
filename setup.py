@@ -20,7 +20,7 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 import re
 from os import path
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(*paths):
@@ -46,9 +46,9 @@ setup(
     author='data.world',
     author_email='help@data.world',
     license='Apache 2.0',
-    packages=['datadotworld'],
+    packages=find_packages(),
     install_requires=[
-        'requests>=2.9.2', 'urllib3 >= 1.15', 'six >= 1.10', 'certifi', 'python-dateutil'
+        'requests>=2.9.2', 'urllib3 >= 1.15', 'six >= 1.10', 'certifi', 'python-dateutil', 'click', 'configparser'
     ],
     setup_requires=[
         'pytest-runner'
@@ -58,5 +58,8 @@ setup(
     ],
     extras_require={
         'PANDAS': ['pandas']
-    }
+    },
+    entry_points={
+        'console_scripts': ['dw=datadotworld.cli:cli'],
+    },
 )

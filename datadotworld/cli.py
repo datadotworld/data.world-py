@@ -16,17 +16,32 @@ permissions and limitations under the License.
 
 This product includes software developed at data.world, Inc.(http://www.data.world/).
 """
-
 from __future__ import absolute_import
 
-from .datadotworld import DataDotWorld
+import click
 
-__version__ = '0.1.2'
-
-
-def query(dataset_key, query, query_type='sql', profile='default'):
-    return DataDotWorld(profile=profile).query(dataset_key, query, query_type=query_type)
+from .config import Config
 
 
-def api_client(profile='default'):
-    return DataDotWorld(profile=profile).api_client
+@click.group()
+@click.option('--profile', '-p', default='default', help='Account name')
+@click.pass_context
+def cli(ctx, profile):
+    if ctx.obj is None:
+        ctx.obj = {}
+    ctx.obj['profile'] = profile
+    pass
+
+
+@click.command()
+@click.option('--token', '-t', prompt=True, help='Authentication token for API access '
+                                                 '(obtained at: data.world/settings/advanced)')
+@click.pass_context
+def configure(ctx, token):
+    """This command configures the environment for access to data.world"""
+    config = Config(ctx.obj['profile'])
+    config.auth_token = token
+    config.save()
+
+
+cli.add_command(configure)
