@@ -55,7 +55,7 @@ setup(
         'pytest-runner'
     ],
     tests_require=[
-        'pytest'
+        'pytest', 'doublex', 'responses', 'pyhamcrest', 'flake8', 'coverage', 'pytest-cov', 'tox'
     ],
     extras_require={
         'PANDAS': ['pandas']

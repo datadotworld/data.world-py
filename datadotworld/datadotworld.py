@@ -32,14 +32,13 @@ from datadotworld.client.api import RestApiClient
 from datadotworld.config import Config
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import Results
-from datadotworld.util import user_agent
+from datadotworld.util import _user_agent
 
 
 class DataDotWorld:
     def __init__(self, profile='default', **kwargs):
-        self._config = Config(profile)
-
         # Overrides, for testing
+        self._config = kwargs.get('config', Config(profile))
         self._protocol = kwargs.get('protocol', 'https')
         self._query_host = kwargs.get('query_host', 'query.data.world')
         self._download_host = kwargs.get('download_host', 'download.data.world')
@@ -95,7 +94,7 @@ class DataDotWorld:
                                          query_type,
                                          dataset_key)
         headers = {
-            'User-Agent': user_agent(),
+            'User-Agent': _user_agent(),
             'Accept': 'text/csv',
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)
         }
@@ -108,7 +107,7 @@ class DataDotWorld:
 
         url = "{0}://{1}/datapackage/{2}".format(self._protocol, self._download_host, dataset_key)
         headers = {
-            'User-Agent': user_agent(),
+            'User-Agent': _user_agent(),
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)
         }
 

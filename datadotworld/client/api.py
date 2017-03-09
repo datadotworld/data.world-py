@@ -20,7 +20,7 @@ from __future__ import absolute_import
 
 from datadotworld.client import _swagger
 from datadotworld.config import Config
-from datadotworld.util import split_dataset_key, user_agent
+from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient:
@@ -35,7 +35,7 @@ class RestApiClient:
 
         api_client = _swagger.ApiClient(host="{}://{}/v0".format(protocol, api_host), header_name='Authorization',
                                         header_value='Bearer {}'.format(config.auth_token))
-        api_client.user_agent = user_agent()
+        api_client.user_agent = _user_agent()
 
         self._datasets_api = _swagger.DatasetsApi(api_client)
         self._uploads_api = _swagger.UploadsApi(api_client)
@@ -68,7 +68,7 @@ class RestApiClient:
         A dataset that serves as a quick introduction to data.world and some of our capabilities.  Follow along in \
         the summary!
         """
-        return self._datasets_api.get_dataset(*(split_dataset_key(dataset_key))).to_dict()
+        return self._datasets_api.get_dataset(*(parse_dataset_key(dataset_key))).to_dict()
 
     def create_dataset(self, owner_id, **kwargs):
         """Create a new dataset
@@ -150,7 +150,7 @@ class RestApiClient:
                                            name=name, source=_swagger.FileSourceCreateOrUpdateRequest(url=url)),
                                        kwargs)
 
-        owner_id, dataset_id = split_dataset_key(dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
         self._datasets_api.patch_dataset(owner_id, dataset_id, request)
 
     def replace_dataset(self, dataset_key, **kwargs):
@@ -194,7 +194,7 @@ class RestApiClient:
                                            name=name, source=_swagger.FileSourceCreateRequest(url=url)),
                                        kwargs)
 
-        owner_id, dataset_id = split_dataset_key(dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
         self._datasets_api.replace_dataset(owner_id, dataset_id, request)
 
     # File Operations
@@ -223,7 +223,7 @@ class RestApiClient:
         file_requests = [_swagger.FileCreateOrUpdateRequest(
             name=name, source=_swagger.FileSourceCreateOrUpdateRequest(url=url)) for name, url in files.items()]
 
-        owner_id, dataset_id = split_dataset_key(dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
         self._datasets_api.add_files_by_source(owner_id, dataset_id,
                                                _swagger.FileBatchUpdateRequest(files=file_requests))
 
@@ -245,7 +245,7 @@ class RestApiClient:
         >>> api_client = datadotworld.api_client()
         >>> api_client.sync_files('jonloyens/an-intro-to-dataworld-dataset')
         """
-        self._datasets_api.sync(*(split_dataset_key(dataset_key)))
+        self._datasets_api.sync(*(parse_dataset_key(dataset_key)))
 
     def upload_files(self, dataset_key, files):
         """Upload dataset files
@@ -268,7 +268,7 @@ class RestApiClient:
         >>> api_client.upload_files('jonloyens/an-intro-to-dataworld-dataset',
         >>>                 ['/Users/jon/DataDotWorldBBall/DataDotWorldBBallTeam.csv'])
         """
-        owner_id, dataset_id = split_dataset_key(dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
         self._uploads_api.upload_files(owner_id, dataset_id, files)
 
     def delete_files(self, dataset_key, names):
@@ -291,7 +291,7 @@ class RestApiClient:
         >>> api_client = datadotworld.api_client()
         >>> api_client.delete_files('jonloyens/an-intro-to-dataworld-dataset', ['atx_startup_league_ranking.csv'])
         """
-        owner_id, dataset_id = split_dataset_key(dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
         self._datasets_api.delete_files_and_sync_sources(owner_id, dataset_id, names)
 
     @staticmethod

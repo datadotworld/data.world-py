@@ -20,17 +20,43 @@ from __future__ import absolute_import
 
 import re
 
-DATASET_KEY_PATTERN = re.compile('[a-z0-9-]+/[a-z0-9-]+')  # Not the most comprehensive, for simplicity
+DATASET_KEY_PATTERN = re.compile('^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # Recognizes URLs and paths
 
 
-def split_dataset_key(dataset_key):
-    if not re.match(DATASET_KEY_PATTERN, dataset_key):
+def parse_dataset_key(dataset_key):
+    """Parse a dataset URL or path and return the owner and the dataset id
+
+    Parameters
+    ----------
+    dataset_key : str
+        Dataset key (in the form of owner/id) or dataset URL
+
+    Returns
+    -------
+    dataset_owner
+        User name of the dataset owner
+    dataset_id
+        ID of the dataset
+
+    Raises
+    ------
+    ValueError
+        If the provided key does comply to the expected pattern
+
+    Examples
+    --------
+    >>> util.parse_dataset_key('https://data.world/jonloyens/an-intro-to-datadotworld-dataset')
+    ('jonloyens', 'an-intro-to-datadotworld-dataset')
+    >>> util.parse_dataset_key('jonloyens/an-intro-to-datadotworld-dataset')
+    ('jonloyens', 'an-intro-to-datadotworld-dataset')
+    """
+    match = re.match(DATASET_KEY_PATTERN, dataset_key)
+    if not match:
         raise ValueError('Invalid dataset key. Key must include user and dataset names, separated by / '
                          '(i.e. user/dataset).')
-    owner_id, dataset_id = dataset_key.split('/')
-    return owner_id, dataset_id
+    return match.groups()
 
-def user_agent():
+
+def _user_agent():
     from datadotworld import __version__
     return 'data.world-py - {}'.format(__version__)
-

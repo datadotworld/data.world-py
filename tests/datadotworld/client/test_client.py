@@ -139,35 +139,6 @@ class TestApiClient:
 
         assert delete_calls.count == 1
 
-        # def test_query_sql(self, dw, monkeypatch):
-        #     expected_url = '{0.protocol}://{0.query_host}/sql/agentid/datasetid'.format(dw)
-        #     expected_params = {'query': 'SELECT * FROM Tables'}
-        #     expected_headers = {
-        #         'User-Agent': 'data.world-py - {0}'.format(__version__),
-        #         'Accept': 'text/csv',
-        #         'Authorization': 'Bearer {0}'.format(api_client.token)
-        #     }
-        #     response = requests.Response()
-        #     response.status_code = 200
-        #     monkeypatch.setattr(requests, 'get', requests_get_stub(expected_url, expected_params, expected_headers,
-        #                                                            response))
-        #
-        #     results = dw.query('agentid/datasetid', 'SELECT * FROM Tables')
-        #
-        #     assert results.as_string() == ''
-        #
-        # # TODO Add test scenarios for query
-        #
-        #
-        # def requests_get_stub(expected_url, expected_params, expected_headers, response):
-        #     def query_function(url, params=None, headers=None):
-        #         assert url == expected_url
-        #         assert params == expected_params
-        #         assert headers == expected_headers
-        #         return response
-        #
-        #     return query_function
-
 
 class Counter:
     def __init__(self):

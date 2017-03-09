@@ -27,6 +27,17 @@ from datadotworld.config import Config
 @click.option('--profile', '-p', default='default', help='Account name')
 @click.pass_context
 def cli(ctx, profile):
+    """Command group
+
+    Allows user to specify configuration profile.
+
+    Parameters
+    ----------
+    ctx
+        Click's Context object
+    profile
+        Profile name
+    """
     if ctx.obj is None:
         ctx.obj = {}
     ctx.obj['profile'] = profile
@@ -34,12 +45,22 @@ def cli(ctx, profile):
 
 
 @click.command()
-@click.option('--token', '-t', prompt=True, help='Authentication token for API access '
-                                                 '(obtained at: data.world/settings/advanced)')
-@click.pass_context
-def configure(ctx, token):
-    """This command configures the environment for access to data.world"""
-    config = Config(ctx.obj['profile'])
+@click.option('--token', '-t', prompt='API token', help='Authentication token for API access '
+                                                        '(obtained at: data.world/settings/advanced)')
+@click.pass_obj
+def configure(obj, token):
+    """Configure profile
+
+    Allows users to cache API tokens for one or more profiles
+
+    Parameters
+    ----------
+    obj : dict
+        Dictionary obtain from Click's context (Context.obj)
+    token : str
+        API token provided by the user
+    """
+    config = obj.get('config') or Config(obj['profile'])
     config.auth_token = token
     config.save()
 

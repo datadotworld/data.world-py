@@ -26,6 +26,7 @@ __version__ = '0.1.2'
 def load_dataset(dataset_key, profile='default'):
     return DataDotWorld(profile=profile).load_dataset(dataset_key)
 
+
 def query(dataset_key, query, query_type='sql', profile='default'):
     return DataDotWorld(profile=profile).query(dataset_key, query, query_type=query_type)
 
