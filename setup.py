@@ -49,7 +49,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'requests>=2.9.2', 'urllib3 >= 1.15', 'six >= 1.10', 'certifi', 'python-dateutil', 'click', 'configparser',
-        'datapackage', 'jsontableschema-pandas', 'progressbar2'
+        'datapackage', 'progressbar2'
     ],
     setup_requires=[
         'pytest-runner'
