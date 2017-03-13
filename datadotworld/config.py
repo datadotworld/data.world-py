@@ -32,12 +32,12 @@ class Config:
             config_parser = configparser.ConfigParser()
             config_parser.read_file(open(config_file_path))
         elif path.isfile(legacy_file_path):
-            config_parser = Config.__migrate_config(legacy_file_path, config_file_path)
+            config_parser = self.__migrate_config(legacy_file_path, config_file_path)
         else:
             raise RuntimeError('Unable to locate configuration file {}. '
                                'To fix this issue, run dw configure'.format(config_file_path))
 
-        Config.__validate_config(config_parser, profile)
+        self.__validate_config(config_parser, profile)
 
         self._config_file_path = config_file_path
         self._config_parser = config_parser

@@ -5,10 +5,12 @@ import six
 from datapackage.resource import TabularResource
 from jsontableschema_pandas import Storage
 
+from datadotworld.util import LazyLoadedDict
+
 if six.PY2:
-    from collections import Mapping
+    pass
 else:
-    from collections.abc import Mapping
+    pass
 
 
 class LocalDataset():
@@ -37,28 +39,24 @@ class LocalDataset():
 
         self._datapackage = datapackage.DataPackage(descriptor_file)
         self.__descriptor_file = descriptor_file
+        self.__base_path = os.path.dirname(os.path.abspath(self.__descriptor_file))
 
         # Index resources by name
         self.__resources = {r.descriptor['name']: r for r in self._datapackage.resources}
 
-        table_resources = {k: r for (k, r) in self.__resources.items() if type(r) is TabularResource}
-
         # Initialize jsontableschema_pandas storage to convert data into dataframes on demand
-        storage = Storage()
-        storage.create(self.__resources.keys(),
-                       [r.descriptor['schema'] for r in self.__resources.values() if 'schema' in r.descriptor])
+        tabular_resources = {k: r for (k, r) in self.__resources.items() if type(r) is TabularResource}
+        self.__storage = Storage()
+        self.__storage.create(tabular_resources.keys(),
+                              [r.descriptor['schema'] for r in tabular_resources.values() if 'schema' in r.descriptor])
 
         # All resources
-        base_path = os.path.dirname(os.path.abspath(self.__descriptor_file))
-        self.raw_data = LazyLoadedResourceDict(self.__resources,
-                                               lambda resource: LocalDataset._to_data(resource, base_path),
-                                               'bytes')
+        self.raw_data = LazyLoadedDict(self.__resources.keys(), self._to_data, 'bytes')
 
         # Tabular resources
-        self.tables = LazyLoadedResourceDict(table_resources, LocalDataset._to_data, type_hint='iterable')
-        self.dataframes = LazyLoadedResourceDict(table_resources,
-                                                 lambda resource: LocalDataset._to_dataframe(storage, resource),
-                                                 type_hint='pandas.DataFrame')
+        self.tables = LazyLoadedDict(tabular_resources.keys(), lambda key: tabular_resources[key].data,
+                                     type_hint='iterable')
+        self.dataframes = LazyLoadedDict(tabular_resources.keys(), self._to_dataframe, type_hint='pandas.DataFrame')
 
     def describe(self, resource=None):
         """Describe dataset or resource within dataset
@@ -78,72 +76,19 @@ class LocalDataset():
         else:
             return self.__resources[resource].descriptor
 
-    @staticmethod
-    def _to_data(resource, base_path):
+    def _to_data(self, resource_name):
         """Extract raw data from resource"""
         # Instantiating the resource again as a simple `Resource` ensures that ``data`` will be returned as bytes.
-        return datapackage.Resource(resource.descriptor, default_base_path=base_path).data
+        upcast_resource = datapackage.Resource(self.__resources[resource_name].descriptor,
+                                               default_base_path=self.__base_path)
+        return upcast_resource.data
 
-    @staticmethod
-    def _to_dataframe(storage, resource):
+    def _to_dataframe(self, resource_name):
         """Extract dataframe from tabular resource"""
-        name = resource.descriptor['name']
-        if storage[name].size == 0:
-            storage.write(name, LocalDataset._to_rows_iter(resource.data))
-        return storage[name]
-
-    @staticmethod
-    def _to_rows_iter(table):
-        """Extract table rows as lists"""
-        for row in table:
-            yield row.values()
+        if self.__storage[resource_name].size == 0:
+            self.__storage.write(resource_name, [row.values() for row in self.tables[resource_name]])
+        return self.__storage[resource_name]
 
     def __repr__(self):
         fully_qualified_type = '{}.{}'.format(self.__module__, self.__class__.__name__)
         return '{}({})'.format(fully_qualified_type, repr(self.__descriptor_file))
-
-
-class LazyLoadedResourceDict(Mapping):
-    """Custom immutable dict implementation with lazy loaded values
-
-    Parameters
-    ----------
-    resources : list of `datapackage.Resource`
-        Datapackage resources
-    lazy_loader : function
-        Function used to instantiate/load the value for a given key, on demand
-    type_hint : str
-        String describing the type of the lazy loaded value. Used in place of the value before value is loaded.
-    """
-
-    def __init__(self, resources, lazy_loader, type_hint='unknown'):
-        self._resources = resources
-        self._data_extractor = lazy_loader
-        self._type_hint = type_hint
-        self.__cache = {}
-
-    def __getitem__(self, item):
-        if item not in self.__cache:
-            self.__cache[item] = self._data_extractor(self._resources[item])
-        return self.__cache[item]
-
-    def __iter__(self):
-        for k in self._resources.keys():
-            yield k
-
-    def __len__(self):
-        return len(self._resources)
-
-    def __repr__(self):
-        fully_qualified_type = '{}.{}'.format(self.__module__, self.__class__.__name__)
-        return '<{} with values of type: {}>'.format(fully_qualified_type, self._type_hint)
-
-    def __str__(self):
-        def format_value_str(resource_key):
-            if resource_key in self.__cache.keys():
-                return str(self.__cache.get(resource_key))
-            else:
-                '<{}>'.format(self._type_hint)
-
-        key_value_strings = ["{}: {}".format(k, format_value_str(k)) for k in self._resources.keys()]
-        return '{{{}}}'.format(', '.join(key_value_strings))

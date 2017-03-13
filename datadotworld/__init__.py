@@ -18,18 +18,8 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import
 
-from datadotworld.datadotworld import DataDotWorld
+from datadotworld.datadotworld import load_dataset, query, api_client
 
 __version__ = '0.1.2'
 
 
-def load_dataset(dataset_key, profile='default'):
-    return DataDotWorld(profile=profile).load_dataset(dataset_key)
-
-
-def query(dataset_key, query, query_type='sql', profile='default'):
-    return DataDotWorld(profile=profile).query(dataset_key, query, query_type=query_type)
-
-
-def api_client(profile='default'):
-    return DataDotWorld(profile=profile).api_client

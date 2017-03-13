@@ -19,6 +19,7 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 from __future__ import absolute_import
 
 import re
+from collections import Mapping
 
 DATASET_KEY_PATTERN = re.compile('^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # Recognizes URLs and paths
 
@@ -60,3 +61,53 @@ def parse_dataset_key(dataset_key):
 def _user_agent():
     from datadotworld import __version__
     return 'data.world-py - {}'.format(__version__)
+
+
+def interactive_mode_enabled():
+    import __main__ as main
+    return not hasattr(main, '__file__')
+
+
+class LazyLoadedDict(Mapping):
+    """Custom immutable dict implementation with lazy loaded values
+
+    Parameters
+    ----------
+    keys : iterable
+        Dictionary keys
+    loader_func : function
+        Function used to instantiate/load the value for a given key, on demand
+    type_hint : str
+        String describing the type of the lazy loaded value. Used in place of the value before value is loaded.
+    """
+
+    def __init__(self, keys, loader_func, type_hint='unknown'):
+        self._keys = keys
+        self._loader_func = loader_func
+        self._type_hint = type_hint
+        self.__cache = {}  # Would love for this to be a weak ref dict, but not all types can be weak referenced
+
+    def __getitem__(self, item):
+        if item not in self.__cache:
+            self.__cache[item] = self._loader_func(item)
+        return self.__cache[item]
+
+    def __iter__(self):
+        return self._keys
+
+    def __len__(self):
+        return len(self._keys)
+
+    def __repr__(self):
+        fully_qualified_type = '{}.{}'.format(self.__module__, self.__class__.__name__)
+        return '<{} with values of type: {}>'.format(fully_qualified_type, self._type_hint)
+
+    def __str__(self):
+        def format_value_str(key):
+            if key in self.__cache:
+                return str(self.__cache[key])
+            else:
+                return '<{}>'.format(self._type_hint)
+
+        key_value_strings = ['\'{}\': {}'.format(k, format_value_str(k)) for k in self._keys]
+        return '{{{}}}'.format(', '.join(key_value_strings))

@@ -18,17 +18,14 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import
 
-import os
 import shutil
-import uuid
-import zipfile
-from os.path import join, isdir
+import weakref
+from os import path
 from warnings import warn
 
-import progressbar
 import requests
 
-from datadotworld.client.api import RestApiClient
+from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.config import Config
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import Results
@@ -103,66 +100,43 @@ class DataDotWorld:
             return Results(response.text)
         raise RuntimeError('Error executing query: {}'.format(response.text))
 
-    def load_dataset(self, dataset_key):
+    def load_dataset(self, dataset_key, force_update=False):
 
-        url = "{0}://{1}/datapackage/{2}".format(self._protocol, self._download_host, dataset_key)
-        headers = {
-            'User-Agent': _user_agent(),
-            'Authorization': 'Bearer {0}'.format(self._config.auth_token)
-        }
+        data_dir = path.join(self._config.cache_dir, dataset_key, 'latest')
+        descriptor_file = path.join(data_dir, 'datapackage.json')
 
-        data_dir = join(self._config.cache_dir, dataset_key, 'latest')
-        descriptor_file = join(data_dir, 'datapackage.json')
+        if not path.isfile(descriptor_file) or force_update:
+            try:
+                descriptor_file = self.api_client.download_datapackage(dataset_key, data_dir)
+            except RestApiError as e:
+                if not path.isfile(descriptor_file):
+                    raise
+                else:
+                    warn('Unable to download datapackage ({}). Loading previously saved version.'.format(e.reason))
 
-        try:
-            response = requests.get(url, headers=headers, stream=True)
-        except requests.RequestException as e:
-            if os.path.exists(descriptor_file):
-                warn('Unable to download datapackage for {}. Loaded from cache at {}'.format(
-                    dataset_key, data_dir))
-                return LocalDataset(descriptor_file)
-            else:
-                raise e
+        return LocalDataset(descriptor_file)
 
-        if response.status_code == 200:
-            unzip_dir = join(self._config.tmp_dir, str(uuid.uuid4()))
-            os.makedirs(unzip_dir)
 
-            zip_file = join(unzip_dir, 'dataset.zip')
-            content_length = len(response.content) if response.content is not None else progressbar.UnknownLength
+# Convenience top-level functions
 
-            with progressbar.ProgressBar(max_value=content_length) as bar, \
-                    open(zip_file, 'wb') as f:
+__instances = weakref.WeakValueDictionary()
 
-                for data in response.iter_content(chunk_size=4096):
-                    f.write(data)
-                    if bar.max_value == progressbar.UnknownLength or (bar.max_value - bar.value) > 4096:
-                        bar.update(bar.value + 4096)
-                    else:
-                        bar.update(bar.max_value)
 
-            z = zipfile.ZipFile(zip_file)  # extract to tmp
-            z.extractall(path=unzip_dir)
-            unzipped_dir = [join(unzip_dir, dir) for dir in os.listdir(unzip_dir) if isdir(join(unzip_dir, dir))][0]
+def _get_instance(profile):
+    instance = __instances.get(profile, lambda: None)()
+    if instance is None:
+        instance = DataDotWorld(profile=profile)
+        __instances[profile] = instance
+    return instance
 
-            # TODO: Calculate overwrite based on dataset last modified
-            overwrite = True
-            if os.path.exists(data_dir):
-                if overwrite:
-                    shutil.rmtree(data_dir)
-                shutil.move(unzipped_dir, data_dir)
-            else:
-                shutil.move(unzipped_dir, data_dir)
 
-            shutil.rmtree(unzip_dir, ignore_errors=True)
+def load_dataset(dataset_key, force_update=False, profile='default'):
+    return _get_instance(profile).load_dataset(dataset_key, force_update=force_update)
 
-            return LocalDataset(descriptor_file)
 
-        else:
-            if os.path.exists(descriptor_file):
-                warn('Unable to download datapackage for {} (HTTP error: {}). Loaded from cache at {}'.format(
-                    dataset_key, response.status_code, data_dir))
-                return LocalDataset(descriptor_file)
-            else:
-                raise RuntimeError(
-                    'Unable to download datapackage for {} (HTTP error: {})'.format(dataset_key, response.status_code))
+def query(dataset_key, query, query_type='sql', profile='default'):
+    return _get_instance(profile).query(dataset_key, query, query_type=query_type)
+
+
+def api_client(profile='default'):
+    return _get_instance(profile).api_client
