@@ -28,16 +28,14 @@ class Config:
         config_file_path = path.expanduser(kwargs.get('config_file_path') or '~/.dw/config')
         legacy_file_path = path.expanduser(kwargs.get('legacy_file_path') or '~/.data.world')
 
+        if not path.isdir(path.dirname(config_file_path)):
+            os.makedirs(path.dirname(config_file_path))
+
+        config_parser = configparser.ConfigParser()
         if path.isfile(config_file_path):
-            config_parser = configparser.ConfigParser()
             config_parser.read_file(open(config_file_path))
         elif path.isfile(legacy_file_path):
             config_parser = self.__migrate_config(legacy_file_path, config_file_path)
-        else:
-            raise RuntimeError('Unable to locate configuration file {}. '
-                               'To fix this issue, run dw configure'.format(config_file_path))
-
-        self.__validate_config(config_parser, profile)
 
         self._config_file_path = config_file_path
         self._config_parser = config_parser
@@ -51,6 +49,7 @@ class Config:
 
     @property
     def auth_token(self):
+        self.__validate_config()
         if self._profile not in self._config_parser:
             return None
         return self._config_parser[self._profile].get('auth_token')
@@ -64,18 +63,17 @@ class Config:
     def save(self):
         self._config_parser.write(open(self._config_file_path, 'w'))
 
-    @staticmethod
-    def __validate_config(config_parser, profile):
-        if profile not in config_parser or 'auth_token' not in config_parser[profile]:
+    def __validate_config(self):
+        if not path.isfile(self._config_file_path):
+            raise RuntimeError('Configuration file not found at {}.'
+                               'To fix this issue, run dw configure'.format(self._config_file_path))
+        if self._profile not in self._config_parser or 'auth_token' not in self._config_parser[self._profile]:
             raise RuntimeError('The {0} profile is not properly configured. '
-                               'To fix this issue, run dw -p {0} configure'.format(profile))
+                               'To fix this issue, run dw -p {0} configure'.format(self._profile))
 
     @staticmethod
     def __migrate_config(legacy_file_path, target_file_path):
         config_parser = configparser.ConfigParser()
-
-        if not path.isdir(path.dirname(target_file_path)):
-            os.makedirs(path.dirname(target_file_path))
 
         with open(legacy_file_path, 'r') as legacy, open(target_file_path, 'w') as target:
             regex = re.compile(r"^token\s*=\s*(\S.*)$")
