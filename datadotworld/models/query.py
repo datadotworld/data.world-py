@@ -18,34 +18,35 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import
 
-import csv
-from io import StringIO
+from tabulator import Stream
 
 
-class Results:
+class QueryResults:
+    """Class for accessing and working with the results of a query
+
+    Attributes
+    ----------
+    raw_data : str
+        Query results as raw CSV data.
+    table : list
+        Query results as a `list` of rows.
+        Each row is a `dict` where keys are column names and values their respective value
+    dataframe : `pandas.DataFrame`
+        Query results as a `DataFrame`.
+    """
     def __init__(self, raw):
-        self.raw = raw
+        self.raw_data = raw
 
-    def __unicode__(self):
-        return self.as_string()
-
-    def __repr__(self):
-        return "{0}\n...".format(self.as_string()[:250])
-
-    def as_string(self):
+    def __str__(self):
         return self.raw
 
-    def as_stream(self):
-        return StringIO(self.raw)
+    @property
+    def dataframe(self):
+        import pandas as pd
+        return pd.DataFrame(self.table)
 
-    def as_dataframe(self):
-        try:
-            import pandas as pd
-        except ImportError:
-            raise RuntimeError("You need to have pandas installed to use .asDf()")
-        else:
-            return pd.read_csv(self.as_stream())
-
-    def as_csv(self):
-        # TODO: support UTF-8 formatted CSV in Python 2.x
-        return csv.reader(self.as_stream())
+    @property
+    def table(self):
+        # TODO Return typed values based on data.world type inference
+        with Stream(self.raw_data, headers=1, format='csv', scheme='text') as stream:
+            return [dict(zip(stream.headers, row)) for row in stream]

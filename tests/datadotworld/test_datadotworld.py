@@ -3,7 +3,7 @@ import responses
 from doublex import Stub, assert_that
 from hamcrest import has_entry, equal_to, calling, raises
 
-from datadotworld import DataDotWorld
+from datadotworld.datadotworld import DataDotWorld
 from datadotworld.config import Config
 
 
@@ -35,7 +35,7 @@ class TestDataDotWorld:
                               callback=lambda req: verify_auth(req, success_response), match_querystring=True)
 
             result = dw.query('owner/dataset', query, query_type=type)
-            assert_that(result.raw, equal_to(beans_csv))
+            assert_that(result.raw_data, equal_to(beans_csv))
 
     @pytest.mark.parametrize("type,endpoint,query", query_types, ids=['sparql', 'sql'])
     def test_query_400(self, dw, type, endpoint, query):

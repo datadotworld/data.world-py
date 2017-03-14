@@ -25,17 +25,21 @@ import uuid
 import zipfile
 from os import path
 
-import progressbar
 import requests
 
 from datadotworld.client import _swagger
 from datadotworld.config import Config
-from datadotworld.util import parse_dataset_key, _user_agent, interactive_mode_enabled
+from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient:
-    """A Python Client for data.world's REST API"""
+    """A Python Client for data.world's REST API
 
+    Parameters
+    ----------
+    profile : str, optional
+        Name of the configuration profile to use
+    """
     def __init__(self, profile='default', **kwargs):
         self._config = Config(profile)
 
@@ -122,10 +126,10 @@ class RestApiClient:
         >>> api_client = datadotworld.api_client()
         >>> api_client.create_dataset('jonloyens', **intro_dataset)
         """
-        request = self.__build_dataset(lambda: _swagger.DatasetCreateRequest(),
-                                       lambda name, url: _swagger.FileCreateRequest(
-                                           name=name, source=_swagger.FileSourceCreateRequest(url=url)),
-                                       kwargs)
+        request = self.__build_dataset_obj(lambda: _swagger.DatasetCreateRequest(),
+                                           lambda name, url: _swagger.FileCreateRequest(
+                                               name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+                                           kwargs)
 
         try:
             self._datasets_api.create_dataset(owner_id, request)
@@ -163,10 +167,10 @@ class RestApiClient:
         >>> api_client = datadotworld.api_client()
         >>> api_client.patch_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_patch)
         """
-        request = self.__build_dataset(lambda: _swagger.DatasetPatchRequest(),
-                                       lambda name, url: _swagger.FileCreateOrUpdateRequest(
-                                           name=name, source=_swagger.FileSourceCreateOrUpdateRequest(url=url)),
-                                       kwargs)
+        request = self.__build_dataset_obj(lambda: _swagger.DatasetPatchRequest(),
+                                           lambda name, url: _swagger.FileCreateOrUpdateRequest(
+                                               name=name, source=_swagger.FileSourceCreateOrUpdateRequest(url=url)),
+                                           kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -210,10 +214,10 @@ class RestApiClient:
         >>> api_client = datadotworld.api_client()
         >>> api_client.replace_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_overwrite)
         """
-        request = self.__build_dataset(lambda: _swagger.DatasetPutRequest(),
-                                       lambda name, url: _swagger.FileCreateRequest(
-                                           name=name, source=_swagger.FileSourceCreateRequest(url=url)),
-                                       kwargs)
+        request = self.__build_dataset_obj(lambda: _swagger.DatasetPutRequest(),
+                                           lambda name, url: _swagger.FileCreateRequest(
+                                               name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+                                           kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -333,7 +337,7 @@ class RestApiClient:
     # Datapackage
 
     def download_datapackage(self, dataset_key, dest_dir):
-        """Download and unzip a dataset's data package
+        """Download and unzip a dataset's datapackage
 
         Parameters
         ----------
@@ -352,7 +356,8 @@ class RestApiClient:
         RestApiException
             If a server error occurs
         """
-        url = "{0}://{1}/datapackage/{2}".format(self._protocol, self._download_host, dataset_key)
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        url = "{0}://{1}/datapackage/{2}/{3}".format(self._protocol, self._download_host, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)
@@ -369,11 +374,8 @@ class RestApiClient:
 
         zip_file = path.join(unzip_dir, 'dataset.zip')
 
-        content_length = (response.headers.get('content-length') or
-                          len(response.content) if response.content is not None else None)
-
         with open(zip_file, 'wb') as f:
-            for data in self.__interactive_progress_info(response.iter_content(chunk_size=4096), 4096, content_length):
+            for data in response.iter_content(chunk_size=4096):
                 f.write(data)
 
         zip_obj = zipfile.ZipFile(zip_file)
@@ -383,13 +385,10 @@ class RestApiClient:
 
         shutil.move(unzipped_dir, dest_dir)
 
-        if interactive_mode_enabled():
-            print('Saved at: {}'.format(dest_dir))
-
         return path.join(dest_dir, 'datapackage.json')
 
     @staticmethod
-    def __build_dataset(dataset_constructor, file_constructor, args):
+    def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = [file_constructor(name, url)
                  for name, url in args['files'].items()] if 'files' in args else None
 
@@ -411,33 +410,18 @@ class RestApiClient:
 
         return dataset
 
-    @staticmethod
-    def __interactive_progress_info(iterable, chunk_size=1, total_size=None):
-        if interactive_mode_enabled():
-            # Show progress bar in interactive mode
-            bar = progressbar.ProgressBar(max_value=int(total_size) or progressbar.UnknownLength,
-                                          widgets=[progressbar.DataSize()])
-
-            for x in iterable:
-                yield x
-                if bar.max_value == progressbar.UnknownLength or (bar.max_value - bar.value) > chunk_size:
-                    bar.update(bar.value + chunk_size)
-                else:
-                    bar.update(bar.max_value)
-        else:
-            return iter
-
 
 class RestApiError(Exception):
+    """Exception wrapper for errors raised by requests or by the swagger client"""
     def __init__(self, *args, **kwargs):
-        if 'cause' in kwargs:
-            cause = kwargs.pop('cause')
-            if type(cause) is _swagger.ApiException:
-                self.status = cause.status
-                self.reason = cause.reason
-                self.body = cause.body
-            elif type(cause) is requests.RequestException:
-                requests_response = cause.response
+        self.cause = kwargs.pop('cause', None)
+        if self.cause is not None:
+            if type(self.cause) is _swagger.rest.ApiException:
+                self.status = self.cause.status
+                self.reason = self.cause.reason
+                self.body = self.cause.body
+            elif type(self.cause) is requests.RequestException:
+                requests_response = self.cause.response
                 if requests_response is not None:
                     self.status = requests_response.status_code
                     self.reason = requests_response.reason
@@ -450,10 +434,19 @@ class RestApiError(Exception):
         super(RestApiError, self).__init__(*args, **kwargs)
 
     def json(self):
+        """Attempts to parse json in the body of response to failed requests
+
+        Data.world often includes a JSON body for errors; however, there are no guarantees.
+
+        Returns
+        -------
+        json
+            The JSON body if one is included. Otherwise, None.
+        """
         try:
             return json.loads(self.body)
-        except json.JSONDecodeError:
-            raise ValueError('Error response body is not a valid JSON')
+        except (json.JSONDecodeError, TypeError):
+            return None
 
     def __str__(self):
-        return str(self.json() or self.body)
+        return str(self.json() or self.cause)

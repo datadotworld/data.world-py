@@ -63,11 +63,6 @@ def _user_agent():
     return 'data.world-py - {}'.format(__version__)
 
 
-def interactive_mode_enabled():
-    import __main__ as main
-    return not hasattr(main, '__file__')
-
-
 class LazyLoadedDict(Mapping):
     """Custom immutable dict implementation with lazy loaded values
 
@@ -93,7 +88,7 @@ class LazyLoadedDict(Mapping):
         return self.__cache[item]
 
     def __iter__(self):
-        return self._keys
+        return iter(self._keys)
 
     def __len__(self):
         return len(self._keys)

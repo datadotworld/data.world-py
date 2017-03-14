@@ -24,6 +24,17 @@ from os import path
 
 
 class Config:
+    """Class for accessing and managing configuration
+
+    Attributes
+    ----------
+    auth_token : str
+        API token for access to data.world.
+    tmp_dir : str
+        Path of temporary directory, where temporary files are created.
+    cache_dir : str
+        Path of dataset cache directory, where downloaded datasets are saved.
+    """
     def __init__(self, profile='default', **kwargs):
         config_file_path = path.expanduser(kwargs.get('config_file_path') or '~/.dw/config')
         legacy_file_path = path.expanduser(kwargs.get('legacy_file_path') or '~/.data.world')
@@ -61,6 +72,7 @@ class Config:
         self._config_parser[self._profile]['auth_token'] = auth_token
 
     def save(self):
+        """Persist config changes"""
         self._config_parser.write(open(self._config_file_path, 'w'))
 
     def __validate_config(self):
