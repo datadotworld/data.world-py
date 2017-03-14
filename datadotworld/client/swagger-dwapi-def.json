@@ -1,0 +1,1400 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.1-SNAPSHOT",
+    "title": "data.world Public API"
+  },
+  "host": "api.data.world",
+  "basePath": "/v0",
+  "tags": [
+    {
+      "name": "datasets"
+    },
+    {
+      "name": "uploads"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/datasets/{owner}": {
+      "post": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Create a new dataset.",
+        "description": "",
+        "operationId": "createDataset",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasetCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset created successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "202": {
+            "description": "Dataset created successfully. Sync failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/datasets/{owner}/{id}": {
+      "get": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Retrieve a dataset.",
+        "description": "",
+        "operationId": "getDataset",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/DatasetSummaryResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Replace an existing dataset.",
+        "description": "",
+        "operationId": "replaceDataset",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasetPutRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset replaced successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "202": {
+            "description": "Dataset replaced successfully. Sync failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Update an existing dataset.",
+        "description": "",
+        "operationId": "patchDataset",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasetPatchRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "202": {
+            "description": "Dataset updated successfully. Sync failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/datasets/{owner}/{id}/files": {
+      "post": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Add or update files for a dataset.",
+        "description": "",
+        "operationId": "addFilesBySource",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FileBatchUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset successfully updated with new sources. Sync in progress.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "202": {
+            "description": "Dataset successfully updated with new sources. Sync in progress.Sync failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Delete files for a dataset.",
+        "description": "",
+        "operationId": "deleteFilesAndSyncSources",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset file(s) have been successfully deleted.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "409": {
+            "description": "Request failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/datasets/{owner}/{id}/files/{name}": {
+      "delete": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Delete a single file for a dataset.",
+        "description": "",
+        "operationId": "deleteFileAndSyncSource",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Filename",
+            "required": true,
+            "type": "string",
+            "maxItems": 128,
+            "minItems": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset file(s) have been successfully deleted.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "409": {
+            "description": "Request failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/datasets/{owner}/{id}/sync": {
+      "get": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Fetch latest files from source and update dataset — via GET, for convenience.",
+        "description": "",
+        "operationId": "syncViaGet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync started.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "409": {
+            "description": "Request failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Fetch latest files from source and update dataset.",
+        "description": "",
+        "operationId": "sync",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync started.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "409": {
+            "description": "Request failed because another sync is already in progress, try again later.",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/uploads/{owner}/{id}/files": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Upload one or more files to a dataset.",
+        "description": "Swagger clients will limit this method of upload to one file at a time. Other HTTP clients capable of making multipart/form-data requests can be used to upload multiple files in a single request.",
+        "operationId": "uploadFiles",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Multipart-encoded file contents",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File(s) uploaded successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "413": {
+            "description": "Upload too large",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/uploads/{owner}/{id}/files/{name}": {
+      "put": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Upload a file to a dataset.",
+        "description": "This method of upload is not supported by Swagger clients. Other HTTP clients can be used to supply the contents of the file directly in the body of the request",
+        "operationId": "uploadFile",
+        "consumes": [
+          "application/octet-stream",
+          "*/*"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Filename",
+            "required": true,
+            "type": "string",
+            "maxItems": 128,
+            "minItems": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File uploaded successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "413": {
+            "description": "Upload too large",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "422": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "token": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "DatasetCreateRequest": {
+      "type": "object",
+      "required": [
+        "title",
+        "visibility"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 25000
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "type": "string",
+          "pattern": "Public Domain|PDDL|CC-0|CC-BY|ODC-BY|CC-BY-SA|ODC-ODbL|CC BY-NC|CC BY-NC-SA|Other",
+          "enum": [
+            "Public Domain",
+            "PDDL",
+            "CC-0",
+            "CC-BY",
+            "ODC-BY",
+            "CC-BY-SA",
+            "ODC-ODbL",
+            "CC BY-NC",
+            "CC BY-NC-SA",
+            "Other"
+          ]
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "PRIVATE"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileCreateRequest"
+          }
+        }
+      }
+    },
+    "DatasetPatchRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "type": "string",
+          "enum": [
+            "Public Domain",
+            "PDDL",
+            "CC-0",
+            "CC-BY",
+            "ODC-BY",
+            "CC-BY-SA",
+            "ODC-ODbL",
+            "CC BY-NC",
+            "CC BY-NC-SA",
+            "Other"
+          ]
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "PRIVATE"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileCreateOrUpdateRequest"
+          }
+        }
+      }
+    },
+    "DatasetPutRequest": {
+      "type": "object",
+      "required": [
+        "visibility"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 25000
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "type": "string",
+          "pattern": "Public Domain|PDDL|CC-0|CC-BY|ODC-BY|CC-BY-SA|ODC-ODbL|CC BY-NC|CC BY-NC-SA|Other",
+          "enum": [
+            "Public Domain",
+            "PDDL",
+            "CC-0",
+            "CC-BY",
+            "ODC-BY",
+            "CC-BY-SA",
+            "ODC-ODbL",
+            "CC BY-NC",
+            "CC BY-NC-SA",
+            "Other"
+          ]
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "PRIVATE"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileCreateRequest"
+          }
+        }
+      }
+    },
+    "DatasetSummaryResponse": {
+      "type": "object",
+      "required": [
+        "created",
+        "id",
+        "owner",
+        "status",
+        "title",
+        "updated",
+        "visibility"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 25000
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "type": "string",
+          "pattern": "Public Domain|PDDL|CC-0|CC-BY|ODC-BY|CC-BY-SA|ODC-ODbL|CC BY-NC|CC BY-NC-SA|Other",
+          "enum": [
+            "Public Domain",
+            "PDDL",
+            "CC-0",
+            "CC-BY",
+            "ODC-BY",
+            "CC-BY-SA",
+            "ODC-ODbL",
+            "CC BY-NC",
+            "CC BY-NC-SA",
+            "Other"
+          ]
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "PRIVATE"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileSummaryResponse"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "INPROGRESS",
+            "LOADED",
+            "SYSTEMERROR"
+          ]
+        },
+        "created": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorMessage": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "readOnly": true
+        },
+        "details": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "FileBatchUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileCreateOrUpdateRequest"
+          }
+        }
+      }
+    },
+    "FileCreateOrUpdateRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "source": {
+          "$ref": "#/definitions/FileSourceCreateOrUpdateRequest"
+        }
+      }
+    },
+    "FileCreateRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "source": {
+          "$ref": "#/definitions/FileSourceCreateRequest"
+        }
+      }
+    },
+    "FileSourceCreateOrUpdateRequest": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "FileSourceCreateRequest": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "FileSourceSummaryResponse": {
+      "type": "object",
+      "required": [
+        "syncStatus",
+        "url"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "syncStatus": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "INPROGRESS",
+            "OK",
+            "SYSTEMERROR"
+          ]
+        },
+        "syncSummary": {
+          "type": "string"
+        },
+        "lastSyncStart": {
+          "type": "string"
+        },
+        "lastSyncSuccess": {
+          "type": "string"
+        },
+        "lastSyncFailure": {
+          "type": "string"
+        }
+      }
+    },
+    "FileSummaryResponse": {
+      "type": "object",
+      "required": [
+        "created",
+        "name",
+        "updated"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "sizeInBytes": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "source": {
+          "$ref": "#/definitions/FileSourceSummaryResponse"
+        },
+        "created": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string"
+        }
+      }
+    },
+    "SuccessMessage": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256
+        }
+      }
+    }
+  }
+}
