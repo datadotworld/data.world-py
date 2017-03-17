@@ -16,7 +16,7 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at
-data.world, Inc.(http://www.data.world/).
+data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
@@ -49,7 +49,11 @@ class QueryResults(object):
 
     @property
     def dataframe(self):
-        import pandas as pd
+        try:
+            import pandas as pd
+        except ImportError:
+            raise RuntimeError('To enable dataframe support, '
+                               'please install the pandas package first.')
         return pd.DataFrame.from_csv(
             six.StringIO(self.raw_data), index_col=False)
 

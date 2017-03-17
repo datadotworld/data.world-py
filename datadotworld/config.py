@@ -16,7 +16,7 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at
-data.world, Inc.(http://www.data.world/).
+data.world, Inc.(http://data.world/).
 """
 import configparser
 import os

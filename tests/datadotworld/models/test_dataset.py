@@ -16,10 +16,11 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at
-data.world, Inc.(http://www.data.world/).
+data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
+import copy
 from os import path
 
 import pytest
@@ -45,8 +46,11 @@ class TestLocalDataset:
         return LocalDataset(simpsons_descriptor_path)
 
     def test_describe(self, simpsons_dataset, simpsons_datapackage):
+        simple_descriptor = copy.deepcopy(simpsons_datapackage.descriptor)
+        for resource in simple_descriptor['resources']:
+            resource.pop('schema', None)
         assert_that(simpsons_dataset.describe(),
-                    equal_to(simpsons_datapackage.descriptor))
+                    equal_to(simple_descriptor))
 
     def test_describe_resource(self, simpsons_dataset, simpsons_datapackage):
         for r in simpsons_datapackage.resources:

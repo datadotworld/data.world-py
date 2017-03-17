@@ -16,11 +16,16 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 
 This product includes software developed at
-data.world, Inc.(http://www.data.world/).
+data.world, Inc.(http://data.world/).
 """
+import copy
+import csv
 import os
+import warnings
 
 import datapackage
+import pandas
+import six
 from datapackage.resource import TabularResource
 
 from datadotworld.util import LazyLoadedDict
@@ -64,15 +69,16 @@ class LocalDataset(object):
                             self._datapackage.resources}
         self.__tabular_resources = {k: r for (k, r) in self.__resources.items()
                                     if type(r) is TabularResource}
+        self.__invalid_schemas = []  # Resource names with invalid schemas
 
-        # All resources
-        self.raw_data = LazyLoadedDict(self.__resources.keys(), self._to_data,
+        # All formats
+        self.raw_data = LazyLoadedDict(self.__resources.keys(),
+                                       self._to_raw_data,
                                        'bytes')
 
-        # Tabular resources
+        # Tabular formats
         self.tables = LazyLoadedDict(self.__tabular_resources.keys(),
-                                     lambda key: self.__tabular_resources[
-                                         key].data,
+                                     self.__to_table,
                                      type_hint='iterable')
         self.dataframes = LazyLoadedDict(self.__tabular_resources.keys(),
                                          self._to_dataframe,
@@ -94,11 +100,14 @@ class LocalDataset(object):
             ``resource`` is specified in the call.
         """
         if resource is None:
-            return self._datapackage.descriptor
+            simple_descriptor = copy.deepcopy(self._datapackage.descriptor)
+            for resource in simple_descriptor['resources']:
+                resource.pop('schema', None)
+            return simple_descriptor
         else:
             return self.__resources[resource].descriptor
 
-    def _to_data(self, resource_name):
+    def _to_raw_data(self, resource_name):
         """Extract raw data from resource"""
         # Instantiating the resource again as a simple `Resource` ensures that
         # ``data`` will be returned as bytes.
@@ -107,29 +116,53 @@ class LocalDataset(object):
             default_base_path=self.__base_path)
         return upcast_resource.data
 
+    def __to_table(self, resource_name):
+        try:
+            return self.__tabular_resources[resource_name].data
+        except ValueError:
+            warnings.warn('Unable to apply datapackage table schema.'
+                          'Reverting to strings...')
+            self.__invalid_schemas.append(resource_name)
+            f = (line.decode('utf-8')
+                 for line in six.BytesIO(self.raw_data[resource_name]))
+            data = list(csv.DictReader(f))
+            return data
+
     def _to_dataframe(self, resource_name):
         """Extract dataframe from tabular resource"""
+        self.__initialize_storage()
 
-        from jsontableschema_pandas import Storage
+        rows = self.tables[resource_name]
+
+        # self.tables will return each row as a dict (no guaranteed order)
+        # Below, each row is recreated as a list, using the order of the
+        # fields in the schema
+        resource_schema = self.describe(resource_name).get('schema')
+        ordered_field_names = [field['name'] for field in
+                               resource_schema['fields']]
+        ordered_rows = [[row[field] for field in ordered_field_names]
+                        for row in rows]
+        if resource_name not in self.__invalid_schemas:
+            if self.__storage[resource_name].size == 0:
+                self.__storage.write(resource_name, ordered_rows)
+            return self.__storage[resource_name]
+        else:
+            return pandas.DataFrame(ordered_rows, columns=ordered_field_names)
+
+    def __initialize_storage(self):
+        try:
+            from jsontableschema_pandas import Storage
+        except ImportError:
+            raise RuntimeError('To enable dataframe support for datapackages, '
+                               'please install the jsontableschema_pandas '
+                               'package first.')
+
         # Initialize storage if needed
         if not hasattr(self, '__storage'):
             self.__storage = Storage()
             for (k, r) in self.__tabular_resources.items():
                 if 'schema' in r.descriptor:
                     self.__storage.create(k, r.descriptor['schema'])
-
-        if self.__storage[resource_name].size == 0:
-            resource_schema = self.describe(resource_name).get('schema')
-            ordered_field_names = [field['name'] for field in
-                                   resource_schema['fields']]
-            # self.tables will return each row as a dict (no guaranteed order)
-            # The list comprehension below recreates each row as a list, using
-            # the order of the fields in the schema
-            self.__storage.write(resource_name,
-                                 [[row[field] for field in ordered_field_names]
-                                  for row in self.tables[resource_name]])
-
-        return self.__storage[resource_name]
 
     def __repr__(self):
         fully_qualified_type = '{}.{}'.format(self.__module__,

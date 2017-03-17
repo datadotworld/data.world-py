@@ -23,14 +23,6 @@ dw configure
 
 Your API token can be obtained on data.world under [Settings > Advanced](https://data.world/settings/advanced)
 
-The library supports working with multiple accounts. 
-To configure multiple access tokens use the `-p` option when invoking `dw configure`.
-For example:
-```bash
-dw -p my-work-account configure
-```
-Then, when using any of the functions below, use the keyword argument `profile` to specify the account to be used.
-
 ### Load a dataset
 
 Start by importing the `datadotworld` module:
@@ -47,7 +39,7 @@ intro_dataset = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
 Dataset objects allow access to data in 3 different ways, via `raw_data`, `tables` and `dataframes` properties.  
 For example:
 ```python
->>> list(intro.dataframes)
+>>> list(intro_dataset.dataframes)
 ['datadotworldbballteam', 'datadotworldbballstats', 'anintrotodata.worlddatasetchangelog-sheet1']
 ```
 
@@ -56,7 +48,7 @@ For example:
 You can also review the metadata associated with a file or the entire dataset, using the `describe` function.  
 For example:
 ```python
->>> intro.describe('datadotworldbballteam')
+>>> intro_dataset.describe('datadotworldbballteam')
 {'format': 'csv',
  'name': 'datadotworldbballteam',
  'path': 'data/DataDotWorldBBallTeam.csv',
