@@ -18,6 +18,7 @@ This product includes software developed at data.world, Inc.(http://www.data.wor
 """
 from __future__ import absolute_import, division
 
+import glob
 import json
 import os
 import shutil
@@ -28,18 +29,18 @@ from os import path
 import requests
 
 from datadotworld.client import _swagger
-from datadotworld.config import Config
 from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient(object):
-    """A Python Client for data.world's REST API
+    """REST API client
 
     Parameters
     ----------
     profile : str, optional
         Name of the configuration profile to use
     """
+
     def __init__(self, config):
         self._config = config
         self._protocol = 'https'
@@ -76,11 +77,11 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> api_client = datadotworld.api_client()
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
         >>> intro_dataset = api_client.get_dataset('jonloyens/an-intro-to-dataworld-dataset')
-        >>> print(intro_dataset['description'])
-        A dataset that serves as a quick introduction to data.world and some of our capabilities.  Follow along in \
-        the summary!
+        >>> intro_dataset['title']
+        'An Intro to data.world Dataset'
         """
         try:
             return self._datasets_api.get_dataset(*(parse_dataset_key(dataset_key))).to_dict()
@@ -117,12 +118,10 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> intro_dataset = {}
-        >>> intro_dataset['title'] = 'An intro to data.world dataset'
-        >>> intro_dataset['visibility'] = 'OPEN'
-        >>> intro_dataset['license'] = 'Public Domain License'
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.create_dataset('jonloyens', **intro_dataset)
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.create_dataset('username', title='Test dataset',
+        ...                       visibility='PRIVATE', license='Public Domain')  # doctest: +SKIP
         """
         request = self.__build_dataset_obj(lambda: _swagger.DatasetCreateRequest(),
                                            lambda name, url: _swagger.FileCreateRequest(
@@ -160,10 +159,9 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> intro_dataset_patch = {}
-        >>> intro_dataset_patch['tags'] = ['demo', 'datadotworld']
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.patch_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_patch)
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.patch_dataset('username/test-dataset', tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
         request = self.__build_dataset_obj(lambda: _swagger.DatasetPatchRequest(),
                                            lambda name, url: _swagger.FileCreateOrUpdateRequest(
@@ -204,13 +202,11 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> intro_dataset_overwrite = {}
-        >>> intro_dataset_overwrite['description'] = 'A dataset that serves as a quick introduction to data.world'
-        >>> intro_dataset_overwrite['tags'] = ['demo', 'datadotworld']
-        >>> intro_dataset_overwrite['visibility']='OPEN'
-        >>> intro_dataset_overwrite['license'] = 'Other'
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.replace_dataset('jonloyens/an-intro-to-dataworld-dataset', intro_dataset_overwrite)
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.replace_dataset('username/test-dataset',
+        ...                       visibility='PRIVATE', license='Public Domain',
+        ...                       description='A better description')  # doctest: +SKIP
         """
         request = self.__build_dataset_obj(lambda: _swagger.DatasetPutRequest(),
                                            lambda name, url: _swagger.FileCreateRequest(
@@ -242,9 +238,10 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.add_files_via_url('jonloyens/an-intro-to-dataworld-dataset',  
-        >>>    {'atx_startup_league_ranking.csv': 'http://www.atxsa.com/sports/basketball/startup_league_ranking.csv'})
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.add_files_via_url('username/test-dataset',
+        ...    {'example.csv': 'http://www.atxsa.com/sports/basketball/startup_league_ranking.csv'})  # doctest: +SKIP
         """
         file_requests = [_swagger.FileCreateOrUpdateRequest(
             name=name, source=_swagger.FileSourceCreateOrUpdateRequest(url=url)) for name, url in files.items()]
@@ -271,8 +268,9 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.sync_files('jonloyens/an-intro-to-dataworld-dataset')
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sync_files('username/test-dataset')  # doctest: +SKIP
         """
         try:
             self._datasets_api.sync(*(parse_dataset_key(dataset_key)))
@@ -296,9 +294,9 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.upload_files('jonloyens/an-intro-to-dataworld-dataset',
-        >>>                 ['/Users/jon/DataDotWorldBBall/DataDotWorldBBallTeam.csv'])
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.upload_files('username/test-dataset', ['/my/local/example.csv'])  # doctest: +SKIP
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -323,8 +321,9 @@ class RestApiClient(object):
 
         Examples
         --------
-        >>> api_client = datadotworld.api_client()
-        >>> api_client.delete_files('jonloyens/an-intro-to-dataworld-dataset', ['atx_startup_league_ranking.csv'])
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.delete_files('username/test-dataset', ['example.csv'])  # doctest: +SKIP
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -335,7 +334,8 @@ class RestApiClient(object):
     # Datapackage
 
     def download_datapackage(self, dataset_key, dest_dir):
-        """Download and unzip a dataset's datapackage
+        """
+        Download and unzip a dataset's datapackage
 
         Parameters
         ----------
@@ -353,6 +353,14 @@ class RestApiClient(object):
         ------
         RestApiException
             If a server error occurs
+
+        Examples
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> datapackage_descriptor = api_client.download_datapackage(
+        ...     'jonloyens/an-intro-to-dataworld-dataset', '/tmp/test')
+        >>> datapackage_descriptor
+        '/tmp/test/datapackage.json'
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         url = "{0}://{1}/datapackage/{2}/{3}".format(self._protocol, self._download_host, owner_id, dataset_id)
@@ -378,8 +386,13 @@ class RestApiClient(object):
 
         zip_obj = zipfile.ZipFile(zip_file)
         zip_obj.extractall(path=unzip_dir)
-        unzipped_dir = [path.join(unzip_dir, d) for d in os.listdir(unzip_dir)
-                        if path.isdir(path.join(unzip_dir, d))][0]
+
+        # Find where datapackage.json is within expanded files
+        unzipped_descriptor = glob.glob('{}/**/datapackage.json'.format(unzip_dir))
+        if not unzipped_descriptor:
+            raise RuntimeError('Zip file did not contain a datapackage manifest.')
+
+        unzipped_dir = path.dirname(unzipped_descriptor[0])
 
         shutil.move(unzipped_dir, dest_dir)
         shutil.rmtree(unzip_dir, ignore_errors=True)
@@ -412,6 +425,7 @@ class RestApiClient(object):
 
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by the swagger client"""
+
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
         if self.cause is not None:
@@ -449,3 +463,9 @@ class RestApiError(Exception):
 
     def __str__(self):
         return str(self.json() or self.cause)
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()

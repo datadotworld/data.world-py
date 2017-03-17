@@ -26,7 +26,9 @@ import six
 
 
 class Config(object):
-    """Class for accessing and managing configuration
+    """Configuration profile
+
+    This class represents the current configuration of a profile (account) for accessing data.world.
 
     Attributes
     ----------

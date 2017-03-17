@@ -46,6 +46,7 @@ def parse_dataset_key(dataset_key):
 
     Examples
     --------
+    >>> from datadotworld import util
     >>> util.parse_dataset_key('https://data.world/jonloyens/an-intro-to-datadotworld-dataset')
     ('jonloyens', 'an-intro-to-datadotworld-dataset')
     >>> util.parse_dataset_key('jonloyens/an-intro-to-datadotworld-dataset')
@@ -106,3 +107,9 @@ class LazyLoadedDict(Mapping):
 
         key_value_strings = ['{}: {}'.format(repr(k), value_or_placeholder(k)) for k in self._keys]
         return '{{{}}}'.format(', '.join(key_value_strings))
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()

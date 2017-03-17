@@ -116,12 +116,12 @@ class TestApiClient:
 
             datapackage = api_client.download_datapackage(dataset_key, config.cache_dir)
 
-            assert_that(datapackage,
-                        equal_to(path.join(config.cache_dir, 'datapackage.json')))
+            assert_that(datapackage, equal_to(path.join(config.cache_dir, 'datapackage.json')))
+            assert_that(path.isfile(datapackage), described_as('%0 is a file', is_(True), datapackage))
 
             data_subdirectory = path.join(config.cache_dir, 'data')
-            assert_that(path.isdir(data_subdirectory), described_as("%0 is a directory", is_(True), data_subdirectory))
-            assert_that(os.listdir(config.tmp_dir), described_as("%0 is empty", empty(), config.tmp_dir))
+            assert_that(path.isdir(data_subdirectory), described_as('%0 is a directory', is_(True), data_subdirectory))
+            assert_that(os.listdir(config.tmp_dir), described_as('%0 is empty', empty(), config.tmp_dir))
 
     def test_download_datapackage_error(self, helpers, config, test_files_path, api_client, dataset_key):
         datapackage_zip = path.join(test_files_path, 'the-simpsons-by-the-data.zip')

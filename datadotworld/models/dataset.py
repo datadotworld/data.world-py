@@ -20,13 +20,11 @@ import os
 
 import datapackage
 from datapackage.resource import TabularResource
-from jsontableschema_pandas import Storage
-
 from datadotworld.util import LazyLoadedDict
 
 
 class LocalDataset(object):
-    """Class for accessing and working with a data.world dataset stored in the local filesystem
+    """Dataset saved in the local file system
 
     .. note:: Datasets are packaged for local access in the form of Datapackage.
               See specs at http://specs.frictionlessdata.io/data-package/
@@ -55,22 +53,16 @@ class LocalDataset(object):
 
         # Index resources by name
         self.__resources = {r.descriptor['name']: r for r in self._datapackage.resources}
-
-        # Initialize jsontableschema_pandas storage to convert data into dataframes on demand
-        tabular_resources = {k: r for (k, r) in self.__resources.items() if type(r) is TabularResource}
-
-        self.__storage = Storage()
-        for (k, r) in tabular_resources.items():
-            if 'schema' in r.descriptor:
-                self.__storage.create(k, r.descriptor['schema'])
+        self.__tabular_resources = {k: r for (k, r) in self.__resources.items() if type(r) is TabularResource}
 
         # All resources
         self.raw_data = LazyLoadedDict(self.__resources.keys(), self._to_data, 'bytes')
 
         # Tabular resources
-        self.tables = LazyLoadedDict(tabular_resources.keys(), lambda key: tabular_resources[key].data,
+        self.tables = LazyLoadedDict(self.__tabular_resources.keys(), lambda key: self.__tabular_resources[key].data,
                                      type_hint='iterable')
-        self.dataframes = LazyLoadedDict(tabular_resources.keys(), self._to_dataframe, type_hint='pandas.DataFrame')
+        self.dataframes = LazyLoadedDict(self.__tabular_resources.keys(), self._to_dataframe,
+                                         type_hint='pandas.DataFrame')
 
     def describe(self, resource=None):
         """Describe dataset or resource within dataset
@@ -99,6 +91,15 @@ class LocalDataset(object):
 
     def _to_dataframe(self, resource_name):
         """Extract dataframe from tabular resource"""
+
+        from jsontableschema_pandas import Storage
+        # Initialize storage if needed
+        if not hasattr(self, '__storage'):
+            self.__storage = Storage()
+            for (k, r) in self.__tabular_resources.items():
+                if 'schema' in r.descriptor:
+                    self.__storage.create(k, r.descriptor['schema'])
+
         if self.__storage[resource_name].size == 0:
             resource_schema = self.describe(resource_name).get('schema')
             ordered_field_names = [field['name'] for field in resource_schema['fields']]
@@ -106,6 +107,7 @@ class LocalDataset(object):
             # The list comprehension below recreates each row as a list, using the order of the fields in the schema
             self.__storage.write(resource_name,
                                  [[row[field] for field in ordered_field_names] for row in self.tables[resource_name]])
+
         return self.__storage[resource_name]
 
     def __repr__(self):

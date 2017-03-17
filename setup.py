@@ -48,17 +48,17 @@ setup(
     license='Apache 2.0',
     packages=find_packages(),
     install_requires=[
-        'certifi', 'click', 'configparser', 'datapackage', 'jsontableschema_pandas', 'python-dateutil',
+        'certifi', 'click', 'configparser', 'datapackage', 'python-dateutil',
         'requests', 'six', 'tabulator', 'urllib3'
     ],
     setup_requires=[
         'pytest-runner'
     ],
     tests_require=[
-        'doublex', 'pyhamcrest', 'responses', 'pytest'
+        'doublex', 'pyhamcrest', 'responses', 'pytest', 'pandas', 'jsontableschema_pandas'
     ],
     extras_require={
-        'PANDAS': ['pandas']
+        'PANDAS': ['pandas', 'jsontableschema_pandas']
     },
     entry_points={
         'console_scripts': ['dw=datadotworld.cli:cli'],

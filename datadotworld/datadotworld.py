@@ -33,6 +33,21 @@ from datadotworld.util import _user_agent, parse_dataset_key
 
 
 class DataDotWorld(object):
+    """Facade with main features of datadotworld package
+
+    .. note:: In most cases, directly instantiating this class is unnecessary.
+              All functions are conveniently wrapped and exposed at the `datadotworld` package level.
+
+    Parameters
+    ----------
+    profile : str, optional
+        Configuration profile (account) to use
+
+    Attributes
+    ----------
+    api_client
+        REST API client object
+    """
     def __init__(self, profile='default', **kwargs):
         # Overrides, for testing
         self._config = kwargs.get('config', Config(profile))
@@ -63,25 +78,6 @@ class DataDotWorld(object):
         ------
         RuntimeError
             If a server error occurs
-
-        Examples
-        --------
-        >>> results = dw.query('jonloyens/an-intro-to-dataworld-dataset',
-        >>>                    'SELECT * FROM `DataDotWorldBBallStats`, `DataDotWorldBBallTeam` '
-        >>>                    'WHERE DataDotWorldBBallTeam.Name = DataDotWorldBBallStats.Name')
-        >>> df = results.dataframe()
-        >>> df.info()
-        <class 'pandas.core.frame.DataFrame'>
-        RangeIndex: 8 entries, 0 to 7
-        Data columns (total 6 columns):
-        Name              8 non-null object
-        PointsPerGame     8 non-null float64
-        AssistsPerGame    8 non-null float64
-        Name.1            8 non-null object
-        Height            8 non-null object
-        Handedness        8 non-null object
-        dtypes: float64(2), object(4)
-        memory usage: 456.0bytes
         """
         # TODO Move network request to RestApiClient
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -158,12 +154,96 @@ def _get_instance(profile):
 
 
 def load_dataset(dataset_key, force_update=False, profile='default'):
+    """Load a dataset from the local filesystem, downloading it from data.world first, if necessary
+
+    Parameters
+    ----------
+    dataset_key : str
+        Dataset identifier, in the form of owner/id or of a url
+    force_update : bool
+        Flag, indicating if a new copy of the dataset should be downloaded replacing any previously downloaded copy
+    profile : str, optional
+        Configuration profile (account) to use.
+
+    Returns
+    -------
+    LocalDataset
+        The object representing the dataset
+
+    Raises
+    ------
+    RestApiError
+        If a server error occurs
+
+    Examples
+    --------
+    >>> import datadotworld as dw
+    >>> dataset = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
+    >>> list(dataset.dataframes)
+    ['anintrotodata.worlddatasetchangelog-sheet1', 'datadotworldbballstats', 'datadotworldbballteam']
+    """
     return _get_instance(profile).load_dataset(dataset_key, force_update=force_update)
 
 
 def query(dataset_key, query, query_type='sql', profile='default'):
+    """Query an existing dataset
+
+    Parameters
+    ----------
+    dataset_key : str
+        Dataset identifier, in the form of owner/id or of a url
+    query : str
+        SQL or SPARQL query
+    query_type : {'sql', 'sparql'}, optional
+        The type of the query. Must be either 'sql' or 'sparql'.
+    profile : str, optional
+        Configuration profile (account) to use.
+
+    Returns
+    -------
+    Results
+        Object containing the results of the query
+
+    Raises
+    ------
+    RuntimeError
+        If a server error occurs
+
+    Examples
+    --------
+    >>> import datadotworld as dw
+    >>> results = dw.query('jonloyens/an-intro-to-dataworld-dataset',
+    ...                    'SELECT * FROM `DataDotWorldBBallStats`, `DataDotWorldBBallTeam` '
+    ...                    'WHERE DataDotWorldBBallTeam.Name = DataDotWorldBBallStats.Name')
+    >>> df = results.dataframe
+    >>> df.shape
+    (8, 6)
+    """
     return _get_instance(profile).query(dataset_key, query, query_type=query_type)
 
 
 def api_client(profile='default'):
+    """Return API client for access to data.world's REST API
+
+    Parameters
+    ----------
+    profile : str, optional
+        Configuration profile (account) to use.
+
+    Returns
+    -------
+    RestApiClient
+        REST API client object
+
+    Examples
+    --------
+    >>> import datadotworld as dw
+    >>> client = dw.api_client()
+    >>> client.get_dataset('jonloyens/an-intro-to-dataworld-dataset').get('title')
+    'An Intro to data.world Dataset'
+    """
     return _get_instance(profile).api_client
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

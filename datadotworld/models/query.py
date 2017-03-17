@@ -23,15 +23,17 @@ from tabulator import Stream
 
 
 class QueryResults(object):
-    """Class for accessing and working with the results of a query
+    """Query results
+
+    Class for accessing and working with the results of a query.
 
     Attributes
     ----------
     raw_data : str
         Query results as raw CSV data.
-    table : list
-        Query results as a `list` of rows.
-        Each row is a `dict` where keys are column names and values their respective value
+    table : iterable
+        Query results as a series of rows.
+        Each row is a `dict` where keys are column names and values their respective value.
     dataframe : `pandas.DataFrame`
         Query results as a `DataFrame`.
     """
