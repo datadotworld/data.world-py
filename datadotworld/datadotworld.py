@@ -6,7 +6,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the
 License.
 
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +15,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
 
-This product includes software developed at data.world, Inc.(http://www.data.world/).
+This product includes software developed at
+data.world, Inc.(http://www.data.world/).
 """
 from __future__ import absolute_import
 
@@ -36,7 +38,8 @@ class DataDotWorld(object):
     """Facade with main features of datadotworld package
 
     .. note:: In most cases, directly instantiating this class is unnecessary.
-              All functions are conveniently wrapped and exposed at the `datadotworld` package level.
+              All functions are conveniently wrapped and exposed at the
+              `datadotworld` package level.
 
     Parameters
     ----------
@@ -48,6 +51,7 @@ class DataDotWorld(object):
     api_client
         REST API client object
     """
+
     def __init__(self, profile='default', **kwargs):
         # Overrides, for testing
         self._config = kwargs.get('config', Config(profile))
@@ -84,7 +88,8 @@ class DataDotWorld(object):
         params = {
             "query": query
         }
-        url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host, query_type, owner_id, dataset_id)
+        url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
+                                             query_type, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
             'Accept': 'text/csv',
@@ -96,14 +101,17 @@ class DataDotWorld(object):
         raise RuntimeError('Error executing query: {}'.format(response.text))
 
     def load_dataset(self, dataset_key, force_update=False):
-        """Load a dataset from the local filesystem, downloading it from data.world first, if necessary
+        """
+        Load a dataset from the local filesystem, downloading it from
+        data.world first, if necessary
 
         Parameters
         ----------
         dataset_key : str
             Dataset identifier, in the form of owner/id or of a url
         force_update : bool
-            Flag, indicating if a new copy of the dataset should be downloaded replacing any previously downloaded copy
+            Flag, indicating if a new copy of the dataset should be downloaded
+            replacing any previously downloaded copy
 
         Returns
         -------
@@ -116,21 +124,27 @@ class DataDotWorld(object):
             If a server error occurs
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
-        cache_dir = path.join(self._config.cache_dir, owner_id, dataset_id, 'latest')
+        cache_dir = path.join(self._config.cache_dir, owner_id, dataset_id,
+                              'latest')
 
         backup_dir = None
         if path.isdir(cache_dir) and force_update:
-            backup_dir = path.join(self._config.cache_dir, owner_id, dataset_id, 'backup')
+            backup_dir = path.join(self._config.cache_dir, owner_id,
+                                   dataset_id, 'backup')
+            if path.isdir(backup_dir):
+                shutil.rmtree(backup_dir)
             shutil.move(cache_dir, backup_dir)
 
         descriptor_file = path.join(cache_dir, 'datapackage.json')
         if not path.isfile(descriptor_file):
             try:
-                descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
+                descriptor_file = self.api_client.download_datapackage(
+                    dataset_key, cache_dir)
             except RestApiError as e:
                 if backup_dir is not None:
                     shutil.move(backup_dir, cache_dir)
-                    warn('Unable to download datapackage ({}). Loading previously saved version.'.format(e.reason))
+                    warn('Unable to download datapackage ({}). '
+                         'Loading previously saved version.'.format(e.reason))
                 else:
                     raise
 
@@ -154,14 +168,17 @@ def _get_instance(profile):
 
 
 def load_dataset(dataset_key, force_update=False, profile='default'):
-    """Load a dataset from the local filesystem, downloading it from data.world first, if necessary
+    """
+    Load a dataset from the local filesystem, downloading it from data.world
+    first, if necessary
 
     Parameters
     ----------
     dataset_key : str
         Dataset identifier, in the form of owner/id or of a url
     force_update : bool
-        Flag, indicating if a new copy of the dataset should be downloaded replacing any previously downloaded copy
+        Flag, indicating if a new copy of the dataset should be downloaded
+        replacing any previously downloaded copy
     profile : str, optional
         Configuration profile (account) to use.
 
@@ -180,9 +197,10 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
     >>> import datadotworld as dw
     >>> dataset = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
     >>> list(dataset.dataframes)
-    ['anintrotodata.worlddatasetchangelog-sheet1', 'datadotworldbballstats', 'datadotworldbballteam']
+    ['changelog', 'datadotworldbballstats', 'datadotworldbballteam']
     """
-    return _get_instance(profile).load_dataset(dataset_key, force_update=force_update)
+    return _get_instance(profile).load_dataset(dataset_key,
+                                               force_update=force_update)
 
 
 def query(dataset_key, query, query_type='sql', profile='default'):
@@ -212,14 +230,16 @@ def query(dataset_key, query, query_type='sql', profile='default'):
     Examples
     --------
     >>> import datadotworld as dw
-    >>> results = dw.query('jonloyens/an-intro-to-dataworld-dataset',
-    ...                    'SELECT * FROM `DataDotWorldBBallStats`, `DataDotWorldBBallTeam` '
-    ...                    'WHERE DataDotWorldBBallTeam.Name = DataDotWorldBBallStats.Name')
+    >>> results = dw.query(
+    ...     'jonloyens/an-intro-to-dataworld-dataset',
+    ...     'SELECT * FROM `DataDotWorldBBallStats`, `DataDotWorldBBallTeam` '
+    ...     'WHERE DataDotWorldBBallTeam.Name = DataDotWorldBBallStats.Name')
     >>> df = results.dataframe
     >>> df.shape
     (8, 6)
     """
-    return _get_instance(profile).query(dataset_key, query, query_type=query_type)
+    return _get_instance(profile).query(dataset_key, query,
+                                        query_type=query_type)
 
 
 def api_client(profile='default'):
@@ -239,11 +259,14 @@ def api_client(profile='default'):
     --------
     >>> import datadotworld as dw
     >>> client = dw.api_client()
-    >>> client.get_dataset('jonloyens/an-intro-to-dataworld-dataset').get('title')
+    >>> client.get_dataset(
+    ...     'jonloyens/an-intro-to-dataworld-dataset').get('title')
     'An Intro to data.world Dataset'
     """
     return _get_instance(profile).api_client
 
+
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

@@ -6,7 +6,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the
 License.
 
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +15,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
 
-This product includes software developed at data.world, Inc.(http://www.data.world/).
+This product includes software developed at
+data.world, Inc.(http://www.data.world/).
 """
 from __future__ import absolute_import
 
@@ -67,18 +69,20 @@ class TestConfig:
 
     @pytest.mark.usefixtures('config_directory', 'default_config_file')
     def test_auth_token(self, config_file_path):
-        config = Config(config_file_path = config_file_path)
+        config = Config(config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('abcd'))
 
     @pytest.mark.usefixtures('config_directory', 'alternative_config_file')
     def test_alternative_token(self, config_file_path):
-        config = Config(profile='alternative', config_file_path=config_file_path)
+        config = Config(profile='alternative',
+                        config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('alternativeabcd'))
 
     @pytest.mark.usefixtures('legacy_config_file')
     def test_legacy_token(self, legacy_file_path, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))
-        config = Config(legacy_file_path=legacy_file_path, config_file_path=config_file_path)
+        config = Config(legacy_file_path=legacy_file_path,
+                        config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('legacyabcd'))
         assert_that(path.isfile(config_file_path), is_(True))
 
@@ -90,7 +94,8 @@ class TestConfig:
     @pytest.mark.usefixtures('config_directory', 'default_config_file')
     def test_missing_token(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(True))
-        config = Config(profile='missingprofile', config_file_path=config_file_path)
+        config = Config(profile='missingprofile',
+                        config_file_path=config_file_path)
         assert_that(calling(lambda: config.auth_token), raises(RuntimeError))
 
     def test_save(self, config_file_path):

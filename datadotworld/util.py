@@ -6,7 +6,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the
 License.
 
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +15,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
 
-This product includes software developed at data.world, Inc.(http://www.data.world/).
+This product includes software developed at
+data.world, Inc.(http://www.data.world/).
 """
 from __future__ import absolute_import
 
 import re
 from collections import Mapping
 
-DATASET_KEY_PATTERN = re.compile('^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # Recognizes URLs and paths
+DATASET_KEY_PATTERN = re.compile(
+    '^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # URLs and paths
 
 
 def parse_dataset_key(dataset_key):
@@ -47,15 +50,16 @@ def parse_dataset_key(dataset_key):
     Examples
     --------
     >>> from datadotworld import util
-    >>> util.parse_dataset_key('https://data.world/jonloyens/an-intro-to-datadotworld-dataset')
+    >>> util.parse_dataset_key(
+    ...     'https://data.world/jonloyens/an-intro-to-datadotworld-dataset')
     ('jonloyens', 'an-intro-to-datadotworld-dataset')
     >>> util.parse_dataset_key('jonloyens/an-intro-to-datadotworld-dataset')
     ('jonloyens', 'an-intro-to-datadotworld-dataset')
     """
     match = re.match(DATASET_KEY_PATTERN, dataset_key)
     if not match:
-        raise ValueError('Invalid dataset key. Key must include user and dataset names, separated by / '
-                         '(i.e. user/dataset).')
+        raise ValueError('Invalid dataset key. Key must include user and '
+                         'dataset names, separated by (i.e. user/dataset).')
     return match.groups()
 
 
@@ -74,14 +78,15 @@ class LazyLoadedDict(Mapping):
     loader_func : function
         Function used to instantiate/load the value for a given key, on demand
     type_hint : str
-        String describing the type of the lazy loaded value. Used in place of the value before value is loaded.
+        String describing the type of the lazy loaded value. Used in place of
+        the value before value is loaded.
     """
 
     def __init__(self, keys, loader_func, type_hint='unknown'):
         self._keys = keys
         self._loader_func = loader_func
         self._type_hint = type_hint
-        self.__cache = {}  # Would love for this to be a weak ref dict, but not all types can be weak referenced
+        self.__cache = {}  # Would love for this to be a weak ref dict
 
     def __getitem__(self, item):
         if item in self._keys and item not in self.__cache:
@@ -95,8 +100,10 @@ class LazyLoadedDict(Mapping):
         return len(self._keys)
 
     def __repr__(self):
-        fully_qualified_type = '{}.{}'.format(self.__module__, self.__class__.__name__)
-        return '<{} with values of type: {}>'.format(fully_qualified_type, self._type_hint)
+        fully_qualified_type = '{}.{}'.format(
+            self.__module__, self.__class__.__name__)
+        return '<{} with values of type: {}>'.format(
+            fully_qualified_type, self._type_hint)
 
     def __str__(self):
         def value_or_placeholder(key):
@@ -105,7 +112,8 @@ class LazyLoadedDict(Mapping):
             else:
                 return '<{}>'.format(self._type_hint)
 
-        key_value_strings = ['{}: {}'.format(repr(k), value_or_placeholder(k)) for k in self._keys]
+        key_value_strings = ['{}: {}'.format(repr(k), value_or_placeholder(k))
+                             for k in self._keys]
         return '{{{}}}'.format(', '.join(key_value_strings))
 
 

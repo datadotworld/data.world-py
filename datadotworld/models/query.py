@@ -6,7 +6,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the
 License.
 
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +15,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
 
-This product includes software developed at data.world, Inc.(http://www.data.world/).
+This product includes software developed at
+data.world, Inc.(http://www.data.world/).
 """
 from __future__ import absolute_import
 
@@ -33,7 +35,8 @@ class QueryResults(object):
         Query results as raw CSV data.
     table : iterable
         Query results as a series of rows.
-        Each row is a `dict` where keys are column names and values their respective value.
+        Each row is a `dict` where keys are column names and values their
+        respective value.
     dataframe : `pandas.DataFrame`
         Query results as a `DataFrame`.
     """
@@ -47,7 +50,8 @@ class QueryResults(object):
     @property
     def dataframe(self):
         import pandas as pd
-        return pd.DataFrame.from_csv(six.StringIO(self.raw_data), index_col=False)
+        return pd.DataFrame.from_csv(
+            six.StringIO(self.raw_data), index_col=False)
 
     @property
     def table(self):
