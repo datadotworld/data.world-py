@@ -19,16 +19,15 @@ This product includes software developed at
 data.world, Inc.(http://data.world/).
 """
 import copy
-import csv
 import os
 import warnings
+from collections import OrderedDict
 
 import datapackage
-import pandas
-import six
 from datapackage.resource import TabularResource
+from tabulator import Stream
 
-from datadotworld.util import LazyLoadedDict
+from datadotworld.util import LazyLoadedDict, memoized
 
 
 class LocalDataset(object):
@@ -72,17 +71,20 @@ class LocalDataset(object):
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
         # All formats
-        self.raw_data = LazyLoadedDict(self.__resources.keys(),
-                                       self._to_raw_data,
-                                       'bytes')
+        self.raw_data = LazyLoadedDict.from_keys(
+            self.__resources.keys(),
+            self._load_raw_data,
+            'bytes')
 
         # Tabular formats
-        self.tables = LazyLoadedDict(self.__tabular_resources.keys(),
-                                     self.__to_table,
-                                     type_hint='iterable')
-        self.dataframes = LazyLoadedDict(self.__tabular_resources.keys(),
-                                         self._to_dataframe,
-                                         type_hint='pandas.DataFrame')
+        self.tables = LazyLoadedDict.from_keys(
+            self.__tabular_resources.keys(),
+            self._load_table,
+            type_hint='iterable')
+        self.dataframes = LazyLoadedDict.from_keys(
+            self.__tabular_resources.keys(),
+            self._load_dataframe,
+            type_hint='pandas.DataFrame')
 
     def describe(self, resource=None):
         """Describe dataset or resource within dataset
@@ -107,7 +109,8 @@ class LocalDataset(object):
         else:
             return self.__resources[resource].descriptor
 
-    def _to_raw_data(self, resource_name):
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
+    def _load_raw_data(self, resource_name):
         """Extract raw data from resource"""
         # Instantiating the resource again as a simple `Resource` ensures that
         # ``data`` will be returned as bytes.
@@ -116,38 +119,47 @@ class LocalDataset(object):
             default_base_path=self.__base_path)
         return upcast_resource.data
 
-    def __to_table(self, resource_name):
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
+    def _load_table(self, resource_name):
+        tabular_resource = self.__tabular_resources[resource_name]
+
         try:
-            return self.__tabular_resources[resource_name].data
+            fields = [field['name'] for field in
+                      tabular_resource.descriptor['schema']['fields']]
+            return [self.__reorder_row(fields, row)
+                    for row in tabular_resource.data]
         except ValueError:
             warnings.warn('Unable to apply datapackage table schema.'
                           'Reverting to strings...')
             self.__invalid_schemas.append(resource_name)
-            f = (line.decode('utf-8')
-                 for line in six.BytesIO(self.raw_data[resource_name]))
-            data = list(csv.DictReader(f))
-            return data
+            file_format = tabular_resource.descriptor['format']
+            with Stream(self.raw_data[resource_name],
+                        format=file_format) as stream:
+                return [OrderedDict(zip(stream.headers, row))
+                        for row in stream.iter()]
 
-    def _to_dataframe(self, resource_name):
-        """Extract dataframe from tabular resource"""
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
+    def _load_dataframe(self, resource_name):
+        """Extract dataframe from tabular resource
+
+        This leverages ``tables`` as tabular resources aren't guaranteed to be
+        of a consistent format (i.e. csv)
+        """
         self.__initialize_storage()
 
         rows = self.tables[resource_name]
-
-        # self.tables will return each row as a dict (no guaranteed order)
-        # Below, each row is recreated as a list, using the order of the
-        # fields in the schema
-        resource_schema = self.describe(resource_name).get('schema')
-        ordered_field_names = [field['name'] for field in
-                               resource_schema['fields']]
-        ordered_rows = [[row[field] for field in ordered_field_names]
-                        for row in rows]
         if resource_name not in self.__invalid_schemas:
             if self.__storage[resource_name].size == 0:
-                self.__storage.write(resource_name, ordered_rows)
+                row_values = [row.values() for row in rows]
+                self.__storage.write(resource_name, row_values)
             return self.__storage[resource_name]
         else:
-            return pandas.DataFrame(ordered_rows, columns=ordered_field_names)
+            try:
+                import pandas
+            except ImportError:
+                raise RuntimeError('To enable dataframe support, '
+                                   'please install the pandas package first.')
+            return pandas.DataFrame(rows)
 
     def __initialize_storage(self):
         try:
@@ -164,10 +176,14 @@ class LocalDataset(object):
                 if 'schema' in r.descriptor:
                     self.__storage.create(k, r.descriptor['schema'])
 
+    @staticmethod
+    def __reorder_row(fields, unordered_row):
+        fields_idx = {f: pos for pos, f in enumerate(fields)}
+        return OrderedDict(sorted(unordered_row.items(),
+                                  key=lambda i: fields_idx[i[0]]))
+
     def __repr__(self):
-        fully_qualified_type = '{}.{}'.format(self.__module__,
-                                              self.__class__.__name__)
-        return '{}({})'.format(fully_qualified_type,
+        return '{}({})'.format(self.__class__.__name__,
                                repr(self.__descriptor_file))
 
     def __eq__(self, other):

@@ -20,8 +20,11 @@ data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
+import functools
 import re
 from collections import Mapping
+
+import collections
 
 DATASET_KEY_PATTERN = re.compile(
     '^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # URLs and paths
@@ -71,50 +74,110 @@ def _user_agent():
 class LazyLoadedDict(Mapping):
     """Custom immutable dict implementation with lazy loaded values
 
+    Internally, values are of type `LazyLoadedValue`. However, clients can
+    use the dictionary like they would normally use any dictionary, without
+    concern for the fact that `LazyLoadedValue` instances are ``callable``.
+
     Parameters
     ----------
-    keys : iterable
-        Dictionary keys
-    loader_func : function
-        Function used to instantiate/load the value for a given key, on demand
-    type_hint : str
-        String describing the type of the lazy loaded value. Used in place of
-        the value before value is loaded.
+    lazy_loaded_items : dict
+        Mapping of keys to values of type `LazyLoadedValue`
     """
 
-    def __init__(self, keys, loader_func, type_hint='unknown'):
-        self._keys = keys
-        self._loader_func = loader_func
-        self._type_hint = type_hint
-        self.__cache = {}  # Would love for this to be a weak ref dict
+    def __init__(self, lazy_loaded_items):
+        self._dict = lazy_loaded_items
+
+    @classmethod
+    def from_keys(cls, keys, loader_func, type_hint=None):
+        """Factory method for `LazyLoadedDict`
+
+        Accepts a ``loader_func`` that is to be applied to all ``keys``.
+
+        Parameters
+        ----------
+        keys : iterable
+            List of keys to create the dictionary with
+        loader_func : function
+            Function to be applied to all keys
+        type_hint : str
+            Expected type of lazy loaded values.
+            Used by `LazyLoadedValue`.
+
+        Returns
+        -------
+        LazyLoadedDict
+            A properly constructed lazy loaded dictionary
+
+        """
+        return cls({k: LazyLoadedValue(
+            lambda k=k: loader_func(k), type_hint=type_hint) for k in keys})
 
     def __getitem__(self, item):
-        if item in self._keys and item not in self.__cache:
-            self.__cache[item] = self._loader_func(item)
-        return self.__cache[item]
+        return self._dict[item]()
 
     def __iter__(self):
-        return iter(self._keys)
+        return iter(self._dict.keys())
 
     def __len__(self):
-        return len(self._keys)
+        return len(self._dict)
 
     def __repr__(self):
-        fully_qualified_type = '{}.{}'.format(
-            self.__module__, self.__class__.__name__)
-        return '<{} with values of type: {}>'.format(
-            fully_qualified_type, self._type_hint)
+        return '{}({})'.format(self.__class__.__name__, repr(self._dict))
 
     def __str__(self):
-        def value_or_placeholder(key):
-            if key in self.__cache:
-                return repr(self.__cache[key])
-            else:
-                return '<{}>'.format(self._type_hint)
+        return str(self._dict)
 
-        key_value_strings = ['{}: {}'.format(repr(k), value_or_placeholder(k))
-                             for k in self._keys]
-        return '{{{}}}'.format(', '.join(key_value_strings))
+
+class LazyLoadedValue(object):
+    def __init__(self, loader_func, type_hint=None):
+        self._loader_func = loader_func
+        self._type_hint = type_hint
+
+    def __call__(self, *args, **kwargs):
+        return self._loader_func()
+
+    def __repr__(self):
+        return '{}({})'.format(
+            self.__class__.__name__,
+            ('<{}>'.format(self._type_hint)
+             if self._type_hint is not None else repr(self._loader_func)))
+
+    def __str__(self):
+        return str(self())
+
+
+class memoized(object):
+    '''Decorator. Caches a function's return value each time it is called.
+    If called later with the same arguments, the cached value is returned
+    (not reevaluated).
+    '''
+
+    def __init__(self, key_mapper=None):
+        self.key_mapper = key_mapper
+        self.cache = {}
+
+    def __call__(self, func):
+        def wrapper(*args):
+            key = self.key_mapper(*args) or args
+            if not isinstance(key, collections.Hashable):
+                # uncacheable. a list, for instance.
+                # better to not cache than blow up.
+                return func(*args)
+            if key in self.cache:
+                return self.cache[key]
+            else:
+                value = func(*args)
+                self.cache[key] = value
+                return value
+        return wrapper
+
+    def __repr__(self):
+        '''Return the function's docstring.'''
+        return self.func.__doc__
+
+    def __get__(self, obj, objtype):
+        '''Support instance methods.'''
+        return functools.partial(self.__call__, obj)
 
 
 if __name__ == "__main__":

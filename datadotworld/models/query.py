@@ -20,6 +20,8 @@ data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
+from collections import OrderedDict
+
 import six
 from tabulator import Stream
 
@@ -44,6 +46,9 @@ class QueryResults(object):
     def __init__(self, raw):
         self.raw_data = raw
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, repr(self.raw_data))
+
     def __str__(self):
         return self.raw_data
 
@@ -60,7 +65,7 @@ class QueryResults(object):
     @property
     def table(self):
         # TODO Return typed values based on data.world type inference
-        stream = Stream(self.raw_data, headers=1, format='csv', scheme='text')
-        stream.open()
-
-        return stream.iter(keyed=True)
+        with Stream(self.raw_data, headers=1,
+                    format='csv', scheme='text') as stream:
+            return [OrderedDict(zip(stream.headers, row))
+                    for row in stream.iter()]

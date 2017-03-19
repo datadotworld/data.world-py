@@ -67,7 +67,8 @@ class TestLazyLoadedDict:
 
     @pytest.fixture()
     def lazy_dict(self, dict_keys, loader_fn):
-        lazy_dict = util.LazyLoadedDict(dict_keys, loader_fn, type_hint='str')
+        lazy_dict = util.LazyLoadedDict.from_keys(dict_keys, loader_fn,
+                                                  type_hint='str')
         return lazy_dict
 
     def test_get(self, lazy_dict):
@@ -81,18 +82,8 @@ class TestLazyLoadedDict:
 
     def test_repr(self, lazy_dict):
         assert_that(repr(lazy_dict), equal_to(
-            '<datadotworld.util.LazyLoadedDict with values of type: str>'))
+            'LazyLoadedDict({})'.format(repr(lazy_dict._dict))))
 
-    def test_str_loaded(self, lazy_dict, dict_keys, loader_fn):
-        # Force loading of values
-        for _ in lazy_dict.values():
-            pass
-
-        expected_values = (repr(loader_fn(k)) for k in dict_keys)
+    def test_str(self, lazy_dict):
         assert_that(str(lazy_dict),
-                    equal_to("{{'key1': {0}, 'key2': {1}}}".format(
-                        *expected_values)))
-
-    def test_str_unloaded(self, lazy_dict):
-        assert_that(str(lazy_dict),
-                    equal_to("{{'key1': {0}, 'key2': {0}}}".format('<str>')))
+                    equal_to('{}'.format(str(lazy_dict._dict))))
