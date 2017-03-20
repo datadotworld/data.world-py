@@ -148,7 +148,7 @@ class LocalDataset(object):
             file_format = tabular_resource.descriptor['format']
             with Stream(six.BytesIO(self.raw_data[resource_name]),
                         format=file_format, headers=1,
-                        scheme='stream') as stream:
+                        scheme='stream', encoding='utf-8') as stream:
                 return [OrderedDict(zip(stream.headers, row))
                         for row in stream.iter()]
 
