@@ -1,8 +1,10 @@
 # data.world-py
 
-A python client for querying data.world datasets.
+A python library for working with data.world datasets
 
-## Install
+## Quick start
+
+### Install
 
 This library hasn't yet been added to a central package repository -
 you can install it using `pip` directly from this github repo:
@@ -11,99 +13,144 @@ you can install it using `pip` directly from this github repo:
 pip install git+git://github.com/datadotworld/data.world-py.git
 ```
 
-## Use
+### Configure
 
-### Setting up the client
-
-Once installed, you can instantiate a client by providing your
-data.world API token to the constructor.  You can find your API
-token at https://data.world/settings/advanced
-
-you can either send the token in the constructor:
-```
-from datadotworld import DataDotWorld
-
-client = DataDotWorld(token = "YOUR_API_TOKEN")
+Before you start using the library, you must first set it up with your access token.  
+To do that, run the following command:
+```bash
+dw configure
 ```
 
-or you can insert your token into a `.data.world` file in your home
-directory, and the constructor will read it from there:
+Your API token can be obtained on data.world under [Settings > Advanced](https://data.world/settings/advanced)
 
-```
-echo 'token=YOUR_API_TOKEN' > ~/.data.world
-```
-then
-```
-from datadotworld import DataDotWorld
+### Load a dataset
 
-client = DataDotWorld()
-```
+The `load_dataset()` function facilitates maintaining copies of datasets on the local filesystem. 
+It will download a given dataset's [datapackage](http://specs.frictionlessdata.io/data-package/) 
+and store it under `~/.dw/cache`. When used subsequently, `load_dataset()` will use the copy stored on disk and will
+work offline, unless it's called with `force_update=True`.
 
-### Querying
+Once loaded, a dataset (data and metadata) can be conveniently access via the object returned by `load_dataset()`.
 
-The client supports one method - `query`, which can be used to send a
-`dwSQL` or a `SPARQL` query to a particular dataset's query endpoint.
-
-`query` returns a results object which can be used to access the results
-as a raw CSV string, a stream containing CSV bytes, a `csv.reader` to
-read the CSV results line-by-line, or a PANDAS data frame (if you have
-PANDAS installed, it is an optional dependency for this library.
-
-```
->>> results = client.query(dataset="bryon/odin-2015-2016", query="SELECT * FROM Tables")
-```
-```
->>> results.as_string()
-'tableId,tableName\r\nODIN-2015-2016-raw.csv/ODIN-2015-2016-raw,ODIN-2015-2016-raw\r\nODIN-2015-2016-standardized.csv/ODIN-2015-2016-standardized,ODIN-2015-2016-standardized\r\nODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted,ODIN-2015-2016-weighted\r\n'
-```
-```
->>> results.as_stream()
-<_io.StringIO object at 0x104e899d8>
-```
-```
->>> for row in results.as_csv():
-...   print(", ".join(row))
-...
-tableId, tableName
-ODIN-2015-2016-raw.csv/ODIN-2015-2016-raw, ODIN-2015-2016-raw
-ODIN-2015-2016-standardized.csv/ODIN-2015-2016-standardized, ODIN-2015-2016-standardized
-ODIN-2015-2016-weighted.csv/ODIN-2015-2016-weighted, ODIN-2015-2016-weighted
-```
-```
->>> results.as_dataframe()
-                                             tableId  \
-0          ODIN-2015-2016-raw.csv/ODIN-2015-2016-raw
-1  ODIN-2015-2016-standardized.csv/ODIN-2015-2016...
-2  ODIN-2015-2016-weighted.csv/ODIN-2015-2016-wei...
-
-                     tableName
-0           ODIN-2015-2016-raw
-1  ODIN-2015-2016-standardized
-2      ODIN-2015-2016-weighted
+Start by importing the `datadotworld` module:
+```python
+import datadotworld as dw
 ```
 
-to execute a `SPARQL` query, you need to specify the `query_type` as
-`sparql`:
+Then, invoke the `load_dataset` function, to download a dataset and work with it locally.  
+For example:
+```python
+intro_dataset = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
 ```
->>> df = client.query(dataset="bryon/odin-2015-2016", query='''
-... PREFIX : <http://data.world/bryon/odin-2015-2016/ODIN-2015-2016-raw.csv/ODIN-2015-2016-raw#>
-... PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-...
-... SELECT * WHERE {
-...   [ :Year ?year ; :Region ?region ; :Overall_subscore ?score ]
-...   FILTER(?year = "2015")
-...   } LIMIT 10''',
-... query_type="sparql").as_dataframe(  )
->>> df
-   year          region  score
-0  2015  Eastern Africa    3.0
-1  2015  Eastern Africa    2.5
-2  2015  Eastern Africa    0.0
-3  2015  Eastern Africa    2.0
-4  2015  Western Africa   25.0
-5  2015  Western Africa    3.0
-6  2015  Western Africa    2.0
-7  2015  Western Africa    0.5
-8  2015  Western Africa    0.0
-9  2015  Western Africa    0.0
+
+Dataset objects allow access to data via three different properties `raw_data`, `tables` and `dataframes`.
+Each of these properties is a mapping (dict) whose values are of type `bytes`, `list` and `pandas.DataFrame`, 
+respectively. Values are lazy loaded and cached once loaded. Their keys are the names of the resources (files) 
+contained in the dataset.
+
+For example:
+```python
+>>> intro_dataset.dataframes
+LazyLoadedDict({
+    'changelog': LazyLoadedValue(<pandas.DataFrame>), 
+    'datadotworldbballstats': LazyLoadedValue(<pandas.DataFrame>), 
+    'datadotworldbballteam': LazyLoadedValue(<pandas.DataFrame>)})
 ```
+
+**IMPORTANT**: Not all files in a dataset are tabular, therefore some will be exposed via `raw_data` only.
+
+Tables are lists of rows, each represented by a mapping (dict) of column names to their respective values.
+
+For example:
+```python
+>>> stats_table = intro_dataset.tables['datadotworldbballstats']
+>>> stats_table[0]
+OrderedDict([('Name', 'Jon'), ('PointsPerGame', Decimal('20.4')), ('AssistsPerGame', Decimal('1.3'))])
+```
+
+You can also review the metadata associated with a file or the entire dataset, using the `describe` function.  
+For example:
+```python
+>>> intro_dataset.describe()
+{
+    'name': 'jonloyens_an-intro-to-dataworld-dataset', 
+    'homepage': 'https://data.world/jonloyens/an-intro-to-dataworld-dataset', 
+    'resources': [
+        {'path': 'data/ChangeLog.csv', 'name': 'changelog', 'format': 'csv'}, 
+        {'path': 'data/DataDotWorldBBallStats.csv', 'name': 'datadotworldbballstats', 'format': 'csv'}, 
+        {'path': 'data/DataDotWorldBBallTeam.csv', 'name': 'datadotworldbballteam', 'format': 'csv'}
+    ]
+}
+
+>>> intro_dataset.describe('datadotworldbballstats')
+{
+    'path': 'data/DataDotWorldBBallStats.csv', 
+    'name': 'datadotworldbballstats', 
+    'format': 'csv', 
+    'schema': {
+        'fields': [
+            {'name': 'Name', 'type': 'string', 'title': 'Name'}, 
+            {'name': 'PointsPerGame', 'type': 'number', 'title': 'PointsPerGame'}, 
+            {'name': 'AssistsPerGame', 'type': 'number', 'title': 'AssistsPerGame'}
+        ]
+    }
+}
+```
+
+### Query a dataset
+
+The 'query()' function allows datasets to be queried live using `SQL` or `SPARQL` query languages.
+
+To query a dataset, invoke the `query` function.
+For example:
+```python
+results = dw.query('jonloyens/an-intro-to-dataworld-dataset', 'SELECT * FROM DataDotWorldBBallStats')
+```
+
+Query result objects allow access to the data via `raw_data`, `table` and `dataframe` properties, of type `str`, `list`
+and `pandas.DataFrame`, respectively.
+
+For example:
+```python
+>>> results.dataframe
+      Name  PointsPerGame  AssistsPerGame
+0      Jon           20.4             1.3
+1      Rob           15.5             8.0
+2   Sharon           30.1            11.2
+3     Alex            8.2             0.5
+4  Rebecca           12.3            17.0
+5   Ariane           18.1             3.0
+6    Bryon           16.0             8.5
+7     Matt           13.0             2.1
+```
+
+Tables are lists of rows, each represented by a mapping (dict) of column names to their respective values.
+For example:
+```python
+>>> results.table[0]
+OrderedDict([('Name', 'Jon'), ('PointsPerGame', '20.4'), ('AssistsPerGame', '1.3')])
+```
+
+To query using `SPARQL` invoke `query()` using `query_type='sparql'`, or else, it will assume 
+the query to be a `SQL` query.
+
+### Create and update datasets
+
+To create and update datasets, start by calling the `api_client` function.
+For example:
+```python
+client = dw.api_client()
+```
+The client supports various methods for creating and updating datasets and dataset files:
+
+- `create_dataset`
+- `update_dataset`
+- `replace_dataset`
+- `get_dataset`
+- `add_files_via_url`
+- `sync_files`
+- `upload_files`
+- `delete_files`
+
+You can find more about those functions using `help()`
+
