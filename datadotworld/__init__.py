@@ -22,4 +22,4 @@ from __future__ import absolute_import
 
 from datadotworld.datadotworld import load_dataset, query, api_client
 
-__version__ = '1.0.0-beta.2'
+__version__ = '1.0.0-beta.3'
