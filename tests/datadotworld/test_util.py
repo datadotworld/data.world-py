@@ -21,10 +21,11 @@ data.world, Inc.(http://data.world/).
 from __future__ import absolute_import
 
 import pytest
-from doublex import assert_that
-from hamcrest import equal_to, calling, raises, only_contains
+from doublex import assert_that, Spy, called
+from hamcrest import equal_to, calling, raises, only_contains, anything
 
 from datadotworld import util
+from datadotworld.util import LazyLoadedValue, memoized
 
 
 def test_parse_dataset_key():
@@ -87,3 +88,35 @@ class TestLazyLoadedDict:
     def test_str(self, lazy_dict):
         assert_that(str(lazy_dict),
                     equal_to('{}'.format(str(lazy_dict._dict))))
+
+
+class TestLazyLoadedValue:
+    @pytest.fixture()
+    def lazy_value(self):
+        return LazyLoadedValue(lambda: 'test', type_hint='str')
+
+    def test_call(self, lazy_value):
+        assert_that(lazy_value(), equal_to('test'))
+
+    def test_repr(self, lazy_value):
+        assert_that(repr(lazy_value), equal_to('LazyLoadedValue(<str>)'))
+
+    def test_str(self, lazy_value):
+        assert_that(str(lazy_value), equal_to('test'))
+
+
+class TestMemoized:
+    @pytest.fixture()
+    def free_spy(self):
+        with Spy() as spy:
+            spy.method('test', anything()).returns('test')
+            return spy
+
+    def test_memoized(self, free_spy):
+        @memoized(key_mapper=lambda first_arg, _: first_arg)
+        def invoke_spy(first_arg, second_arg):
+            return free_spy.method(first_arg, second_arg)
+
+        assert_that(invoke_spy('test', 'not_in_key'),
+                    equal_to(invoke_spy('test', 'should_not_matter')))
+        assert_that(free_spy.method, called().times(1))

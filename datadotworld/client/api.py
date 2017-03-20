@@ -142,7 +142,7 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def patch_dataset(self, dataset_key, **kwargs):
+    def update_dataset(self, dataset_key, **kwargs):
         """Update an existing dataset
 
         Parameters
@@ -170,7 +170,7 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> api_client.patch_dataset(
+        >>> api_client.update_dataset(
         ...    'username/test-dataset',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """

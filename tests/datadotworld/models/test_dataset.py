@@ -25,8 +25,8 @@ from os import path
 
 import pytest
 from datapackage import DataPackage, Resource
-from doublex import assert_that
-from hamcrest import equal_to
+from doublex import assert_that, is_
+from hamcrest import equal_to, contains, calling, not_, raises
 
 from datadotworld.models.dataset import LocalDataset
 
@@ -45,6 +45,20 @@ class TestLocalDataset:
     def simpsons_dataset(self, simpsons_descriptor_path):
         return LocalDataset(simpsons_descriptor_path)
 
+    @pytest.fixture()
+    def simpsons_broken_descriptor_path(self, test_files_path):
+        return path.join(test_files_path,
+                         'the-simpsons-by-the-data-bad-schema',
+                         'datapackage.json')
+
+    @pytest.fixture()
+    def simpsons_broken_datapackage(self, simpsons_broken_descriptor_path):
+        return DataPackage(descriptor=simpsons_broken_descriptor_path)
+
+    @pytest.fixture()
+    def simpsons_broken_dataset(self, simpsons_broken_descriptor_path):
+        return LocalDataset(simpsons_broken_descriptor_path)
+
     def test_describe(self, simpsons_dataset, simpsons_datapackage):
         simple_descriptor = copy.deepcopy(simpsons_datapackage.descriptor)
         for resource in simple_descriptor['resources']:
@@ -62,19 +76,38 @@ class TestLocalDataset:
         for r in simpsons_datapackage.resources:
             resource = Resource(r.descriptor, default_base_path=path.dirname(
                 simpsons_descriptor_path))
-            assert_that(simpsons_dataset.raw_data[r.descriptor['name']],
-                        equal_to(resource.data))
+            once = simpsons_dataset.raw_data[r.descriptor['name']]
+            twice = simpsons_dataset.raw_data[r.descriptor['name']]
+            assert_that(once, equal_to(resource.data))
+            # Not a generator
+            for _ in once:
+                pass  # Consume iterable
+            assert_that(once, equal_to(twice))
 
     def test_tables(self, simpsons_dataset, simpsons_datapackage):
         for r in simpsons_datapackage.resources:
             if r.descriptor['name'] in simpsons_dataset.tables:
-                assert_that(simpsons_dataset.tables[r.descriptor['name']],
-                            equal_to(r.data))
+                once = simpsons_dataset.tables[r.descriptor['name']]
+                twice = simpsons_dataset.tables[r.descriptor['name']]
+                assert_that(once, equal_to(r.data))
+                # Same keys and values in consistent order
+                first_row_fields = once[0].keys()
+                for row in once:
+                    assert_that(row.keys(), contains(*first_row_fields))
+                    ordered_values = [row[f] for f in first_row_fields]
+                    assert_that(row.values(), contains(*ordered_values))
+                assert_that(once, equal_to(twice))
+
+    def test_tables_broken_schema(self, simpsons_broken_dataset):
+        assert_that(calling(simpsons_broken_dataset.tables.get).with_args(
+            'simpsons_episodes'), not_(raises(ValueError)))
 
     def test_dataframes(self, simpsons_dataset):
         for k, t in simpsons_dataset.tables.items():
-            df = simpsons_dataset.dataframes[k]
-            assert_that(df.shape, equal_to((len(t), len(t[0]))))
+            once = simpsons_dataset.dataframes[k]
+            twice = simpsons_dataset.dataframes[k]
+            assert_that(once.shape, equal_to((len(t), len(t[0]))))
+            assert_that(once.equals(twice), is_(True))
 
     def test_dataframe_types(self, simpsons_dataset):
         df = simpsons_dataset.dataframes['simpsons_episodes']

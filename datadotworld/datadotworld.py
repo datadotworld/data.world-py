@@ -103,7 +103,12 @@ class DataDotWorld(object):
     def load_dataset(self, dataset_key, force_update=False):
         """
         Load a dataset from the local filesystem, downloading it from
-        data.world first, if necessary
+        data.world first, if necessary.
+
+        This function returns an object of type `LocalDataset`. The object
+        allows access to metedata via it's `describe()` method and to all the
+        data via three properties `raw_data`, `tables` and `dataframes`, all
+        of which are mappings (dict-like structures).
 
         Parameters
         ----------
@@ -170,7 +175,13 @@ def _get_instance(profile):
 def load_dataset(dataset_key, force_update=False, profile='default'):
     """
     Load a dataset from the local filesystem, downloading it from data.world
-    first, if necessary
+    first, if necessary.
+
+    This function returns an object of type `LocalDataset`. The object
+    allows access to metedata via it's `describe()` method and to all the data
+    via three properties `raw_data`, `tables` and `dataframes`, all of which
+    are mappings (dict-like structures).
+
 
     Parameters
     ----------

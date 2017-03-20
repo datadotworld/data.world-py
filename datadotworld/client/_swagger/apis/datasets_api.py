@@ -630,7 +630,7 @@ class DatasetsApi(object):
         >>> def callback_function(response):
         >>>     pprint(response)
         >>>
-        >>> thread = api.patch_dataset(owner, id, body, callback=callback_function)
+        >>> thread = api.update_dataset(owner, id, body, callback=callback_function)
 
         :param callback function: The callback function
             for asynchronous request. (optional)

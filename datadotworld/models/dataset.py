@@ -24,6 +24,7 @@ import warnings
 from collections import OrderedDict
 
 import datapackage
+import six
 from datapackage.resource import TabularResource
 from tabulator import Stream
 
@@ -48,8 +49,10 @@ class LocalDataset(object):
         Mapping of resource names to their content (raw bytes) for all types
         of data contained in the dataset.
     tables : dict of tables
-        Mapping of resource names to their rows for all *tabular* data
+        Mapping of resource names to their data table for all *tabular* data
         contained in the dataset.
+        A table is a `list` of rows, where each row is a mapping of field
+        names to their respective values.
     dataframes : dict of `pandas.DataFrame`
         Mapping of resource names to their `DataFrame` representation for all
         *tabular* data contained  in the dataset.
@@ -80,7 +83,7 @@ class LocalDataset(object):
         self.tables = LazyLoadedDict.from_keys(
             self.__tabular_resources.keys(),
             self._load_table,
-            type_hint='iterable')
+            type_hint='list of rows')
         self.dataframes = LazyLoadedDict.from_keys(
             self.__tabular_resources.keys(),
             self._load_dataframe,
@@ -93,7 +96,8 @@ class LocalDataset(object):
         ----------
         resource : str, optional
             The name of a specific resource (i.e. file or table) contained in
-            the dataset.
+            the dataset. If ``resource`` is None, this method will describe
+            the dataset itself.
 
         Returns
         -------
@@ -124,31 +128,35 @@ class LocalDataset(object):
         tabular_resource = self.__tabular_resources[resource_name]
 
         try:
-            fields = [field['name'] for field in
-                      tabular_resource.descriptor['schema']['fields']]
-            return [self.__reorder_row(fields, row)
-                    for row in tabular_resource.data]
+            # Sorting fields in the same order as they appear in the schema
+            # is necessary for tables to be converted into pandas.DataFrame
+            fields = []
+            if 'schema' in tabular_resource.descriptor:
+                fields = [f['name'] for f in
+                          tabular_resource.descriptor['schema']['fields']]
+            elif len(tabular_resource.data) > 0:
+                fields = tabular_resource.data[0].keys()
+
+            return [self.__align_fields(fields, row) for row in
+                    tabular_resource.data]
         except ValueError:
             warnings.warn('Unable to apply datapackage table schema.'
-                          'Reverting to strings...')
+                          'Reverting to resource defaults...')
             self.__invalid_schemas.append(resource_name)
             file_format = tabular_resource.descriptor['format']
-            with Stream(self.raw_data[resource_name],
-                        format=file_format) as stream:
+            with Stream(six.BytesIO(self.raw_data[resource_name]),
+                        format=file_format, headers=1,
+                        scheme='stream') as stream:
                 return [OrderedDict(zip(stream.headers, row))
                         for row in stream.iter()]
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_dataframe(self, resource_name):
-        """Extract dataframe from tabular resource
-
-        This leverages ``tables`` as tabular resources aren't guaranteed to be
-        of a consistent format (i.e. csv)
-        """
         self.__initialize_storage()
 
         rows = self.tables[resource_name]
-        if resource_name not in self.__invalid_schemas:
+        if (resource_name in self.__storage.buckets and
+                resource_name not in self.__invalid_schemas):
             if self.__storage[resource_name].size == 0:
                 row_values = [row.values() for row in rows]
                 self.__storage.write(resource_name, row_values)
@@ -177,7 +185,7 @@ class LocalDataset(object):
                     self.__storage.create(k, r.descriptor['schema'])
 
     @staticmethod
-    def __reorder_row(fields, unordered_row):
+    def __align_fields(fields, unordered_row):
         fields_idx = {f: pos for pos, f in enumerate(fields)}
         return OrderedDict(sorted(unordered_row.items(),
                                   key=lambda i: fields_idx[i[0]]))

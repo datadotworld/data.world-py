@@ -35,10 +35,9 @@ class QueryResults(object):
     ----------
     raw_data : str
         Query results as raw CSV data.
-    table : iterable
-        Query results as a series of rows.
-        Each row is a `dict` where keys are column names and values their
-        respective value.
+    table : list of rows
+        Query results as a `list` of rows.
+        Each row is a mapping of field names to their respective values.
     dataframe : `pandas.DataFrame`
         Query results as a `DataFrame`.
     """

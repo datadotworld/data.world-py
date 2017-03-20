@@ -68,9 +68,9 @@ class TestApiClient:
                                                 has_properties(
                                                     create_request)))
 
-    def test_patch_dataset(self, api_client, datasets_api, dataset_key):
+    def test_update_dataset(self, api_client, datasets_api, dataset_key):
         patch_request = {'tags': ['tag1', 'tag2']}
-        api_client.patch_dataset(dataset_key, **patch_request)
+        api_client.update_dataset(dataset_key, **patch_request)
         assert_that(datasets_api.patch_dataset,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
