@@ -26,6 +26,7 @@ from collections import OrderedDict
 import datapackage
 import six
 from datapackage.resource import TabularResource
+from jsontableschema.exceptions import SchemaValidationError
 from tabulator import Stream
 
 from datadotworld.util import LazyLoadedDict, memoized
@@ -139,9 +140,10 @@ class LocalDataset(object):
 
             return [self.__align_fields(fields, row) for row in
                     tabular_resource.data]
-        except ValueError:
-            warnings.warn('Unable to apply datapackage table schema.'
-                          'Reverting to resource defaults...')
+        except (SchemaValidationError, ValueError):
+            warnings.warn(
+                'Unable to apply datapackage table schema for {}. '
+                'Reverting to resource defaults...'.format(resource_name))
             self.__invalid_schemas.append(resource_name)
             file_format = tabular_resource.descriptor['format']
             with Stream(six.BytesIO(self.raw_data[resource_name]),
@@ -156,7 +158,7 @@ class LocalDataset(object):
 
         rows = self.tables[resource_name]
         if (resource_name in self.__storage.buckets and
-                resource_name not in self.__invalid_schemas):
+                    resource_name not in self.__invalid_schemas):
             if self.__storage[resource_name].size == 0:
                 row_values = [row.values() for row in rows]
                 self.__storage.write(resource_name, row_values)
@@ -182,7 +184,10 @@ class LocalDataset(object):
             self.__storage = Storage()
             for (k, r) in self.__tabular_resources.items():
                 if 'schema' in r.descriptor:
-                    self.__storage.create(k, r.descriptor['schema'])
+                    try:
+                        self.__storage.create(k, r.descriptor['schema'])
+                    except SchemaValidationError:
+                        self.__invalid_schemas.append(r.descriptor['schema'])
 
     @staticmethod
     def __align_fields(fields, unordered_row):
