@@ -3,9 +3,11 @@ dependencies:
   override:
     - pyenv global 2.7.11 3.4.4 3.5.1 3.6.0
     - pip install twine tox
+    - tox --no-test
 
   cache_directories:
       - .tox
+      - .eggs
 
 deployment:
   release:
