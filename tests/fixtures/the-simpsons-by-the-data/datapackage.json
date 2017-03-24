@@ -3,6 +3,11 @@
   "homepage": "https://data.world/data-society/the-simpsons-by-the-data",
   "resources": [
     {
+      "path": "data/Homer_Simpson_2006.png",
+      "name": "Homer_Simpson_2006",
+      "format": "png"
+    },
+    {
       "path": "data/simpsons_characters.csv",
       "name": "simpsons_characters",
       "format": "csv",
@@ -43,24 +48,19 @@
             "title": "id"
           },
           {
-            "name": "title",
+            "name": "image_url",
             "type": "string",
-            "title": "title"
+            "title": "image_url"
           },
           {
-            "name": "original_air_date",
-            "type": "date",
-            "title": "original_air_date"
+            "name": "imdb_rating",
+            "type": "number",
+            "title": "imdb_rating"
           },
           {
-            "name": "production_code",
-            "type": "string",
-            "title": "production_code"
-          },
-          {
-            "name": "season",
-            "type": "integer",
-            "title": "season"
+            "name": "imdb_votes",
+            "type": "number",
+            "title": "imdb_votes"
           },
           {
             "name": "number_in_season",
@@ -73,34 +73,44 @@
             "title": "number_in_series"
           },
           {
+            "name": "original_air_date",
+            "type": "date",
+            "title": "original_air_date"
+          },
+          {
+            "name": "original_air_year",
+            "type": "gyear",
+            "title": "original_air_year"
+          },
+          {
+            "name": "production_code",
+            "type": "string",
+            "title": "production_code"
+          },
+          {
+            "name": "season",
+            "type": "integer",
+            "title": "season"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "title": "title"
+          },
+          {
             "name": "us_viewers_in_millions",
             "type": "number",
             "title": "us_viewers_in_millions"
           },
           {
-            "name": "views",
-            "type": "integer",
-            "title": "views"
-          },
-          {
-            "name": "imdb_rating",
-            "type": "number",
-            "title": "imdb_rating"
-          },
-          {
-            "name": "imdb_votes",
-            "type": "integer",
-            "title": "imdb_votes"
-          },
-          {
-            "name": "image_url",
-            "type": "string",
-            "title": "image_url"
-          },
-          {
             "name": "video_url",
             "type": "string",
             "title": "video_url"
+          },
+          {
+            "name": "views",
+            "type": "number",
+            "title": "views"
           }
         ]
       }
@@ -128,10 +138,6 @@
           }
         ]
       }
-    },
-    {
-      "path": "data/Homer_Simpson_2006.png",
-      "name": "Homer_Simpson_2006"
     }
   ]
 }

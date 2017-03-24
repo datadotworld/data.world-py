@@ -25,11 +25,13 @@ from collections import OrderedDict
 
 import datapackage
 import six
+from datadotworld.models.util import (sanitize_table_schema,
+                                      align_table_fields,
+                                      patch_jsontableschema_pandas)
+from datadotworld.util import LazyLoadedDict, memoized
 from datapackage.resource import TabularResource
 from jsontableschema.exceptions import SchemaValidationError
 from tabulator import Stream
-
-from datadotworld.util import LazyLoadedDict, memoized
 
 
 class LocalDataset(object):
@@ -63,14 +65,16 @@ class LocalDataset(object):
     def __init__(self, descriptor_file):
 
         self._datapackage = datapackage.DataPackage(descriptor_file)
+
         self.__descriptor_file = descriptor_file
         self.__base_path = os.path.dirname(
             os.path.abspath(self.__descriptor_file))
 
         # Index resources by name
-        self.__resources = {r.descriptor['name']: r for r in
-                            self._datapackage.resources}
-        self.__tabular_resources = {k: r for (k, r) in self.__resources.items()
+        self.__resources = {r.descriptor['name']: r
+                            for r in self._datapackage.resources}
+        self.__tabular_resources = {k: sanitize_table_schema(r)
+                                    for (k, r) in self.__resources.items()
                                     if type(r) is TabularResource}
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
@@ -138,12 +142,13 @@ class LocalDataset(object):
             elif len(tabular_resource.data) > 0:
                 fields = tabular_resource.data[0].keys()
 
-            return [self.__align_fields(fields, row) for row in
+            return [align_table_fields(fields, row) for row in
                     tabular_resource.data]
-        except (SchemaValidationError, ValueError):
+        except (SchemaValidationError, ValueError, TypeError) as e:
             warnings.warn(
-                'Unable to apply datapackage table schema for {}. '
-                'Reverting to resource defaults...'.format(resource_name))
+                'Unable to set column types automatically using {} schema. '
+                'Data types may need to be adjusted manually. '
+                'Error: {}'.format(resource_name, e))
             self.__invalid_schemas.append(resource_name)
             file_format = tabular_resource.descriptor['format']
             with Stream(six.BytesIO(self.raw_data[resource_name]),
@@ -158,7 +163,7 @@ class LocalDataset(object):
 
         rows = self.tables[resource_name]
         if (resource_name in self.__storage.buckets and
-                    resource_name not in self.__invalid_schemas):
+                resource_name not in self.__invalid_schemas):
             if self.__storage[resource_name].size == 0:
                 row_values = [row.values() for row in rows]
                 self.__storage.write(resource_name, row_values)
@@ -168,16 +173,16 @@ class LocalDataset(object):
                 import pandas
             except ImportError:
                 raise RuntimeError('To enable dataframe support, '
-                                   'please install the pandas package first.')
+                                   'run \'pip install datadotworld[PANDAS]\'')
             return pandas.DataFrame(rows)
 
     def __initialize_storage(self):
         try:
-            from jsontableschema_pandas import Storage
+            from jsontableschema_pandas import Storage, mappers
+            patch_jsontableschema_pandas(mappers)
         except ImportError:
-            raise RuntimeError('To enable dataframe support for datapackages, '
-                               'please install the jsontableschema_pandas '
-                               'package first.')
+            raise RuntimeError('To enable dataframe support, '
+                               'run \'pip install datadotworld[PANDAS]\'')
 
         # Initialize storage if needed
         if not hasattr(self, '__storage'):
@@ -188,12 +193,6 @@ class LocalDataset(object):
                         self.__storage.create(k, r.descriptor['schema'])
                     except SchemaValidationError:
                         self.__invalid_schemas.append(r.descriptor['schema'])
-
-    @staticmethod
-    def __align_fields(fields, unordered_row):
-        fields_idx = {f: pos for pos, f in enumerate(fields)}
-        return OrderedDict(sorted(unordered_row.items(),
-                                  key=lambda i: fields_idx[i[0]]))
 
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__,

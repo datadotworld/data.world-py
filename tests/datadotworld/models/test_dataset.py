@@ -24,11 +24,11 @@ import copy
 from os import path
 
 import pytest
+from datadotworld.models.dataset import LocalDataset
+from datadotworld.models.util import sanitize_table_schema
 from datapackage import DataPackage, Resource
 from doublex import assert_that, is_
-from hamcrest import equal_to, contains, calling, not_, raises
-
-from datadotworld.models.dataset import LocalDataset
+from hamcrest import equal_to, contains, calling, not_, raises, not_none
 
 
 class TestLocalDataset:
@@ -39,7 +39,10 @@ class TestLocalDataset:
 
     @pytest.fixture()
     def simpsons_datapackage(self, simpsons_descriptor_path):
-        return DataPackage(descriptor=simpsons_descriptor_path)
+        datapackage = DataPackage(descriptor=simpsons_descriptor_path)
+        for r in datapackage.resources:
+            sanitize_table_schema(r)
+        return datapackage
 
     @pytest.fixture()
     def simpsons_dataset(self, simpsons_descriptor_path):
@@ -100,7 +103,9 @@ class TestLocalDataset:
 
     def test_tables_broken_schema(self, simpsons_broken_dataset):
         assert_that(calling(simpsons_broken_dataset.tables.get).with_args(
-            'simpsons_episodes'), not_(raises(ValueError)))
+            'simpsons_episodes'), not_(raises(Exception)))
+        assert_that(simpsons_broken_dataset.tables.get('simpsons_episodes'),
+                    not_none())
 
     def test_dataframes(self, simpsons_dataset):
         for k, t in simpsons_dataset.tables.items():
@@ -113,7 +118,15 @@ class TestLocalDataset:
         df = simpsons_dataset.dataframes['simpsons_episodes']
         assert_that(df['id'].dtype, equal_to('int64'))
         assert_that(df['title'].dtype, equal_to('object'))
-        # TODO test different datapackages and more dtypes
+        assert_that(df['original_air_date'].dtype, equal_to('datetime64[ns]'))
+        assert_that(df['original_air_year'].dtype, equal_to('int64'))
+        assert_that(df['imdb_rating'].dtype, equal_to('float64'))
+
+    def test_dataframe_broken_schema(self, simpsons_broken_dataset):
+        assert_that(calling(simpsons_broken_dataset.dataframes.get).with_args(
+            'simpsons_episodes'), not_(raises(Exception)))
+        assert_that(simpsons_broken_dataset.dataframes.get(
+            'simpsons_episodes'), not_none())
 
     def test_repr(self, simpsons_dataset):
         # noinspection PyUnresolvedReferences

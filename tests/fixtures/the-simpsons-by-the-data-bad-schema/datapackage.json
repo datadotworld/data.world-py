@@ -10,7 +10,7 @@
         "fields": [
           {
             "name": "id",
-            "type": "integer",
+            "type": "BAD_TYPE",
             "title": "id"
           },
           {
