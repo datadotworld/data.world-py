@@ -49,7 +49,10 @@ setup(
     author_email='help@data.world',
     license='Apache 2.0',
     packages=find_packages(),
-    keywords=['data.world', 'dataset'],
+    keywords=[
+        'data.world',
+        'dataset',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -64,23 +67,39 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Topic :: Database :: Database Engines/Servers',
         'Topic :: Scientific/Engineering :: Information Analysis',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
-        'certifi', 'click', 'configparser', 'datapackage', 'python-dateutil',
-        'requests', 'six', 'tabulator', 'urllib3'
+        'certifi',
+        'click',
+        'configparser',
+        'datapackage',
+        'python-dateutil',
+        'requests',
+        'six',
+        'tabulator',
+        'urllib3',
     ],
     setup_requires=[
-        'pytest-runner'
+        'pytest-runner',
     ],
     tests_require=[
-        'doublex', 'pyhamcrest', 'responses', 'pytest',
-        'jsontableschema_pandas', 'pandas<0.19a'
+        'doublex',
+        'pyhamcrest',
+        'responses',
+        'pytest',
+        'jsontableschema_pandas',
+        'pandas<0.19a',
     ],
     extras_require={
-        'PANDAS': ['jsontableschema_pandas', 'pandas<0.19a']
+        'PANDAS': [
+            'jsontableschema_pandas',
+            'pandas<0.19a',
+        ],
     },
     entry_points={
-        'console_scripts': ['dw=datadotworld.cli:cli'],
+        'console_scripts': [
+            'dw=datadotworld.cli:cli',
+        ],
     },
 )
