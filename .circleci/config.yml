@@ -18,9 +18,10 @@ jobs:
       - run:
           name: install pyenv
           command: |
+            pyenv install --list
             pyenv install 2.7.13
             pyenv install 3.4.5
-            pyenv install 3.5.3
+            pyenv install 3.5.2
             pyenv install 3.6.0
 
       - save_cache:
