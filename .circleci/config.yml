@@ -18,8 +18,9 @@ jobs:
       - run:
           name: Install pyenv versions
           command: |
-#            pyenv install --list
             pyenv versions
+
+#            pyenv install --list
 #            pyenv install --skip-existing 2.7.13
 #            pyenv install --skip-existing 3.4.5
 #            pyenv install --skip-existing 3.5.2
