@@ -3,6 +3,8 @@ jobs:
   build:
     machine: true
 
+    working_directory: ~/data.world-py
+
     environment:
       PRERELEASE_BRANCH: prerelease
       RELEASE_BRANCH: release
