@@ -53,7 +53,7 @@ jobs:
           name: Pre-release to pypi
           command: |
             if [[ ! "${CIRCLE_BRANCH}" =~ ^(${PRERELEASE_BRANCH})$ ]]; then
-              # twine command for pre-release
+              echo 'Do a prerelease with twine here'
             fi
 
       - deploy:
