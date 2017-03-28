@@ -25,7 +25,7 @@ from os import path
 
 import pytest
 from datadotworld.models.dataset import LocalDataset
-from datadotworld.models.util import sanitize_table_schema
+from datadotworld.models.util import sanitize_resource_schema
 from datapackage import DataPackage, Resource
 from doublex import assert_that, is_
 from hamcrest import equal_to, contains, calling, not_, raises, not_none
@@ -41,7 +41,7 @@ class TestLocalDataset:
     def simpsons_datapackage(self, simpsons_descriptor_path):
         datapackage = DataPackage(descriptor=simpsons_descriptor_path)
         for r in datapackage.resources:
-            sanitize_table_schema(r)
+            sanitize_resource_schema(r)
         return datapackage
 
     @pytest.fixture()
