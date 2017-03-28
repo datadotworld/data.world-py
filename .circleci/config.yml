@@ -10,10 +10,12 @@ jobs:
       RELEASE_BRANCH: release
 
     steps:
+      - checkout
+
       - restore_cache:
           keys:
             - main_cache
-            - pyenv
+            - pyenv-{{ checksum "tox.ini" }}
 
       - run:
           name: Install pyenv versions
@@ -26,7 +28,7 @@ jobs:
             pyenv install --skip-existing 3.6.0
 
       - save_cache:
-          key: pyenv
+          key: pyenv-{{ checksum "tox.ini" }}
           paths: /opt/circleci/.pyenv
 
       - run:
@@ -36,8 +38,6 @@ jobs:
             pip install tox twine
 
       - run: env
-
-      - checkout
 
       - run:
           name: tox
