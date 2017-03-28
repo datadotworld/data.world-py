@@ -43,23 +43,24 @@ jobs:
           name: tox
           command: tox
 
+      - save_cache:
+          key: main_cache
+          paths:
+            - .eggs
+            - .tox
+
       - deploy:
           name: Pre-release to pypi
           command: |
-            if [[ ! "${CIRCLE_BRANCH}" =~ ^${PRERELEASE_BRANCH}$ ]]; then
+            if [[ ! "${CIRCLE_BRANCH}" =~ ^${PRERELEASE_BRANCH} ]]; then
               # twine command for pre-release
             fi
 
       - deploy:
           name: Release to pypi
           command: |
-            if [[ ! "${CIRCLE_BRANCH}" =~ ^${RELEASE_BRANCH}$ ]]; then
+            if [[ ! "${CIRCLE_BRANCH}" =~ ^${RELEASE_BRANCH} ]]; then
               python setup.py sdist
               twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
             fi
 
-      - save_cache:
-          key: main_cache
-          paths:
-            - .eggs
-            - .tox
