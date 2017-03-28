@@ -74,6 +74,7 @@ setup(
         'click',
         'configparser',
         'datapackage',
+        'jsontableschema>=0.10.0,<1.0a',
         'python-dateutil',
         'requests',
         'six',
@@ -88,12 +89,12 @@ setup(
         'pyhamcrest',
         'responses',
         'pytest',
-        'jsontableschema_pandas',
+        'jsontableschema_pandas>=0.3.0,<1.0a',
         'pandas<0.19a',
     ],
     extras_require={
         'PANDAS': [
-            'jsontableschema_pandas',
+            'jsontableschema_pandas>=0.3.0',
             'pandas<0.19a',
         ],
     },

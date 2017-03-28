@@ -25,7 +25,7 @@ from collections import OrderedDict
 
 import datapackage
 import six
-from datadotworld.models.util import (sanitize_table_schema,
+from datadotworld.models.util import (sanitize_resource_schema,
                                       align_table_fields,
                                       patch_jsontableschema_pandas)
 from datadotworld.util import LazyLoadedDict, memoized
@@ -73,7 +73,7 @@ class LocalDataset(object):
         # Index resources by name
         self.__resources = {r.descriptor['name']: r
                             for r in self._datapackage.resources}
-        self.__tabular_resources = {k: sanitize_table_schema(r)
+        self.__tabular_resources = {k: sanitize_resource_schema(r)
                                     for (k, r) in self.__resources.items()
                                     if type(r) is TabularResource}
         self.__invalid_schemas = []  # Resource names with invalid schemas
