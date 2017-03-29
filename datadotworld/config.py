@@ -113,5 +113,6 @@ class Config(object):
             config_parser['default'] = {'auth_token': token}
             config_parser.write(target)
 
-        os.remove(legacy_file_path)
+        # Will leave legacy in case R SDK may still need it
+        # os.remove(legacy_file_path)
         return config_parser

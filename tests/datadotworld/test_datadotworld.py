@@ -20,6 +20,7 @@ data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
+import json
 import shutil
 from os import path
 
@@ -74,18 +75,18 @@ class TestDataDotWorld:
     @pytest.mark.parametrize("type,endpoint,query", query_types,
                              ids=['sparql', 'sql'])
     def test_query(self, helpers, dw, dataset_key, type, endpoint, query,
-                   query_result_csv):
+                   query_result_json):
         with responses.RequestsMock() as rsps:
             @helpers.validate_request_headers()
             def query_endpoint(_):
-                return 200, {}, query_result_csv
+                return 200, {}, json.dumps(query_result_json)
 
             rsps.add_callback(rsps.GET, '{}?query={}'.format(endpoint, query),
                               content_type='text/csv',
                               callback=query_endpoint, match_querystring=True)
 
             result = dw.query(dataset_key, query, query_type=type)
-            assert_that(result.raw_data, equal_to(query_result_csv))
+            assert_that(result.raw_data, equal_to(query_result_json))
 
     @pytest.mark.parametrize("type,endpoint,query", query_types,
                              ids=['sparql', 'sql'])
