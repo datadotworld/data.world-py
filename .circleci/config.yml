@@ -1,0 +1,66 @@
+version: 2
+jobs:
+  build:
+    machine: true
+
+    working_directory: ~/data.world-py
+
+    environment:
+      PRERELEASE_BRANCH: prerelease
+      RELEASE_BRANCH: release
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - main_cache
+            - pyenv-{{ checksum "tox.ini" }}
+
+      - run:
+          name: Install pyenv versions
+          command: |
+            pyenv versions
+            pyenv install --list
+            pyenv install --skip-existing 2.7.13
+            pyenv install --skip-existing 3.4.5
+            pyenv install --skip-existing 3.5.2
+            pyenv install --skip-existing 3.6.0
+
+      - save_cache:
+          key: pyenv-{{ checksum "tox.ini" }}
+          paths: /opt/circleci/.pyenv
+
+      - run:
+          name: Install python dependencies
+          command: |
+            pyenv global 2.7.13 3.4.5 3.5.2 3.6.0
+            pip install tox twine
+
+      - run: env
+
+      - run:
+          name: tox
+          command: tox
+
+      - save_cache:
+          key: main_cache
+          paths:
+            - .eggs
+            - .tox
+
+      - deploy:
+          name: Pre-release to pypi
+          command: |
+            if [[ "${CIRCLE_BRANCH}" =~ ^(${PRERELEASE_BRANCH})$ ]]; then
+              echo 'Do a prerelease with twine here'
+            fi
+
+      - deploy:
+          name: Release to pypi
+          command: |
+            if [[ "${CIRCLE_BRANCH}" =~ ^(${RELEASE_BRANCH})$ ]]; then
+              python setup.py sdist
+              twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
+            fi
+
