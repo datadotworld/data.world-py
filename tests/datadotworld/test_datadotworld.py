@@ -36,20 +36,28 @@ from datadotworld.datadotworld import DataDotWorld
 
 class TestDataDotWorld:
     @pytest.fixture()
-    def existing_dataset(self, config, test_files_path):
+    def query_response_json(self, test_queries_path):
+        with open(path.join(test_queries_path, 'sql_select.json'),
+                  'r') as json_results:
+            return json.load(json_results)
+
+    @pytest.fixture()
+    def existing_dataset(self, config, test_datapackages_path):
         # Previously downloaded
         dest_dir = path.join(config.cache_dir, 'agentid', 'datasetid',
                              'latest')
         shutil.copytree(
-            path.join(test_files_path, 'the-simpsons-by-the-data-existing'),
+            path.join(test_datapackages_path,
+                      'the-simpsons-by-the-data-existing'),
             dest_dir)
 
     @pytest.fixture()
-    def api_client(self, test_files_path):
+    def api_client(self, test_datapackages_path):
         with Spy(RestApiClient) as client:
             def download_datapackage(_, dest_dir):
                 shutil.copytree(
-                    path.join(test_files_path, 'the-simpsons-by-the-data'),
+                    path.join(test_datapackages_path,
+                              'the-simpsons-by-the-data'),
                     dest_dir)
                 return path.join(dest_dir, 'datapackage.json')
 
@@ -75,18 +83,18 @@ class TestDataDotWorld:
     @pytest.mark.parametrize("type,endpoint,query", query_types,
                              ids=['sparql', 'sql'])
     def test_query(self, helpers, dw, dataset_key, type, endpoint, query,
-                   query_result_json):
+                   query_response_json):
         with responses.RequestsMock() as rsps:
             @helpers.validate_request_headers()
             def query_endpoint(_):
-                return 200, {}, json.dumps(query_result_json)
+                return 200, {}, json.dumps(query_response_json)
 
             rsps.add_callback(rsps.GET, '{}?query={}'.format(endpoint, query),
                               content_type='text/csv',
                               callback=query_endpoint, match_querystring=True)
 
             result = dw.query(dataset_key, query, query_type=type)
-            assert_that(result.raw_data, equal_to(query_result_json))
+            assert_that(result.raw_data, equal_to(query_response_json))
 
     @pytest.mark.parametrize("type,endpoint,query", query_types,
                              ids=['sparql', 'sql'])

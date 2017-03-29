@@ -26,7 +26,8 @@ from os import path
 
 import pytest
 from doublex import assert_that
-from hamcrest import equal_to, is_not, is_, calling, raises
+from hamcrest import equal_to, is_not, is_, calling, raises, has_length
+from six import StringIO
 
 from datadotworld.config import Config
 
@@ -49,8 +50,14 @@ class TestConfig:
     @pytest.fixture()
     def default_config_file(self, config_file_path):
         config_parser = configparser.ConfigParser()
-        config_parser.add_section('default')
-        config_parser.set('default', 'auth_token', 'abcd')
+        config_parser.set(configparser.DEFAULTSECT, 'auth_token', 'abcd')
+        config_parser.write(open(config_file_path, 'w'))
+
+    @pytest.fixture()
+    def default_invalid_config_file(self, config_file_path):
+        config_parser = configparser.ConfigParser()
+        config_parser.read_file(StringIO('[default]'))
+        config_parser.set('default', 'auth_token', 'lower_case_default')
         config_parser.write(open(config_file_path, 'w'))
 
     @pytest.fixture()
@@ -85,6 +92,12 @@ class TestConfig:
                         config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('legacyabcd'))
         assert_that(path.isfile(config_file_path), is_(True))
+
+    @pytest.mark.usefixtures('config_directory', 'default_invalid_config_file')
+    def test_invalid_config_section(self, config_file_path):
+        config = Config(config_file_path=config_file_path)
+        assert_that(config.auth_token, equal_to('lower_case_default'))
+        assert_that(config._config_parser.sections(), has_length(0))
 
     def test_missing_file(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))

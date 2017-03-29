@@ -45,28 +45,32 @@ class Config(object):
 
     def __init__(self, profile='default', **kwargs):
         # Overrides, for testing
-        config_file_path = path.expanduser(
+        self._config_file_path = path.expanduser(
             kwargs.get('config_file_path', '~/.dw/config'))
         legacy_file_path = path.expanduser(
             kwargs.get('legacy_file_path', '~/.data.world'))
 
-        if not path.isdir(path.dirname(config_file_path)):
-            os.makedirs(path.dirname(config_file_path))
+        if not path.isdir(path.dirname(self._config_file_path)):
+            os.makedirs(path.dirname(self._config_file_path))
 
-        config_parser = (configparser.ConfigParser()
-                         if six.PY3 else configparser.SafeConfigParser())
-        if path.isfile(config_file_path):
-            config_parser.read_file(open(config_file_path))
+        self._config_parser = (configparser.ConfigParser()
+                               if six.PY3 else configparser.SafeConfigParser())
+
+        if path.isfile(self._config_file_path):
+            self._config_parser.read_file(open(self._config_file_path))
+            if self.__migrate_invalid_defaults(self._config_parser) > 0:
+                self.save()
         elif path.isfile(legacy_file_path):
-            config_parser = self.__migrate_config(legacy_file_path,
-                                                  config_file_path)
+            self._config_parser = self.__migrate_config(legacy_file_path,
+                                                        self._config_file_path)
+            self.save()
 
-        self._config_file_path = config_file_path
-        self._config_parser = config_parser
         self._profile = profile
+        self._section = (profile
+                         if profile.lower() != configparser.DEFAULTSECT.lower()
+                         else configparser.DEFAULTSECT)
 
         self.tmp_dir = path.expanduser(tempfile.gettempdir())
-
         self.cache_dir = path.expanduser('~/.dw/cache')
         if not path.isdir(path.dirname(self.cache_dir)):
             os.makedirs(path.dirname(self.cache_dir))
@@ -74,13 +78,14 @@ class Config(object):
     @property
     def auth_token(self):
         self.__validate_config()
-        return self._config_parser.get(self._profile, 'auth_token')
+        return self._config_parser.get(self._section, 'auth_token')
 
     @auth_token.setter
     def auth_token(self, auth_token):
-        if not self._config_parser.has_section(self._profile):
-            self._config_parser.add_section(self._profile)
-        self._config_parser.set(self._profile, 'auth_token', auth_token)
+        if (self._section != configparser.DEFAULTSECT and
+                not self._config_parser.has_section(self._section)):
+            self._config_parser.add_section(self._section)
+        self._config_parser.set(self._section, 'auth_token', auth_token)
 
     def save(self):
         """Persist config changes"""
@@ -93,7 +98,7 @@ class Config(object):
                 'Configuration file not found at {}.'
                 'To fix this issue, run dw configure'.format(
                     self._config_file_path))
-        if not self._config_parser.has_option(self._profile, 'auth_token'):
+        if not self._config_parser.has_option(self._section, 'auth_token'):
             raise RuntimeError(
                 'The {0} profile is not properly configured. '
                 'To fix this issue, run dw -p {0} configure'.format(
@@ -103,16 +108,40 @@ class Config(object):
     def __migrate_config(legacy_file_path, target_file_path):
         config_parser = configparser.ConfigParser()
 
-        with open(legacy_file_path, 'r') as legacy, open(target_file_path,
-                                                         'w') as target:
+        with open(legacy_file_path, 'r') as legacy:
             regex = re.compile(r"^token\s*=\s*(\S.*)$")
             token = next(iter(
                 [regex.match(line.strip()).group(1) for line in legacy if
                  regex.match(line)]),
                 None)
-            config_parser['default'] = {'auth_token': token}
-            config_parser.write(target)
+            config_parser[configparser.DEFAULTSECT] = {'auth_token': token}
 
         # Will leave legacy in case R SDK may still need it
         # os.remove(legacy_file_path)
+
         return config_parser
+
+    @staticmethod
+    def __migrate_invalid_defaults(config_parser):
+        # This fixes an issue related to us having referred to the default
+        # section in the config file as 'default' as opposed to using
+        # configparser.DEFAULTSECT
+        # That may result in 'ValueError: Invalid section name: default'
+        # https://github.com/datadotworld/data.world-py/issues/18
+        invalid_defaults = []
+        for section in config_parser.sections():
+            # Doesn't include DEFAULTSECT, but checking nonetheless
+            if (section != configparser.DEFAULTSECT and
+                        section.lower() == configparser.DEFAULTSECT.lower()):
+                invalid_defaults.append(section)
+
+        if len(invalid_defaults) == 1:
+            old_default = invalid_defaults[0]
+            config_parser[configparser.DEFAULTSECT] = {
+                option: config_parser.get(old_default, option)
+                for option in config_parser.options(old_default)}
+
+        for section in invalid_defaults:
+            config_parser.remove_section(section)
+
+        return len(invalid_defaults)

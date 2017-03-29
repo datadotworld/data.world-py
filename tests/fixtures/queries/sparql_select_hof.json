@@ -1,0 +1,410 @@
+{
+  "head": {
+    "vars": [
+      "playerID",
+      "yearid",
+      "votedBy",
+      "ballots",
+      "needed",
+      "votes",
+      "inducted",
+      "category",
+      "needed_note",
+      "null_col"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "alexape01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "BBWAA"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "226"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "170"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "55"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "true"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "allisdo01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "ansonca01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "39"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "bakerfr01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "BBWAA"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "226"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "170"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "barnero01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "3"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "battijo01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "becklja01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "bendech01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "BBWAA"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "226"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "170"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "2"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "bennech01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "3"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      },
+      {
+        "playerID": {
+          "type": "literal",
+          "value": "bondto01"
+        },
+        "yearid": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1936"
+        },
+        "votedBy": {
+          "type": "literal",
+          "value": "Veterans"
+        },
+        "ballots": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "78"
+        },
+        "needed": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "59"
+        },
+        "votes": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1"
+        },
+        "inducted": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        },
+        "category": {
+          "type": "literal",
+          "value": "Player"
+        }
+      }
+    ]
+  }
+}

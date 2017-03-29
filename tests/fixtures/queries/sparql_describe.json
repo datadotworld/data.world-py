@@ -1,0 +1,155 @@
+{
+  "head": {
+    "vars": [
+      "subject",
+      "predicate",
+      "object",
+      "context"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://data.world#generationTime"
+        },
+        "object": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#long",
+          "type": "literal",
+          "value": "1475533105077"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#yearID_raw"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/2000/01/rdf-schema#domain"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman_csv_2015_01_24_AllstarFull_csv"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/csvw#table"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull0"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull1"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull10"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull100"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://data.world#datasetId"
+        },
+        "object": {
+          "type": "literal",
+          "value": "lahman-baseball"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://data.world#agentId"
+        },
+        "object": {
+          "type": "literal",
+          "value": "user8"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull109"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/lahman-csv_2015-01-24.zip/lahman-csv_2015-01-24/AllstarFull.csv/AllstarFull#"
+        }
+      }
+    ]
+  }
+}

@@ -3,7 +3,7 @@
   "query_lang": "SQL",
   "metadata": [
     {
-      "name": "station_id",
+      "name": "bk.station_id",
       "type": "http://www.w3.org/2001/XMLSchema#string"
     },
     {
@@ -20,7 +20,7 @@
       "type": "http://www.w3.org/2001/XMLSchema#string"
     },
     {
-      "name": "station_id",
+      "name": "st.station_id",
       "type": "http://www.w3.org/2001/XMLSchema#string"
     },
     {

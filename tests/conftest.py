@@ -82,7 +82,10 @@ def test_files_path():
 
 
 @pytest.fixture()
-def query_result_json(test_files_path):
-    with open(path.join(test_files_path, 'sample_query.json'),
-              'r') as json_results:
-        return json.load(json_results)
+def test_datapackages_path(test_files_path):
+    return path.join(test_files_path, 'datapackages')
+
+
+@pytest.fixture()
+def test_queries_path(test_files_path):
+    return path.join(test_files_path, 'queries')
