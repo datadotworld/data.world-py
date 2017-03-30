@@ -20,8 +20,8 @@ jobs:
             - main_cache
 
       - run:
-          name: pyenv
-          command: pyenv versions
+          name: set pyenv global versions
+          command: pyenv global 2.7.13 3.4.5 3.5.2 3.6.0
 
       - run:
           name: tox
