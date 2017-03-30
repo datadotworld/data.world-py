@@ -22,10 +22,7 @@ jobs:
       - run:
           name: pyenv setup
           command: |
-            eval "$(pyenv init -)"
-            eval "$(pyenv virtualenv-init -)"
-            pyenv global 2.7.13 3.4.5 3.5.2 3.6.0
-            tox -r -e py34
+            pyenv local 2.7.13 3.4.5 3.5.2 3.6.0
 
       - run:
           name: tox
