@@ -1,0 +1,621 @@
+{
+  "query_text": "SELECT bk.*, st.*\nFROM `bikes.csv/bikes` as bk\nJOIN `stations.csv/stations` as st USING(station_id)\nLIMIT 10\n",
+  "query_lang": "SQL",
+  "metadata": [
+    {
+      "name": "bk.station_id",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "formatString": "yyyy-MM-dd HH:mm:ss",
+      "name": "bk.datetime",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "bk.bikes",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "bk.docks",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.station_id",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.name",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.address",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.lat",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.lon",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "formatString": "yyyy-MM-dd HH:mm:ss",
+      "name": "st.datetime",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "st.Location",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  ],
+  "head": {
+    "vars": [
+      "v_0",
+      "v_1",
+      "v_2",
+      "v_3",
+      "v_4",
+      "v_5",
+      "v_6",
+      "v_7",
+      "v_8",
+      "v_9",
+      "v_10"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "1"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "6"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "7"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "1"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "2nd & Congress"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "151 E. 2nd St, Austin, TX 78701"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.26408"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74355"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.26408 -97.74355)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "2"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "5"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "8"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "2"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "4th & Congress"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "120 W. 4th St., Austin, TX 78701"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.26634"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74378"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.26634 -97.74378)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "11"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "1"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "12"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "11"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "West & 6th St."
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "603 West Ave., Austin, TX 78701"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.27041"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.75046"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.27041 -97.75046)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "5"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:10:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "8"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "11"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "5"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "City Hall / Lavaca & 2nd"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "Presented by Graves Dougherty Hearon & Moody, Austin, TX 78701"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.26476"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74678"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.26476 -97.74678)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "41"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T01:40:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "6"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "7"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "41"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "Capital Metro HQ - East 5th at Broadway"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "2910 E 5th St, Austin, TX 78702"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.2563"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.71007"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.2563 -97.71007)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "17"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T17:20:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "12"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "1"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "17"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "East 6th & Pedernales St."
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "2498 E. 6th St., Austin, TX 78702"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.25895"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.71475"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.25895 -97.71475)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "17"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-08T05:35:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "5"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "8"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "17"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "East 6th & Pedernales St."
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "2498 E. 6th St., Austin, TX 78702"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.25895"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.71475"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.25895 -97.71475)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "18"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-08T05:35:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "6"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "5"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "18"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "ACC - West & 12th Street"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "1231 West Ave., Austin, TX 78701"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.27624"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74831"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.27624 -97.74831)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "19"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-08T05:35:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "9"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "4"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "19"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "Guadalupe & 21st"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "2100 Guadalupe St., Austin, TX 78752"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.28395"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74198"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.28395 -97.74198)"
+        }
+      },
+      {
+        "v_0": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "20"
+        },
+        "v_1": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-08T05:35:00"
+        },
+        "v_2": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "1"
+        },
+        "v_3": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "12"
+        },
+        "v_4": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "value": "20"
+        },
+        "v_5": {
+          "type": "literal",
+          "value": "UT West Mall @ Guadalupe"
+        },
+        "v_6": {
+          "type": "literal",
+          "value": "2242 Guadalupe St., Austin, TX 78705"
+        },
+        "v_7": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "30.28576"
+        },
+        "v_8": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "-97.74181"
+        },
+        "v_9": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+          "value": "2016-04-01T00:00:00"
+        },
+        "v_10": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/OGC-GeoSPARQL/1.0/Point",
+          "value": "POINT(30.28576 -97.74181)"
+        }
+      }
+    ]
+  }
+}

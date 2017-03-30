@@ -92,13 +92,14 @@ class DataDotWorld(object):
                                              query_type, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
-            'Accept': 'text/csv',
+            'Accept': 'application/sparql-results+json',
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)
         }
         response = requests.get(url, params=params, headers=headers)
         if response.status_code == 200:
-            return QueryResults(response.text)
-        raise RuntimeError('Error executing query: {}'.format(response.text))
+            return QueryResults(response.json())
+        raise RuntimeError(
+            'Error executing query: {}'.format(response.content))
 
     def load_dataset(self, dataset_key, force_update=False):
         """

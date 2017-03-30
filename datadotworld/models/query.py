@@ -22,8 +22,9 @@ from __future__ import absolute_import
 
 from collections import OrderedDict
 
-import six
-from tabulator import Stream
+from jsontableschema import Schema
+
+from datadotworld.models import table_schema
 
 
 class QueryResults(object):
@@ -34,7 +35,7 @@ class QueryResults(object):
     Attributes
     ----------
     raw_data : str
-        Query results as raw CSV data.
+        Query results as raw SPARQL JSON data
     table : list of rows
         Query results as a `list` of rows.
         Each row is a mapping of field names to their respective values.
@@ -45,26 +46,66 @@ class QueryResults(object):
     def __init__(self, raw):
         self.raw_data = raw
 
+        self._schema = table_schema.infer_table_schema(raw)
+
+        self._table = None
+        self.__storage = None
+
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, repr(self.raw_data))
 
     def __str__(self):
-        return self.raw_data
+        return str(self.raw_data)
 
-    @property
-    def dataframe(self):
-        try:
-            import pandas as pd
-        except ImportError:
-            raise RuntimeError('To enable dataframe support, '
-                               'please install the pandas package first.')
-        return pd.DataFrame.from_csv(
-            six.StringIO(self.raw_data), index_col=False)
+    def describe(self):
+        return self._schema
 
     @property
     def table(self):
-        # TODO Return typed values based on data.world type inference
-        with Stream(self.raw_data, headers=1,
-                    format='csv', scheme='text') as stream:
-            return [OrderedDict(zip(stream.headers, row))
-                    for row in stream.iter()]
+        """Build and cache a table from query results"""
+        if self._table is None:
+            schema_obj = Schema(self._schema)
+
+            table = []
+            if 'results' in self.raw_data:
+                field_names = [field.name for field in schema_obj.fields]
+                result_vars = self.raw_data['head']['vars']
+
+                for binding in self.raw_data['results']['bindings']:
+                    rdf_terms = table_schema.order_terms_in_binding(
+                        result_vars, binding)
+
+                    values = []
+                    for rdf_term in rdf_terms:
+                        if rdf_term is not None:
+                            values.append(rdf_term['value'])
+                        else:
+                            values.append(None)
+
+                    table_row = schema_obj.cast_row(values)
+                    table.append(OrderedDict(zip(field_names, table_row)))
+            elif 'boolean' in self.raw_data:
+                # Results of an ASK query
+                table = [{'boolean': self.raw_data['boolean']}]
+
+            self._table = table
+
+        return self._table
+
+    @property
+    def dataframe(self):
+        """Build and cache a dataframe from query results"""
+        try:
+            from jsontableschema_pandas import Storage
+        except ImportError:
+            raise RuntimeError('To enable dataframe support, '
+                               'run \'pip install datadotworld[PANDAS]\'')
+
+        if self.__storage is None:
+            self.__storage = Storage()
+            self.__storage.create('results', self._schema)
+
+            row_values = [row.values() for row in self.table]
+            self.__storage.write('results', row_values)
+
+        return self.__storage['results']

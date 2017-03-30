@@ -1,0 +1,42 @@
+{
+  "head": {
+    "vars": [
+      "subject",
+      "predicate",
+      "object",
+      "context"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/entailment/Simple"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/sparql-service-description#defaultEntailmentRegime"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        }
+      },
+      {
+        "subject": {
+          "type": "uri",
+          "value": "https://query.data.world/sparql/user8/lahman-baseball"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/sparql-service-description#endpoint"
+        },
+        "object": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        }
+      }
+    ]
+  }
+}

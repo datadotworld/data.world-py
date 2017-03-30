@@ -25,9 +25,9 @@ from collections import OrderedDict
 
 import datapackage
 import six
-from datadotworld.models.util import (sanitize_table_schema,
-                                      align_table_fields,
-                                      patch_jsontableschema_pandas)
+from datadotworld.models.table_schema import (sanitize_resource_schema,
+                                              order_columns_in_row,
+                                              patch_jsontableschema_pandas)
 from datadotworld.util import LazyLoadedDict, memoized
 from datapackage.resource import TabularResource
 from jsontableschema.exceptions import SchemaValidationError
@@ -73,7 +73,7 @@ class LocalDataset(object):
         # Index resources by name
         self.__resources = {r.descriptor['name']: r
                             for r in self._datapackage.resources}
-        self.__tabular_resources = {k: sanitize_table_schema(r)
+        self.__tabular_resources = {k: sanitize_resource_schema(r)
                                     for (k, r) in self.__resources.items()
                                     if type(r) is TabularResource}
         self.__invalid_schemas = []  # Resource names with invalid schemas
@@ -111,6 +111,7 @@ class LocalDataset(object):
             ``resource`` is specified in the call.
         """
         if resource is None:
+            # Show simpler descriptor, omitting schema definitions
             simple_descriptor = copy.deepcopy(self._datapackage.descriptor)
             for resource in simple_descriptor['resources']:
                 resource.pop('schema', None)
@@ -130,6 +131,7 @@ class LocalDataset(object):
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
+        """Build table structure from resource data"""
         tabular_resource = self.__tabular_resources[resource_name]
 
         try:
@@ -142,7 +144,7 @@ class LocalDataset(object):
             elif len(tabular_resource.data) > 0:
                 fields = tabular_resource.data[0].keys()
 
-            return [align_table_fields(fields, row) for row in
+            return [order_columns_in_row(fields, row) for row in
                     tabular_resource.data]
         except (SchemaValidationError, ValueError, TypeError) as e:
             warnings.warn(
@@ -159,6 +161,11 @@ class LocalDataset(object):
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_dataframe(self, resource_name):
+        """Build pandas.DataFrame from resource data
+
+        Lazy load any optional dependencies in order to allow users to
+        use package without installing pandas if so they wish.
+        """
         self.__initialize_storage()
 
         rows = self.tables[resource_name]
