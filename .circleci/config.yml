@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: dataworld:pyenv
+      - image: dataworld/pyenv
 
     working_directory: ~/data.world-py
 
