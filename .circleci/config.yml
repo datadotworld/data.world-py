@@ -20,6 +20,10 @@ jobs:
             - main_cache
 
       - run:
+          name: pyenv
+          command: pyenv versions
+
+      - run:
           name: tox
           command: tox
 
