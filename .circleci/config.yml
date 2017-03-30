@@ -20,6 +20,10 @@ jobs:
             - main_cache
 
       - run:
+          name: pyenv setup
+          command: eval "$(pyenv init -)"
+
+      - run:
           name: tox
           command: tox
 
