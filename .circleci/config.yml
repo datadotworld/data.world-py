@@ -11,8 +11,6 @@ jobs:
       RELEASE_BRANCH: release
 
     steps:
-      - run: env
-
       - checkout
 
       - restore_cache:
