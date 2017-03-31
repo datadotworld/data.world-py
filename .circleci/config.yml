@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: dataworld/pyenv
 
-    working_directory: ~/data.world-py
+    working_directory: /root/data.world-py
 
     environment:
       PRERELEASE_BRANCH: prerelease

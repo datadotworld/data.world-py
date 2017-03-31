@@ -30,7 +30,7 @@ It will download a given dataset's [datapackage](http://specs.frictionlessdata.i
 and store it under `~/.dw/cache`. When used subsequently, `load_dataset()` will use the copy stored on disk and will
 work offline, unless it's called with `force_update=True`.
 
-Once loaded, a dataset (data and metadata) can be conveniently access via the object returned by `load_dataset()`.
+Once loaded, a dataset (data and metadata) can be conveniently accessed via the object returned by `load_dataset()`.
 
 Start by importing the `datadotworld` module:
 ```python
@@ -45,7 +45,7 @@ intro_dataset = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
 
 Dataset objects allow access to data via three different properties `raw_data`, `tables` and `dataframes`.
 Each of these properties is a mapping (dict) whose values are of type `bytes`, `list` and `pandas.DataFrame`, 
-respectively. Values are lazy loaded and cached once loaded. Their keys are the names of the resources (files) 
+respectively. Values are lazy loaded and cached once loaded. Their keys are the names of the files 
 contained in the dataset.
 
 For example:
@@ -65,36 +65,39 @@ For example:
 ```python
 >>> stats_table = intro_dataset.tables['datadotworldbballstats']
 >>> stats_table[0]
-OrderedDict([('Name', 'Jon'), ('PointsPerGame', Decimal('20.4')), ('AssistsPerGame', Decimal('1.3'))])
+OrderedDict([('Name', 'Jon'),
+             ('PointsPerGame', Decimal('20.4')),
+             ('AssistsPerGame', Decimal('1.3'))])
 ```
 
 You can also review the metadata associated with a file or the entire dataset, using the `describe` function.  
 For example:
 ```python
 >>> intro_dataset.describe()
-{
-    'name': 'jonloyens_an-intro-to-dataworld-dataset', 
-    'homepage': 'https://data.world/jonloyens/an-intro-to-dataworld-dataset', 
-    'resources': [
-        {'path': 'data/ChangeLog.csv', 'name': 'changelog', 'format': 'csv'}, 
-        {'path': 'data/DataDotWorldBBallStats.csv', 'name': 'datadotworldbballstats', 'format': 'csv'}, 
-        {'path': 'data/DataDotWorldBBallTeam.csv', 'name': 'datadotworldbballteam', 'format': 'csv'}
-    ]
-}
+{'homepage': 'https://data.world/jonloyens/an-intro-to-dataworld-dataset',
+ 'name': 'jonloyens_an-intro-to-dataworld-dataset',
+ 'resources': [{'format': 'csv',
+   'name': 'changelog',
+   'path': 'data/ChangeLog.csv'},
+  {'format': 'csv',
+   'name': 'datadotworldbballstats',
+   'path': 'data/DataDotWorldBBallStats.csv'},
+  {'format': 'csv',
+   'name': 'datadotworldbballteam',
+   'path': 'data/DataDotWorldBBallTeam.csv'}]}
+
 
 >>> intro_dataset.describe('datadotworldbballstats')
-{
-    'path': 'data/DataDotWorldBBallStats.csv', 
-    'name': 'datadotworldbballstats', 
-    'format': 'csv', 
-    'schema': {
-        'fields': [
-            {'name': 'Name', 'type': 'string', 'title': 'Name'}, 
-            {'name': 'PointsPerGame', 'type': 'number', 'title': 'PointsPerGame'}, 
-            {'name': 'AssistsPerGame', 'type': 'number', 'title': 'AssistsPerGame'}
-        ]
-    }
-}
+{'format': 'csv',
+ 'name': 'datadotworldbballstats',
+ 'path': 'data/DataDotWorldBBallStats.csv',
+ 'schema': {'fields': [{'name': 'Name', 'title': 'Name', 'type': 'string'},
+                       {'name': 'PointsPerGame',
+                        'title': 'PointsPerGame',
+                        'type': 'number'},
+                       {'name': 'AssistsPerGame',
+                        'title': 'AssistsPerGame',
+                        'type': 'number'}]}}
 ```
 
 ### Query a dataset
@@ -107,7 +110,7 @@ For example:
 results = dw.query('jonloyens/an-intro-to-dataworld-dataset', 'SELECT * FROM DataDotWorldBBallStats')
 ```
 
-Query result objects allow access to the data via `raw_data`, `table` and `dataframe` properties, of type `str`, `list`
+Query result objects allow access to the data via `raw_data`, `table` and `dataframe` properties, of type `json`, `list`
 and `pandas.DataFrame`, respectively.
 
 For example:
@@ -128,11 +131,22 @@ Tables are lists of rows, each represented by a mapping (dict) of column names t
 For example:
 ```python
 >>> results.table[0]
-OrderedDict([('Name', 'Jon'), ('PointsPerGame', '20.4'), ('AssistsPerGame', '1.3')])
+OrderedDict([('Name', 'Jon'),
+             ('PointsPerGame', Decimal('20.4')),
+             ('AssistsPerGame', Decimal('1.3'))])
 ```
 
 To query using `SPARQL` invoke `query()` using `query_type='sparql'`, or else, it will assume 
 the query to be a `SQL` query.
+
+Just like in the dataset case, you can view the metadata associated with a query result using the `describe()` function.
+For example:
+```python
+>>> results.describe()
+{'fields': [{'name': 'Name', 'type': 'string'},
+            {'name': 'PointsPerGame', 'type': 'number'},
+            {'name': 'AssistsPerGame', 'type': 'number'}]}
+```
 
 ### Create and update datasets
 

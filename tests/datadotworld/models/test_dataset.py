@@ -25,7 +25,7 @@ from os import path
 
 import pytest
 from datadotworld.models.dataset import LocalDataset
-from datadotworld.models.util import sanitize_table_schema
+from datadotworld.models.table_schema import sanitize_resource_schema
 from datapackage import DataPackage, Resource
 from doublex import assert_that, is_
 from hamcrest import equal_to, contains, calling, not_, raises, not_none
@@ -33,15 +33,15 @@ from hamcrest import equal_to, contains, calling, not_, raises, not_none
 
 class TestLocalDataset:
     @pytest.fixture()
-    def simpsons_descriptor_path(self, test_files_path):
-        return path.join(test_files_path, 'the-simpsons-by-the-data',
+    def simpsons_descriptor_path(self, test_datapackages_path):
+        return path.join(test_datapackages_path, 'the-simpsons-by-the-data',
                          'datapackage.json')
 
     @pytest.fixture()
     def simpsons_datapackage(self, simpsons_descriptor_path):
         datapackage = DataPackage(descriptor=simpsons_descriptor_path)
         for r in datapackage.resources:
-            sanitize_table_schema(r)
+            sanitize_resource_schema(r)
         return datapackage
 
     @pytest.fixture()
@@ -49,8 +49,8 @@ class TestLocalDataset:
         return LocalDataset(simpsons_descriptor_path)
 
     @pytest.fixture()
-    def simpsons_broken_descriptor_path(self, test_files_path):
-        return path.join(test_files_path,
+    def simpsons_broken_descriptor_path(self, test_datapackages_path):
+        return path.join(test_datapackages_path,
                          'the-simpsons-by-the-data-bad-schema',
                          'datapackage.json')
 

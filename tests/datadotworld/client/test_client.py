@@ -122,9 +122,10 @@ class TestApiClient:
 
     # TODO Test CRUD exception cases
 
-    def test_download_datapackage(self, helpers, config, test_files_path,
-                                  api_client, dataset_key):
-        datapackage_zip = path.join(test_files_path,
+    def test_download_datapackage(self, helpers, config,
+                                  test_datapackages_path, api_client,
+                                  dataset_key):
+        datapackage_zip = path.join(test_datapackages_path,
                                     'the-simpsons-by-the-data.zip')
         with responses.RequestsMock() as rsps, open(datapackage_zip,
                                                     'rb') as file:
@@ -152,9 +153,10 @@ class TestApiClient:
             assert_that(os.listdir(config.tmp_dir),
                         described_as('%0 is empty', empty(), config.tmp_dir))
 
-    def test_download_datapackage_error(self, helpers, config, test_files_path,
-                                        api_client, dataset_key):
-        datapackage_zip = path.join(test_files_path,
+    def test_download_datapackage_error(self, helpers, config,
+                                        test_datapackages_path, api_client,
+                                        dataset_key):
+        datapackage_zip = path.join(test_datapackages_path,
                                     'the-simpsons-by-the-data.zip')
         with responses.RequestsMock() as rsps, open(datapackage_zip,
                                                     'rb') as file:

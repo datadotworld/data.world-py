@@ -1,0 +1,155 @@
+{
+  "head": {
+    "vars": [
+      "s",
+      "p",
+      "o"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#agentId"
+        },
+        "o": {
+          "type": "literal",
+          "value": "user8"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#datasetId"
+        },
+        "o": {
+          "type": "literal",
+          "value": "lahman-baseball"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#generationTime"
+        },
+        "o": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#long",
+          "type": "literal",
+          "value": "1475533105077"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#gitCommitAbbrev"
+        },
+        "o": {
+          "type": "literal",
+          "value": "f5cc2ef"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#gitCommitId"
+        },
+        "o": {
+          "type": "literal",
+          "value": "f5cc2efe4a53da4e3771f2f06df558cd53597e56"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#gitDirty"
+        },
+        "o": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "type": "literal",
+          "value": "false"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#mavenVersion"
+        },
+        "o": {
+          "type": "literal",
+          "value": "0.1-SNAPSHOT"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://data.world#versionId"
+        },
+        "o": {
+          "type": "literal",
+          "value": "9f7e0921-5332-4e9a-847f-8b9f6e783558"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/sparql-service-description#defaultEntailmentRegime"
+        },
+        "o": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/entailment/Simple"
+        }
+      },
+      {
+        "s": {
+          "type": "uri",
+          "value": "http://data.world/user8/lahman-baseball/"
+        },
+        "p": {
+          "type": "uri",
+          "value": "http://www.w3.org/ns/sparql-service-description#endpoint"
+        },
+        "o": {
+          "type": "uri",
+          "value": "https://query.data.world/sparql/user8/lahman-baseball"
+        }
+      }
+    ]
+  }
+}

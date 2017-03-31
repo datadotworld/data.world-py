@@ -20,29 +20,75 @@ data.world, Inc.(http://data.world/).
 """
 from __future__ import absolute_import
 
+import json
+from os import path
+
 import pytest
+from doublex import assert_that
+from hamcrest import equal_to, has_length, contains, has_key
 
 from datadotworld.models.query import QueryResults
-from doublex import assert_that
-from hamcrest import equal_to, only_contains
 
 
 class TestQueryResults:
+    @pytest.fixture(params=['sql_select.json'])
+    def query_result_example(self, test_queries_path, request):
+        with open(path.join(test_queries_path, request.param),
+                  'r') as json_results:
+            return json.load(json_results)
+
     @pytest.fixture()
-    def query_results(self, query_result_csv):
-        return QueryResults(query_result_csv)
+    def query_results(self, query_result_example):
+        return QueryResults(query_result_example)
 
-    def test_raw_data(self, query_results, query_result_csv):
-        assert_that(query_results.raw_data, equal_to(query_result_csv))
+    def test_describe(self, query_result_example, query_results):
+        metadata_names = [c['name'] for c in query_result_example['metadata']]
+        field_names = [f['name'] for f in query_results.describe()['fields']]
+        assert_that(field_names, contains(*metadata_names))
 
-    def test_table(self, query_results):
-        expected = ({'cool': '1', 'beans': '2'}, {'cool': '3', 'beans': '4'})
-        assert_that(list(query_results.table), only_contains(*expected))
+    def test_raw_data(self, query_results, query_result_example):
+        assert_that(query_results.raw_data, equal_to(query_result_example))
 
-    def test_dataframe(self, query_results):
+    def test_table(self, query_result_example, query_results):
+        metadata_names = [c['name'] for c in query_result_example['metadata']]
+        for row in query_results.table:
+            assert_that(row.keys(), contains(*metadata_names))
+            assert_that(row.values(),
+                        contains(*(row[f] for f in metadata_names)))
+        assert_that(query_results.table,
+                    has_length(
+                        len(query_result_example['results']['bindings'])))
+
+    @pytest.mark.parametrize('query_result_example', [
+        'sparql_ask.json',
+        'sparql_construct.json',
+        'sparql_construct_mixed_types.json',
+        'sparql_describe.json',
+        'sparql_select.json',
+        'sparql_select_hof.json',
+        'sql_select.json',
+        'sql_select2.json'
+    ], indirect=True)
+    def test_table_parameterized(self, query_result_example, query_results):
+        if 'results' in query_result_example:
+            assert_that(query_results.table,
+                        has_length(len(
+                            query_result_example['results']['bindings'])))
+        else:
+            assert_that(query_results.table[0],
+                        has_key('boolean'))
+            assert_that(query_results.table, has_length(1))
+
+    def test_dataframe(self, query_result_example, query_results):
+        metadata_names = [c['name'] for c in query_result_example['metadata']]
         df = query_results.dataframe
-        assert_that(df.shape, equal_to((2, 2)))
-        # TODO More comprehensive assertions
+        assert_that(df['st.station_id'].dtype, equal_to('int64'))
+        assert_that(df['st.name'].dtype, equal_to('object'))
+        assert_that(df['st.lat'].dtype, equal_to('float64'))
+        assert_that(df['st.datetime'].dtype, equal_to('datetime64[ns]'))
+        assert_that(df.shape,
+                    equal_to((len(query_result_example['results']['bindings']),
+                              len(metadata_names))))
 
-    def test_str(self, query_results, query_result_csv):
-        assert_that(str(query_results), equal_to(query_result_csv))
+    def test_str(self, query_results, query_result_example):
+        assert_that(str(query_results), equal_to(str(query_result_example)))

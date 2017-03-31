@@ -1,0 +1,512 @@
+{
+"query_text":"CONSTRUCT {\n    ?subject ?predicate ?object .\n}\nWHERE {\n  ?subject ?predicate ?object .\n\n  # only show your data (no metadata)\n  FILTER(STRSTARTS(STR(?predicate), \"http://data.world/\"))\n}\nLIMIT 100",
+"query_lang":"SPARQL",
+
+  "head": {
+    "vars": [ "subject" , "predicate" , "object" , "context" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#travel" } ,
+        "object": { "type": "literal" , "value": "no" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#boolean" , "value": "true" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize_raw" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#title" } ,
+        "object": { "type": "literal" , "value": "IrishHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 28" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "University of Notre Dame" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length_raw" } ,
+        "object": { "type": "literal" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url_raw" } ,
+        "object": { "type": "literal" , "value": "http://irishhacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year_raw" } ,
+        "object": { "type": "literal" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#gYear" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#startDate" } ,
+        "object": { "type": "literal" , "value": "September 26" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "South Bend, IN, United States" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url" } ,
+        "object": { "type": "uri" , "value": "http://irishhacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0912" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#size" } ,
+        "object": { "type": "literal" , "value": "unknown" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL" } ,
+        "object": { "type": "uri" , "value": "https://twitter.com/mhacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://www.facebook.com/MHacksHackathon" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#googlePlusURL" } ,
+        "object": { "type": "literal" , "value": "https://plus.google.com/115874279567400942805/videos" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize_raw" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#size" } ,
+        "object": { "type": "literal" , "value": "1000" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#boolean" , "value": "true" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length_raw" } ,
+        "object": { "type": "literal" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#title" } ,
+        "object": { "type": "literal" , "value": "MHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "Ann Arbor, MI, United States" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://twitter.com/mhacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url" } ,
+        "object": { "type": "uri" , "value": "http://mhacks.org/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL" } ,
+        "object": { "type": "uri" , "value": "https://www.facebook.com/MHacksHackathon" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 7" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#travel" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#startDate" } ,
+        "object": { "type": "literal" , "value": "September 5" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url_raw" } ,
+        "object": { "type": "literal" , "value": "http://mhacks.org/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year_raw" } ,
+        "object": { "type": "literal" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "University of Michigan" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/091" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#gYear" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#boolean" , "value": "true" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 21" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year_raw" } ,
+        "object": { "type": "literal" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL" } ,
+        "object": { "type": "uri" , "value": "https://twitter.com/unhackathon" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#travel" } ,
+        "object": { "type": "literal" , "value": "no" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#title" } ,
+        "object": { "type": "literal" , "value": "Unhackathon" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url" } ,
+        "object": { "type": "uri" , "value": "http://www.unhackathon.org/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "Stony Brook, NY, United States" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://twitter.com/unhackathon" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url_raw" } ,
+        "object": { "type": "literal" , "value": "http://www.unhackathon.org/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#startDate" } ,
+        "object": { "type": "literal" , "value": "September 20" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "Stony Brook University" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize_raw" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#size" } ,
+        "object": { "type": "literal" , "value": "unknown" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#gYear" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0910" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length_raw" } ,
+        "object": { "type": "literal" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0913" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "24" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0913" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "BattleHack (PayPal)" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0913" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0913" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 28" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0913" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "Mexico City, Mexico" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "Ithaca, NY, United States" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize_raw" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#title" } ,
+        "object": { "type": "literal" , "value": "BigRed//Hacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL" } ,
+        "object": { "type": "uri" , "value": "https://twitter.com/BigRedHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url_raw" } ,
+        "object": { "type": "literal" , "value": "http://www.bigredhacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#travel" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "Cornell University" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 28" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://twitter.com/BigRedHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#startDate" } ,
+        "object": { "type": "literal" , "value": "September 26" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://www.facebook.com/bigredhacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length_raw" } ,
+        "object": { "type": "literal" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL" } ,
+        "object": { "type": "uri" , "value": "https://www.facebook.com/bigredhacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#gYear" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url" } ,
+        "object": { "type": "uri" , "value": "http://www.bigredhacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#size" } ,
+        "object": { "type": "literal" , "value": "unknown" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#boolean" , "value": "true" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/0911" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year_raw" } ,
+        "object": { "type": "literal" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year_raw" } ,
+        "object": { "type": "literal" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#boolean" , "value": "true" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#host" } ,
+        "object": { "type": "literal" , "value": "Johns Hopkins University" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url_raw" } ,
+        "object": { "type": "literal" , "value": "http://hophacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#prize_raw" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#endDate" } ,
+        "object": { "type": "literal" , "value": "September 7" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://twitter.com/HopHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length_raw" } ,
+        "object": { "type": "literal" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL_raw" } ,
+        "object": { "type": "literal" , "value": "https://www.facebook.com/HopHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#length" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "value": "36" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#city" } ,
+        "object": { "type": "literal" , "value": "Baltimore, MD, United States" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#facebookURL" } ,
+        "object": { "type": "uri" , "value": "https://www.facebook.com/HopHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#url" } ,
+        "object": { "type": "uri" , "value": "http://hophacks.com/" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#highSchoolers" } ,
+        "object": { "type": "literal" , "value": "yes" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#size" } ,
+        "object": { "type": "literal" , "value": "unknown" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#year" } ,
+        "object": { "type": "literal" , "datatype": "http://www.w3.org/2001/XMLSchema#gYear" , "value": "2014" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#startDate" } ,
+        "object": { "type": "literal" , "value": "September 5" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#title" } ,
+        "object": { "type": "literal" , "value": "HopHacks" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#travel" } ,
+        "object": { "type": "literal" , "value": "no" }
+      } ,
+      {
+        "subject": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/090" } ,
+        "predicate": { "type": "uri" , "value": "http://data.world/rflprr/demo-dataset/09.json/09#twitterURL" } ,
+        "object": { "type": "uri" , "value": "https://twitter.com/HopHacks" }
+      }
+    ]
+  }
+}
