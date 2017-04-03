@@ -1,9 +1,10 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      - image: dataworld/pyenv-tox
 
-    working_directory: ~/data.world-py
+    working_directory: /root/data.world-py
 
     environment:
       PRERELEASE_BRANCH: prerelease
@@ -14,37 +15,19 @@ jobs:
 
       - restore_cache:
           keys:
-            - main_cache
-            - pyenv-{{ checksum "tox.ini" }}
+            - tox_cache-{{ checksum "tox.ini" }}
 
       - run:
-          name: Install pyenv versions
+          name: pyenv setup
           command: |
-            pyenv versions
-            pyenv install --list
-            pyenv install --skip-existing 2.7.13
-            pyenv install --skip-existing 3.4.5
-            pyenv install --skip-existing 3.5.2
-            pyenv install --skip-existing 3.6.0
-
-      - save_cache:
-          key: pyenv-{{ checksum "tox.ini" }}
-          paths: /opt/circleci/.pyenv
-
-      - run:
-          name: Install python dependencies
-          command: |
-            pyenv global 2.7.13 3.4.5 3.5.2 3.6.0
-            pip install tox twine
-
-      - run: env
+            pyenv local 2.7.13 3.4.5 3.5.2 3.6.0
 
       - run:
           name: tox
           command: tox
 
       - save_cache:
-          key: main_cache
+          key: tox_cache-{{ checksum "tox.ini" }}
           paths:
             - .eggs
             - .tox
@@ -63,4 +46,3 @@ jobs:
               python setup.py sdist
               twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
             fi
-
