@@ -1,23 +1,22 @@
-"""
-data.world-py
-Copyright 2017 data.world, Inc.
+# data.world-py
+# Copyright 2017 data.world, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the
+# License.
+#
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+#
+# This product includes software developed at
+# data.world, Inc.(http://data.world/).
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the
-License.
-
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied. See the License for the specific language governing
-permissions and limitations under the License.
-
-This product includes software developed at
-data.world, Inc.(http://data.world/).
-"""
 from __future__ import absolute_import, division
 
 import glob
@@ -118,6 +117,11 @@ class RestApiClient(object):
         files : dict, optional
             File names and source URLs
 
+        Returns
+        -------
+        str
+            Newly created dataset key
+
         Raises
         ------
         RestApiException
@@ -138,7 +142,10 @@ class RestApiClient(object):
             kwargs)
 
         try:
-            self._datasets_api.create_dataset(owner_id, request)
+            (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
+                owner_id, request, _return_http_data_only=False)
+            if 'Location' in headers:
+                return headers['Location']
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -496,7 +503,7 @@ class RestApiError(Exception):
         """
         try:
             return json.loads(self.body)
-        except (json.JSONDecodeError, TypeError):
+        except (ValueError, TypeError):
             return None
 
     def __str__(self):

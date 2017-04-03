@@ -6,11 +6,14 @@ A python library for working with data.world datasets
 
 ### Install
 
-This library hasn't yet been added to a central package repository -
-you can install it using `pip` directly from this github repo:
+You can install it using `pip` directly from PyPI
 
+```bash
+pip install datadotworld
 ```
-pip install git+git://github.com/datadotworld/data.world-py.git
+Optionally, you can install the library including pandas support
+```bash
+pip install datadotworld[PANDAS]
 ```
 
 ### Configure

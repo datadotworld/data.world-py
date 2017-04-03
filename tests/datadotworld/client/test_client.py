@@ -1,23 +1,22 @@
-"""
-data.world-py
-Copyright 2017 data.world, Inc.
+# data.world-py
+# Copyright 2017 data.world, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the
+# License.
+#
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+#
+# This product includes software developed at
+# data.world, Inc.(http://data.world/).
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the
-License.
-
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied. See the License for the specific language governing
-permissions and limitations under the License.
-
-This product includes software developed at
-data.world, Inc.(http://data.world/).
-"""
 from __future__ import absolute_import
 
 import os
@@ -39,6 +38,8 @@ class TestApiClient:
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
             api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
+            api.create_dataset_with_http_info = lambda o, b, **kwargs: (
+                {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
             return api
 
     @pytest.fixture()
@@ -59,14 +60,12 @@ class TestApiClient:
         assert_that(dataset, has_entries(
             {'owner': equal_to('agentid'), 'id': equal_to('datasetid')}))
 
-    def test_create_dataset(self, api_client, datasets_api):
+    def test_create_dataset(self, api_client):
         create_request = {'title': 'Dataset', 'visibility': 'OPEN',
                           'license': 'Public Domain'}
-        api_client.create_dataset('agentid', **create_request)
-        assert_that(datasets_api.create_dataset,
-                    called().times(1).with_args(equal_to('agentid'),
-                                                has_properties(
-                                                    create_request)))
+        dataset_key = api_client.create_dataset('agentid', **create_request)
+        assert_that(dataset_key,
+                    equal_to('https://data.world/agentid/datasetid'))
 
     def test_update_dataset(self, api_client, datasets_api, dataset_key):
         patch_request = {'tags': ['tag1', 'tag2']}
@@ -176,7 +175,6 @@ class TestApiClient:
 
     def test_download_datapackage_existing_dest_dir(
             self, config, api_client, dataset_key):
-
         os.mkdir(config.cache_dir)
         assert_that(
             calling(api_client.download_datapackage).with_args(

@@ -1,27 +1,28 @@
-"""
-data.world-py
-Copyright 2017 data.world, Inc.
+# data.world-py
+# Copyright 2017 data.world, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the
+# License.
+#
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+#
+# This product includes software developed at
+# data.world, Inc.(http://data.world/).
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the
-License.
-
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied. See the License for the specific language governing
-permissions and limitations under the License.
-
-This product includes software developed at
-data.world, Inc.(http://data.world/).
-"""
 from __future__ import absolute_import
 
 import json
+import os
 import shutil
+import warnings
 from os import path
 
 import pytest
@@ -29,7 +30,7 @@ import responses
 from doublex import assert_that, Spy, when, called, never, Stub
 from hamcrest import equal_to, calling, raises, has_length, anything, is_
 
-from datadotworld import datadotworld
+import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.datadotworld import DataDotWorld
 
@@ -61,8 +62,13 @@ class TestDataDotWorld:
                     dest_dir)
                 return path.join(dest_dir, 'datapackage.json')
 
+            def get_dataset(_):
+                return {'updated': '2016-11-07T00:00:00.000Z'}
+
             client.download_datapackage(anything(), anything()).delegates(
                 download_datapackage)
+            client.get_dataset(anything()).delegates(
+                get_dataset)
             return client
 
     @pytest.fixture()
@@ -122,7 +128,20 @@ class TestDataDotWorld:
 
     @pytest.mark.usefixtures('existing_dataset')
     def test_load_dataset_existing(self, api_client, dw, dataset_key):
-        dataset = dw.load_dataset(dataset_key)
+        with warnings.catch_warnings(record=True) as w:
+            dataset = dw.load_dataset(dataset_key)
+            assert_that(w, has_length(0))
+        assert_that(api_client.download_datapackage, never(called()))
+        assert_that(dataset.raw_data, has_length(3))
+
+    @pytest.mark.usefixtures('existing_dataset')
+    def test_load_dataset_existing_expired(self, monkeypatch, api_client, dw,
+                                           dataset_key):
+        monkeypatch.setattr(os.path, 'getmtime', lambda _: 1468195199)
+        with warnings.catch_warnings(record=True) as w:
+            dataset = dw.load_dataset(dataset_key)
+            assert_that(w, has_length(1))
+            assert_that(w[-1].category, equal_to(UserWarning))
 
         assert_that(api_client.download_datapackage, never(called()))
         assert_that(dataset.raw_data, has_length(3))
@@ -153,7 +172,7 @@ class TestDataDotWorld:
 
 @pytest.fixture()
 def dw_instances(monkeypatch):
-    from datadotworld import datadotworld
+    import datadotworld
     with Spy(DataDotWorld) as dw, Spy(DataDotWorld) as dw_alternative:
         dw.api_client = dw_alternative.api_client = Stub(RestApiClient)
         monkeypatch.setattr(

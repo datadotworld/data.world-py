@@ -1,23 +1,22 @@
-"""
-data.world-py
-Copyright 2017 data.world, Inc.
+# data.world-py
+# Copyright 2017 data.world, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the
+# License.
+#
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+#
+# This product includes software developed at
+# data.world, Inc.(http://data.world/).
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the
-License.
-
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied. See the License for the specific language governing
-permissions and limitations under the License.
-
-This product includes software developed at
-data.world, Inc.(http://data.world/).
-"""
 import configparser
 import os
 import re
@@ -61,8 +60,7 @@ class Config(object):
             if self.__migrate_invalid_defaults(self._config_parser) > 0:
                 self.save()
         elif path.isfile(legacy_file_path):
-            self._config_parser = self.__migrate_config(legacy_file_path,
-                                                        self._config_file_path)
+            self._config_parser = self.__migrate_config(legacy_file_path)
             self.save()
 
         self._profile = profile
@@ -105,7 +103,7 @@ class Config(object):
                     self._profile))
 
     @staticmethod
-    def __migrate_config(legacy_file_path, target_file_path):
+    def __migrate_config(legacy_file_path):
         config_parser = configparser.ConfigParser()
 
         with open(legacy_file_path, 'r') as legacy:
@@ -114,7 +112,8 @@ class Config(object):
                 [regex.match(line.strip()).group(1) for line in legacy if
                  regex.match(line)]),
                 None)
-            config_parser[configparser.DEFAULTSECT] = {'auth_token': token}
+            if token is not None:
+                config_parser[configparser.DEFAULTSECT] = {'auth_token': token}
 
         # Will leave legacy in case R SDK may still need it
         # os.remove(legacy_file_path)
@@ -132,7 +131,7 @@ class Config(object):
         for section in config_parser.sections():
             # Doesn't include DEFAULTSECT, but checking nonetheless
             if (section != configparser.DEFAULTSECT and
-                        section.lower() == configparser.DEFAULTSECT.lower()):
+                    section.lower() == configparser.DEFAULTSECT.lower()):
                 invalid_defaults.append(section)
 
         if len(invalid_defaults) == 1:

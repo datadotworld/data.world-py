@@ -1,3 +1,22 @@
+# data.world-py
+# Copyright 2017 data.world, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the
+# License.
+#
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+#
+# This product includes software developed at
+# data.world, Inc.(http://data.world/).
+
 from collections import OrderedDict, Counter
 
 from collections import defaultdict
@@ -112,8 +131,8 @@ def infer_table_schema(sparql_results_json):
         A schema descriptor for the inferred schema
     """
     if ('results' in sparql_results_json and
-                'bindings' in sparql_results_json['results'] and
-                len(sparql_results_json['results']['bindings']) > 0):
+            'bindings' in sparql_results_json['results'] and
+            len(sparql_results_json['results']['bindings']) > 0):
 
         # SQL results include metadata, SPARQL results don't
         result_metadata = sparql_results_json.get('metadata', [])
@@ -182,8 +201,8 @@ def infer_table_schema_type_from_rdf_term(rdf_term):
         A Table Schema field type
     """
     if (rdf_term is not None and
-                rdf_term['type'] == 'literal' and
-                'datatype' in rdf_term):
+            rdf_term['type'] == 'literal' and
+            'datatype' in rdf_term):
         return _RDF_LITERAL_TYPE_MAPPING.get(rdf_term['datatype'],
                                              'string')
     else:
@@ -266,7 +285,7 @@ def _verify_unique_names(result_vars, metadata_names):
                       in Counter(result_vars).items()
                       if count > 1]
     if (metadata_name_duplicates != [] or
-                var_duplicates != []):
+            var_duplicates != []):
         raise ValueError('Ambiguous query results. '
                          'One or more columns appear multiple times: '
                          '{}'.format(metadata_name_duplicates or
