@@ -76,8 +76,6 @@ class FileSummaryResponse(object):
             raise ValueError("Invalid value for `name`, length must be less than or equal to `128`")
         if name is not None and len(name) < 1:
             raise ValueError("Invalid value for `name`, length must be greater than or equal to `1`")
-        if name is not None and not re.search('^[^/]+$', name):
-            raise ValueError("Invalid value for `name`, must be a follow pattern or equal to `/^[^/]+$/`")
 
         self._name = name
 
