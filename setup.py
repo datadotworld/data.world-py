@@ -41,7 +41,7 @@ setup(
     name='datadotworld',
     version=find_version('datadotworld', '__init__.py'),
     description='Python library for data.world',
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     url='http://github.com/datadotworld/data.world-py',
     author='data.world',
     author_email='help@data.world',

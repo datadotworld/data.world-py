@@ -29,7 +29,7 @@ import weakref
 
 from datadotworld.datadotworld import DataDotWorld
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 # Convenience top-level functions
 
