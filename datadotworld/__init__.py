@@ -27,9 +27,10 @@ from __future__ import absolute_import
 
 import weakref
 
+from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.datadotworld import DataDotWorld
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 # Convenience top-level functions
 
@@ -39,7 +40,10 @@ __instances = weakref.WeakValueDictionary()
 def _get_instance(profile):
     instance = __instances.get(profile)
     if instance is None:
-        instance = DataDotWorld(profile=profile)
+        config_param = (ChainedConfig()
+                        if profile == 'default'
+                        else FileConfig(profile=profile))
+        instance = DataDotWorld(config=config_param)
         __instances[profile] = instance
     return instance
 

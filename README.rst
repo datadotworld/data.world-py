@@ -2,7 +2,12 @@
 data.world-py
 =============
 
-A python library for working with data.world datasets
+A python library for working with data.world datasets.
+
+This library makes it easy for data.world users to pull and work with data stored on data.world.
+Additionally, the library provides convenient wrappers for data.world APIs, allowing users to create and update
+datasets, add and modify files, etc, and possibly implement entire apps on top of data.world.
+
 
 Quick start
 ===========
@@ -21,12 +26,20 @@ Optionally, you can install the library including pandas support::
 Configure
 ---------
 
-Before you start using the library, you must first set it up with your access token.
-To do that, run the following command::
+This library requires a data.world API authentication token to work.
+
+Your authentication token can be obtained on data.world under
+`Settings > Advanced <https://data.world/settings/advanced>`_
+
+To configure the library, run the following command::
 
     dw configure
 
-Your API token can be obtained on data.world under `Settings > Advanced <https://data.world/settings/advanced>`_
+
+Alternatively, tokens can be provided via the ``DW_AUTH_TOKEN`` environment variable.
+On MacOS or Unix machines, run (replacing ``<YOUR_TOKEN>>`` below with the token obtained earlier)::
+
+    export DW_AUTH_TOKEN=<YOUR_TOKEN>
 
 Load a dataset
 --------------
@@ -165,17 +178,20 @@ For example:
                 {'name': 'PointsPerGame', 'type': 'number'},
                 {'name': 'AssistsPerGame', 'type': 'number'}]}
 
-Create and update datasets
---------------------------
+API Wrappers
+------------
 
-To create and update datasets, start by calling the ``api_client()`` function.
+For a complete list of available API operations, see
+`official documentation <https://docs.data.world/documentation/api/>`_.
+
+Python wrappers are implemented by the ``ApiClient`` class. To obtain an instance, simply call ``api_client()``.
 For example:
 
 .. code-block:: python
 
     client = dw.api_client()
 
-The client supports various methods for creating and updating datasets and dataset files:
+The client currently implements the following functions:
 
 * ``create_dataset``
 * ``update_dataset``
@@ -186,5 +202,5 @@ The client supports various methods for creating and updating datasets and datas
 * ``upload_files``
 * ``delete_files``
 
-You can find more about those functions using ``help()``
+You can find more about those functions using ``help(client)``
 

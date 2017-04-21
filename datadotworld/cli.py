@@ -21,7 +21,7 @@ from __future__ import absolute_import
 
 import click
 
-from datadotworld.config import Config
+from datadotworld.config import FileConfig
 
 
 @click.group()
@@ -50,7 +50,7 @@ def cli(ctx, profile):
 def configure(obj, token):
     """Use this command to configure API tokens
     """
-    config = obj.get('config') or Config(obj['profile'])
+    config = obj.get('config') or FileConfig(obj['profile'])
     config.auth_token = token
     config.save()
 

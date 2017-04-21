@@ -26,7 +26,7 @@ from click.testing import CliRunner
 from doublex import Spy, assert_that, called, property_set
 
 from datadotworld import cli
-from datadotworld.config import Config
+from datadotworld.config import FileConfig
 
 
 @pytest.mark.skipif(
@@ -34,7 +34,7 @@ from datadotworld.config import Config
     reason="http://click.pocoo.org/5/python3/#python-3-surrogate-handling")
 def test_configure():
     runner = CliRunner()
-    config = Spy(Config)
+    config = Spy(FileConfig)
 
     runner.invoke(cli.configure, input='token\n', obj={'config': config})
 
