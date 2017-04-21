@@ -26,11 +26,11 @@ from os import path
 import six
 
 
-class Config(object):
-    """Configuration profile
+class DefaultConfig(object):
+    """Base class for configuration objects
 
-    This class represents the current configuration of a profile (account) for
-    accessing data.world.
+    This class defines default values and establishes the contract for
+    sub-classes.
 
     Attributes
     ----------
@@ -42,7 +42,58 @@ class Config(object):
         Path of dataset cache directory, where downloaded datasets are saved.
     """
 
+    def __init__(self):
+        self._auth_token = None
+        self._tmp_dir = path.expanduser(tempfile.gettempdir())
+        self._cache_dir = path.expanduser('~/.dw/cache')
+
+    @property
+    def auth_token(self):
+        return self._auth_token
+
+    @property
+    def cache_dir(self):
+        return self._cache_dir
+
+    @property
+    def tmp_dir(self):
+        return self._tmp_dir
+
+
+class EnvConfig(DefaultConfig):
+    """Environment-based configuration
+
+    This class will obtain configuration parameters from environment variables:
+    - DW_AUTH_TOKEN
+    - DW_CACHE_DIR
+    - DW_TMP_DIR
+    """
+
+    def __init__(self):
+        super(EnvConfig, self).__init__()
+        self._auth_token = os.environ.get('DW_AUTH_TOKEN')
+        self._cache_dir = os.environ.get('DW_CACHE_DIR')
+        self._tmp_dir = os.environ.get('DW_TMP_DIR')
+
+
+class FileConfig(DefaultConfig):
+    """File-based configuration
+
+    This class allows configuration to be saved to and obtained from
+    data.world's configuration file.
+
+    Multiple configurations profiles can be saved in the same file and are
+    identified by their profile name.
+
+    Parameters
+    ----------
+    profile: str
+        Name of configuration profile.
+    """
+
     def __init__(self, profile='default', **kwargs):
+        super(FileConfig, self).__init__()
+
         # Overrides, for testing
         self._config_file_path = path.expanduser(
             kwargs.get('config_file_path', '~/.dw/config'))
@@ -68,8 +119,6 @@ class Config(object):
                          if profile.lower() != configparser.DEFAULTSECT.lower()
                          else configparser.DEFAULTSECT)
 
-        self.tmp_dir = path.expanduser(tempfile.gettempdir())
-        self.cache_dir = path.expanduser('~/.dw/cache')
         if not path.isdir(path.dirname(self.cache_dir)):
             os.makedirs(path.dirname(self.cache_dir))
 
@@ -131,7 +180,7 @@ class Config(object):
         for section in config_parser.sections():
             # Doesn't include DEFAULTSECT, but checking nonetheless
             if (section != configparser.DEFAULTSECT and
-                    section.lower() == configparser.DEFAULTSECT.lower()):
+                        section.lower() == configparser.DEFAULTSECT.lower()):
                 invalid_defaults.append(section)
 
         if len(invalid_defaults) == 1:
@@ -144,3 +193,44 @@ class Config(object):
             config_parser.remove_section(section)
 
         return len(invalid_defaults)
+
+
+class ChainedConfig(DefaultConfig):
+    """Checks for env config first, then file-based config
+    """
+
+    def __init__(self, **kwargs):
+        # Overrides (for testing)
+        self._config_chain = kwargs.get('config_chain',
+                                        [EnvConfig(), FileConfig()])
+
+    def __getattribute__(self, item):
+        """Delegates requests to config objects in the chain
+        """
+        return object.__getattribute__(self, '_first_not_none')(
+            object.__getattribute__(self, '_config_chain'),
+            lambda c: c.__getattribute__(item))
+
+    @staticmethod
+    def _first_not_none(seq, supplier_func):
+        """Applies supplier_func to each element in seq, returns 1st not None
+
+        Parameters
+        ----------
+        seq: iterable
+            Sequence of object
+        supplier_func: function
+            Function that extracts the desired value from elements in seq
+
+        Returns
+        -------
+        object
+            The desired value, or None if value is not provided
+            by elemens in seq
+        """
+        for i in seq:
+            obj = supplier_func(i)
+            if obj is not None:
+                return obj
+
+        return None

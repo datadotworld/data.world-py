@@ -27,7 +27,7 @@ from warnings import warn
 import requests
 
 from datadotworld.client.api import RestApiClient, RestApiError
-from datadotworld.config import Config
+from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
@@ -51,13 +51,12 @@ class DataDotWorld(object):
         REST API client object
     """
 
-    def __init__(self, profile='default', **kwargs):
-        # Overrides, for testing
-        self._config = kwargs.get('config', Config(profile))
-
+    def __init__(self, config=None):
         self._protocol = 'https'
         self._query_host = 'query.data.world'
         self._download_host = 'download.data.world'
+
+        self._config = config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
     def query(self, dataset_key, query, query_type="sql"):

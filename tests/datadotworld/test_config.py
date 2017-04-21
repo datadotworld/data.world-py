@@ -21,36 +21,72 @@ from __future__ import absolute_import
 
 import configparser
 import os
+import tempfile
 from os import path
 
 import pytest
 from doublex import assert_that
-from hamcrest import equal_to, is_not, is_, calling, raises, has_length
+from hamcrest import equal_to, is_not, is_, calling, raises, has_length, none
 from six import StringIO
 
-from datadotworld.config import Config
+from datadotworld.config import FileConfig, EnvConfig, DefaultConfig, \
+    ChainedConfig
 
 
-class TestConfig:
+# Shared fixtures
+
+@pytest.fixture()
+def config_directory(tmpdir):
+    return os.makedirs(str(tmpdir.join('.dw')))
+
+
+@pytest.fixture()
+def config_file_path(tmpdir):
+    return str(tmpdir.join('.dw/config'))
+
+
+@pytest.fixture()
+def default_config_file(config_file_path):
+    config_parser = configparser.ConfigParser()
+    config_parser.set(configparser.DEFAULTSECT, 'auth_token', 'file_token')
+    config_parser.write(open(config_file_path, 'w'))
+
+
+# Tests
+
+class TestDefaultConfig:
+    def test_auth_token(self):
+        assert_that(DefaultConfig().auth_token, none())
+
+    def test_cache_dir(self):
+        assert_that(DefaultConfig().cache_dir,
+                    equal_to(path.expanduser('~/.dw/cache')))
+
+    def test_tmp_dir(self):
+        assert_that(DefaultConfig().tmp_dir,
+                    equal_to(path.expanduser(tempfile.gettempdir())))
+
+
+class TestEnvConfig:
+    def test_auth_token(self, monkeypatch):
+        monkeypatch.setattr(os, 'environ', {'DW_AUTH_TOKEN': 'env_token'})
+        assert_that(EnvConfig().auth_token, equal_to('env_token'))
+
+    def test_cache_dir(self, monkeypatch):
+        monkeypatch.setattr(os, 'environ', {'DW_CACHE_DIR': 'env_cache_dir'})
+        assert_that(EnvConfig().cache_dir, equal_to('env_cache_dir'))
+
+    def test_tmp_dir(self, monkeypatch):
+        monkeypatch.setattr(os, 'environ', {'DW_TMP_DIR': 'env_tmp_dir'})
+        assert_that(EnvConfig().tmp_dir, equal_to('env_tmp_dir'))
+
+
+class TestFileConfig:
     # Fixtures
-
-    @pytest.fixture()
-    def config_file_path(self, tmpdir):
-        return str(tmpdir.join('.dw/config'))
 
     @pytest.fixture()
     def legacy_file_path(self, tmpdir):
         return str(tmpdir.join('.data.world'))
-
-    @pytest.fixture()
-    def config_directory(self, tmpdir):
-        return os.makedirs(str(tmpdir.join('.dw')))
-
-    @pytest.fixture()
-    def default_config_file(self, config_file_path):
-        config_parser = configparser.ConfigParser()
-        config_parser.set(configparser.DEFAULTSECT, 'auth_token', 'abcd')
-        config_parser.write(open(config_file_path, 'w'))
 
     @pytest.fixture()
     def default_invalid_config_file(self, config_file_path):
@@ -80,61 +116,80 @@ class TestConfig:
 
     @pytest.mark.usefixtures('config_directory', 'default_config_file')
     def test_auth_token(self, config_file_path):
-        config = Config(config_file_path=config_file_path)
-        assert_that(config.auth_token, equal_to('abcd'))
+        config = FileConfig(config_file_path=config_file_path)
+        assert_that(config.auth_token, equal_to('file_token'))
 
     @pytest.mark.usefixtures('config_directory', 'alternative_config_file')
     def test_alternative_token(self, config_file_path):
-        config = Config(profile='alternative',
-                        config_file_path=config_file_path)
+        config = FileConfig(profile='alternative',
+                            config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('alternativeabcd'))
 
     @pytest.mark.usefixtures('legacy_config_file')
     def test_legacy_token(self, legacy_file_path, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))
-        config = Config(legacy_file_path=legacy_file_path,
-                        config_file_path=config_file_path)
+        config = FileConfig(legacy_file_path=legacy_file_path,
+                            config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('legacyabcd'))
         assert_that(path.isfile(config_file_path), is_(True))
 
     @pytest.mark.usefixtures('config_directory', 'default_invalid_config_file')
     def test_invalid_config_section(self, config_file_path):
-        config = Config(config_file_path=config_file_path)
+        config = FileConfig(config_file_path=config_file_path)
         assert_that(config.auth_token, equal_to('lower_case_default'))
         assert_that(config._config_parser.sections(), has_length(0))
 
     def test_missing_file(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))
-        config = Config(config_file_path=config_file_path)
+        config = FileConfig(config_file_path=config_file_path)
         assert_that(calling(lambda: config.auth_token), raises(RuntimeError))
 
     @pytest.mark.usefixtures('unsuitable_legacy_config_file')
     def test_missing_file_unsuitable_legacy_file(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))
-        config = Config(config_file_path=config_file_path)
+        config = FileConfig(config_file_path=config_file_path)
         assert_that(calling(lambda: config.auth_token), raises(RuntimeError))
 
     @pytest.mark.usefixtures('config_directory', 'default_config_file')
     def test_missing_token(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(True))
-        config = Config(profile='missingprofile',
-                        config_file_path=config_file_path)
+        config = FileConfig(profile='missingprofile',
+                            config_file_path=config_file_path)
         assert_that(calling(lambda: config.auth_token), raises(RuntimeError))
 
     def test_save(self, config_file_path):
         assert_that(path.isfile(config_file_path), is_(False))
-        config = Config(config_file_path=config_file_path)
+        config = FileConfig(config_file_path=config_file_path)
         config.auth_token = 'brandnewtoken'
         config.save()
-        config_reload = Config(config_file_path=config_file_path)
+        config_reload = FileConfig(config_file_path=config_file_path)
         assert_that(path.isfile(config_file_path), is_(True))
         assert_that(config_reload.auth_token, equal_to(config.auth_token))
 
     @pytest.mark.usefixtures('config_directory', 'default_config_file')
     def test_save_overwrite(self, config_file_path):
-        config = Config(config_file_path=config_file_path)
+        config = FileConfig(config_file_path=config_file_path)
         assert_that(config_file_path, is_not(equal_to('newtoken')))
         config.auth_token = 'newtoken'
         config.save()
-        config_reloaded = Config(config_file_path=config_file_path)
+        config_reloaded = FileConfig(config_file_path=config_file_path)
         assert_that(config_reloaded.auth_token, equal_to('newtoken'))
+
+
+class TestChainedConfig:
+    @pytest.fixture()
+    def config_chain(self, monkeypatch, config_file_path):
+        monkeypatch.setattr(os, 'environ', {'DW_CACHE_DIR': 'env_cache_dir'})
+        chain = [EnvConfig(), FileConfig(config_file_path=config_file_path)]
+        return ChainedConfig(config_chain=chain)
+
+    @pytest.mark.usefixtures('config_directory', 'default_config_file')
+    def test_auth_token(self, config_chain):
+        assert_that(config_chain.auth_token, equal_to('file_token'))
+
+    def test_cache_dir(self, config_chain):
+        assert_that(config_chain.cache_dir, equal_to('env_cache_dir'))
+
+    def test_tmp_dir(self, config_chain):
+        assert_that(config_chain.tmp_dir,
+                    equal_to(path.expanduser(tempfile.gettempdir())))

@@ -27,7 +27,7 @@ import pytest
 from doublex import Stub, assert_that
 from hamcrest import has_entries, equal_to
 
-from datadotworld.config import Config
+from datadotworld.config import FileConfig
 
 
 class Helpers(object):
@@ -65,7 +65,7 @@ def dataset_key(request):
 
 @pytest.fixture()
 def config(tmpdir):
-    with Stub(Config) as cfg:
+    with Stub() as cfg:
         cfg.auth_token = 'token'
         cfg.tmp_dir = path.join(str(tmpdir), 'tmp')
         if not path.isdir(path.dirname(cfg.tmp_dir)):
