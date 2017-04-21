@@ -26,15 +26,17 @@ Optionally, you can install the library including pandas support::
 Configure
 ---------
 
-This library requires a data.world access token to work.
-Your access token can be obtained on data.world under `Settings > Advanced <https://data.world/settings/advanced>`_
+This library requires a data.world API authentication token to work.
+
+Your authentication token can be obtained on data.world under
+`Settings > Advanced <https://data.world/settings/advanced>`_
 
 To configure the library, run the following command::
 
     dw configure
 
 
-Alternatively, access tokens can be provided via the ``DW_AUTH_TOKEN`` environment variable.
+Alternatively, tokens can be provided via the ``DW_AUTH_TOKEN`` environment variable.
 On MacOS or Unix machines, run (replacing ``<YOUR_TOKEN>>`` below with the token obtained earlier)::
 
     export DW_AUTH_TOKEN=<YOUR_TOKEN>
