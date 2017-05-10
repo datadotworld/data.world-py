@@ -23,15 +23,16 @@ import shutil
 from datetime import datetime
 from os import path
 from warnings import warn
+import numbers
 
 import requests
+import types
 
 from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
-
 
 class DataDotWorld(object):
     """Facade with main features of datadotworld package
@@ -59,7 +60,7 @@ class DataDotWorld(object):
         self._config = config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
-    def query(self, dataset_key, query, query_type="sql"):
+    def query(self, dataset_key, query, query_type="sql", parameters=None):
         """Query an existing dataset
 
         Parameters
@@ -70,6 +71,11 @@ class DataDotWorld(object):
             SQL or SPARQL query
         query_type : {'sql', 'sparql'}, optional
             The type of the query. Must be either 'sql' or 'sparql'.
+        parameters: query parameters, optional
+            parameters to the query - if SPARQL query, this should be a dict containing named parameters, if
+            SQL query, then this should be a list containing positional parameters.  Boolean values will be
+            converted to xsd:boolean, Integer values to xsd:integer, and other Numeric values to xsd:decimal.
+            anything else is treated as a String literal
 
         Returns
         -------
@@ -86,6 +92,14 @@ class DataDotWorld(object):
         params = {
             "query": query
         }
+        if parameters and query_type == "sparql":
+            # if SPARQL, then the parameters should be a Mapping containing named parameters
+            params["parameters"] = ",".join(["{}={}".format(k, convert_to_sparql_literal(parameters[k])) for k in parameters.keys()])
+        elif parameters and query_type == "sql":
+            # if SQL, then the parameters should be an array with positional parameters, need to unwind them to
+            # $data_world_paramN for each 0-indexed position N
+            parameters = {"$data_world_param{}".format(i): x for i, x in enumerate(parameters)}
+            params["parameters"] = ",".join(["{}={}".format(k, convert_to_sparql_literal(parameters[k])) for k in parameters.keys()])
         url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
                                              query_type, owner_id, dataset_id)
         headers = {
@@ -171,6 +185,16 @@ class DataDotWorld(object):
 
         return LocalDataset(descriptor_file)
 
+# convert a literal into the SPARQL format expected by the REST endpoint
+def convert_to_sparql_literal(value):
+    if isinstance(value, numbers.Integral):
+        return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#integer>".format(value)
+    elif isinstance(value, types.BooleanType):
+        return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#boolean>".format(value)
+    elif isinstance(value, numbers.Number):
+        return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#decimal>".format(value)
+    else:
+        return "\"{}\"".format(value)
 
 if __name__ == "__main__":
     import doctest
