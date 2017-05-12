@@ -187,10 +187,10 @@ class DataDotWorld(object):
 
 # convert a literal into the SPARQL format expected by the REST endpoint
 def convert_to_sparql_literal(value):
-    if isinstance(value, numbers.Integral):
-        return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#integer>".format(value)
-    elif isinstance(value, types.BooleanType):
+    if isinstance(value, types.BooleanType) or isinstance(value, bool):
         return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#boolean>".format(value)
+    elif isinstance(value, numbers.Integral):
+        return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#integer>".format(value)
     elif isinstance(value, numbers.Number):
         return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#decimal>".format(value)
     else:
