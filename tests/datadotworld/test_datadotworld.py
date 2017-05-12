@@ -29,7 +29,7 @@ from os import path
 import pytest
 import responses
 from doublex import assert_that, Spy, when, called, never, Stub
-from hamcrest import equal_to, calling, raises, has_length, anything, is_
+from hamcrest import equal_to, calling, raises, has_length, anything, contains_string, is_
 
 import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
@@ -117,22 +117,20 @@ class TestDataDotWorld:
 
     parameterized_queries = [
         ('sql', 'notreallysql', ["USA", 10, 100.0, False],
-         'https://query.data.world/sql/agentid/datasetid?'
-         'query=notreallysql&'
-         'parameters='
-         '%24data_world_param3%3D%22False%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E%2C'
-         '%24data_world_param2%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E%2C'
-         '%24data_world_param1%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E%2C'
-         '%24data_world_param0%3D%22USA%22'
+         [
+             '%24data_world_param3%3D%22false%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E',
+             '%24data_world_param2%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E',
+             '%24data_world_param1%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E',
+             '%24data_world_param0%3D%22USA%22'
+         ]
          ),
         ('sparql', 'notreallysparql', {'$aString': "USA", '$anInt': 10, '$aDecimal': 100.0, '$aBool': False},
-         'https://query.data.world/sparql/agentid/datasetid?'
-         'query=notreallysparql&'
-         'parameters='
-         '%24anInt%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E%2C'
-         '%24aDecimal%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E%2C'
-         '%24aString%3D%22USA%22%2C'
-         '%24aBool%3D%22False%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E'
+         [
+             '%24anInt%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E',
+             '%24aDecimal%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E',
+             '%24aString%3D%22USA%22',
+             '%24aBool%3D%22false%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E',
+         ]
          )
     ]
 
@@ -141,8 +139,9 @@ class TestDataDotWorld:
                                    dw, dataset_key, query_response_json):
         with responses.RequestsMock() as rsps:
             def request_callback(request):
-                assert_that(request.url, equal_to(expected),
-                            reason="Expected [[\n{}\n]] got [[\n{}\n]]".format(expected, request.url))
+                for value in expected:
+                    assert_that(request.url, contains_string(value),
+                                reason="Expected [[\n{}\n]] to contain [[\n{}\n]]".format(request.url, expected))
                 return(200, {}, json.dumps(query_response_json))
 
             rsps.add_callback(rsps.GET, re.compile(r'https?://query\.data\.world/.*'),
