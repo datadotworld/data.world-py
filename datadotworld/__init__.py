@@ -30,7 +30,7 @@ import weakref
 from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.datadotworld import DataDotWorld
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 # Convenience top-level functions
 
@@ -90,7 +90,8 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
                                                force_update=force_update)
 
 
-def query(dataset_key, query, query_type='sql', profile='default'):
+def query(dataset_key, query, query_type='sql', profile='default',
+          parameters=None):
     """Query an existing dataset
 
     Parameters
@@ -101,6 +102,13 @@ def query(dataset_key, query, query_type='sql', profile='default'):
         SQL or SPARQL query
     query_type : {'sql', 'sparql'}, optional
         The type of the query. Must be either 'sql' or 'sparql'.
+    parameters: query parameters, optional
+        parameters to the query - if SPARQL query, this should be a dict
+        containing named parameters, if SQL query, then this should be a
+        list containing positional parameters.  Boolean values will be
+        converted to xsd:boolean, Integer values to xsd:integer, and other
+        Numeric values to xsd:decimal. anything else is treated as a String
+        literal
     profile : str, optional
         Configuration profile (account) to use.
 
@@ -126,7 +134,8 @@ def query(dataset_key, query, query_type='sql', profile='default'):
     (8, 6)
     """
     return _get_instance(profile).query(dataset_key, query,
-                                        query_type=query_type)
+                                        query_type=query_type,
+                                        parameters=parameters)
 
 
 def api_client(profile='default'):

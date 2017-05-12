@@ -21,6 +21,7 @@ from __future__ import absolute_import
 
 import json
 import os
+import re
 import shutil
 import warnings
 from os import path
@@ -28,7 +29,7 @@ from os import path
 import pytest
 import responses
 from doublex import assert_that, Spy, when, called, never, Stub
-from hamcrest import equal_to, calling, raises, has_length, anything, is_
+from hamcrest import equal_to, calling, raises, has_length, anything, contains_string, is_
 
 import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
@@ -113,6 +114,41 @@ class TestDataDotWorld:
             assert_that(calling(dw.query).with_args(dataset_key, query,
                                                     query_type=type),
                         raises(RuntimeError))
+
+    parameterized_queries = [
+        ('sql', 'notreallysql', ["USA", 10, 100.0, False],
+         [
+             '%24data_world_param3%3D%22false%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E',
+             '%24data_world_param2%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E',
+             '%24data_world_param1%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E',
+             '%24data_world_param0%3D%22USA%22'
+         ]
+         ),
+        ('sparql', 'notreallysparql', {'$aString': "USA", '$anInt': 10, '$aDecimal': 100.0, '$aBool': False},
+         [
+             '%24anInt%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E',
+             '%24aDecimal%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E',
+             '%24aString%3D%22USA%22',
+             '%24aBool%3D%22false%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E',
+         ]
+         )
+    ]
+
+    @pytest.mark.parametrize("type,query,parameters,expected", parameterized_queries)
+    def test_parameterized_queries(self, type, query, parameters, expected,
+                                   dw, dataset_key, query_response_json):
+        with responses.RequestsMock() as rsps:
+            def request_callback(request):
+                for value in expected:
+                    assert_that(request.url, contains_string(value),
+                                reason="Expected [[\n{}\n]] to contain [[\n{}\n]]".format(request.url, expected))
+                return(200, {}, json.dumps(query_response_json))
+
+            rsps.add_callback(rsps.GET, re.compile(r'https?://query\.data\.world/.*'),
+                              callback = request_callback, content_type="application/json",
+                              match_querystring=True)
+
+            dw.query(dataset_key, query, query_type=type, parameters=parameters)
 
     def test_load_dataset(self, config, api_client, dw, dataset_key):
         dest_dir = path.join(config.cache_dir, 'agentid', 'datasetid',
