@@ -90,7 +90,8 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
                                                force_update=force_update)
 
 
-def query(dataset_key, query, query_type='sql', profile='default', parameters=None):
+def query(dataset_key, query, query_type='sql', profile='default',
+          parameters=None):
     """Query an existing dataset
 
     Parameters
@@ -102,10 +103,12 @@ def query(dataset_key, query, query_type='sql', profile='default', parameters=No
     query_type : {'sql', 'sparql'}, optional
         The type of the query. Must be either 'sql' or 'sparql'.
     parameters: query parameters, optional
-        parameters to the query - if SPARQL query, this should be a dict containing named parameters, if
-        SQL query, then this should be a list containing positional parameters.  Boolean values will be
-        converted to xsd:boolean, Integer values to xsd:integer, and other Numeric values to xsd:decimal.
-        anything else is treated as a String literal
+        parameters to the query - if SPARQL query, this should be a dict
+        containing named parameters, if SQL query, then this should be a
+        list containing positional parameters.  Boolean values will be
+        converted to xsd:boolean, Integer values to xsd:integer, and other
+        Numeric values to xsd:decimal. anything else is treated as a String
+        literal
     profile : str, optional
         Configuration profile (account) to use.
 
