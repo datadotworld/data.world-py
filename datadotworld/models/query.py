@@ -62,6 +62,9 @@ class QueryResults(object):
     @property
     def table(self):
         """Build and cache a table from query results"""
+        if self._schema is None:  # Empty results
+            return []
+
         if self._table is None:
             schema_obj = Schema(self._schema)
 
@@ -95,16 +98,9 @@ class QueryResults(object):
     def dataframe(self):
         """Build and cache a dataframe from query results"""
         try:
-            from jsontableschema_pandas import Storage
+            import pandas as pd
         except ImportError:
             raise RuntimeError('To enable dataframe support, '
                                'run \'pip install datadotworld[PANDAS]\'')
 
-        if self.__storage is None:
-            self.__storage = Storage()
-            self.__storage.create('results', self._schema)
-
-            row_values = [row.values() for row in self.table]
-            self.__storage.write('results', row_values)
-
-        return self.__storage['results']
+        return pd.DataFrame.from_records(self.table, coerce_float=True)

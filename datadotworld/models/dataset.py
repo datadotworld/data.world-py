@@ -24,13 +24,15 @@ from collections import OrderedDict
 
 import datapackage
 import six
-from datadotworld.models.table_schema import (sanitize_resource_schema,
-                                              order_columns_in_row,
-                                              patch_jsontableschema_pandas)
-from datadotworld.util import LazyLoadedDict, memoized
 from datapackage.resource import TabularResource
 from jsontableschema.exceptions import SchemaValidationError
+from os import path
 from tabulator import Stream
+
+from datadotworld.models.table_schema import (sanitize_resource_schema,
+                                              order_columns_in_row,
+                                              fields_to_dtypes)
+from datadotworld.util import LazyLoadedDict, memoized
 
 
 class LocalDataset(object):
@@ -165,40 +167,32 @@ class LocalDataset(object):
         Lazy load any optional dependencies in order to allow users to
         use package without installing pandas if so they wish.
         """
-        self.__initialize_storage()
-
-        rows = self.tables[resource_name]
-        if (resource_name in self.__storage.buckets and
-                resource_name not in self.__invalid_schemas):
-            if self.__storage[resource_name].size == 0:
-                row_values = [row.values() for row in rows]
-                self.__storage.write(resource_name, row_values)
-            return self.__storage[resource_name]
-        else:
-            try:
-                import pandas
-            except ImportError:
-                raise RuntimeError('To enable dataframe support, '
-                                   'run \'pip install datadotworld[PANDAS]\'')
-            return pandas.DataFrame(rows)
-
-    def __initialize_storage(self):
         try:
-            from jsontableschema_pandas import Storage, mappers
-            patch_jsontableschema_pandas(mappers)
+            import pandas
         except ImportError:
             raise RuntimeError('To enable dataframe support, '
                                'run \'pip install datadotworld[PANDAS]\'')
 
-        # Initialize storage if needed
-        if not hasattr(self, '__storage'):
-            self.__storage = Storage()
-            for (k, r) in self.__tabular_resources.items():
-                if 'schema' in r.descriptor:
-                    try:
-                        self.__storage.create(k, r.descriptor['schema'])
-                    except SchemaValidationError:
-                        self.__invalid_schemas.append(r.descriptor['schema'])
+        tabular_resource = self.__tabular_resources[resource_name]
+        field_dtypes = fields_to_dtypes(tabular_resource.descriptor['schema'])
+
+        try:
+            return pandas.read_csv(
+                path.join(
+                    self.__base_path,
+                    tabular_resource.descriptor['path']),
+                dtype=field_dtypes['other'],
+                parse_dates=list(field_dtypes['dates'].keys()),
+                infer_datetime_format=True)
+        except ValueError as e:
+            warnings.warn(
+                'Unable to set data frame dtypes automatically using {} '
+                'schema. Data types may need to be adjusted manually. '
+                'Error: {}'.format(resource_name, e))
+            return pandas.read_csv(
+                path.join(
+                    self.__base_path,
+                    tabular_resource.descriptor['path']))
 
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__,

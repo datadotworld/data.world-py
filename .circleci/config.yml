@@ -24,7 +24,7 @@ jobs:
 
       - run:
           name: tox
-          command: tox
+          command: tox --pre
 
       - save_cache:
           key: tox_cache-{{ checksum "tox.ini" }}

@@ -18,8 +18,28 @@
 # data.world, Inc.(http://data.world/).
 
 from collections import OrderedDict, Counter
-
 from collections import defaultdict
+
+#: Mapping of Table Schema field types to all suitable dtypes (pandas)
+from warnings import warn
+
+_TABLE_SCHEMA_DTYPE_MAPPING = {
+    'string': 'object',
+    'number': 'float64',
+    'integer': 'int64',
+    'boolean': 'bool',
+    'array': 'object',
+    'object': 'object',
+    'date': 'datetime64[ns]',
+    'time': 'object',
+    'datetime': 'datetime64[ns]',
+    'year': 'int64',
+    'yearmonth': 'object',
+    'geopoint': 'object',
+    'geojson': 'object',
+    'duration': 'object',
+    'any': 'object'
+}
 
 #: Mapping of Table Schema field types to all suitable RDF literal types
 _TABLE_SCHEMA_TYPE_MAPPINGS = {
@@ -68,37 +88,20 @@ _RDF_LITERAL_TYPE_MAPPING = {xsd_type: ts_type
                              for xsd_type in xsd_types}
 
 
-def patch_jsontableschema_pandas(mappers):
-    """Monkey patch jsontableschema_pandas module
+def fields_to_dtypes(schema):
+    """Maps table schema fields types to dtypes separating date fields"""
+    datetime_types = ['date', 'datetime']
+    datetime_fields = {
+        f['name']: _TABLE_SCHEMA_DTYPE_MAPPING.get(f['type'], 'object')
+        for f in schema['fields']
+        if f['type'] in datetime_types}
 
-    Up to version 0.2.0 jsontableschema_pandas mapped date fields
-    to object dtype
-    https://github.com/frictionlessdata/
-        jsontableschema-pandas-py/pull/23
-    """
-    if hasattr(mappers, 'jtstype_to_dtype'):
-        mapper = mappers.jtstype_to_dtype
-        new_mappings = {
-            'date': 'datetime64[ns]',
-            'year': 'int64',
-            'yearmonth': 'int64',
-            'duration': 'object',
-        }
+    other_fields = {
+        f['name']: _TABLE_SCHEMA_DTYPE_MAPPING.get(f['type'], 'object')
+        for f in schema['fields']
+        if f['type'] not in datetime_types}
 
-        def mapper_wrapper(jtstype):
-            try:
-                if jtstype == 'date':
-                    return new_mappings[jtstype]
-
-                return mapper(jtstype)
-
-            except TypeError as e:
-                if jtstype in new_mappings:
-                    return new_mappings[jtstype]
-                else:
-                    raise e
-
-        mappers.jtstype_to_dtype = mapper_wrapper
+    return {'dates': datetime_fields, 'other': other_fields}
 
 
 def sanitize_resource_schema(r):
@@ -182,8 +185,8 @@ def infer_table_schema(sparql_results_json):
         # ASK query results
         return {'fields': [{'name': 'boolean', 'type': 'boolean'}]}
     else:
-        raise ValueError(
-            'Unable to infer table schema from empty query results')
+        warn('Unable to infer table schema from empty query results')
+        return None
 
 
 def infer_table_schema_type_from_rdf_term(rdf_term):
@@ -254,12 +257,6 @@ def _sanitize_schema(schema_descriptor):
         # However, data.world may fail to include 'Z' at the end
         if field['type'] == 'datetime' and 'format' not in field:
             field['format'] = 'any'
-
-        # Datapackage specs are ambiguous in relation to yearmonth type
-        # It's described as a 2 digit field while XML gYearMonth is not
-        # For now, avoid it altogether
-        if field['type'] == 'yearmonth':
-            field['type'] = 'string'
 
         if missing_type_support:
             # Convert unsupported types to integer and string
