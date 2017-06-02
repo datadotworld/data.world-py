@@ -43,6 +43,6 @@ jobs:
           name: Release to pypi
           command: |
             if [[ "${CIRCLE_BRANCH}" =~ ^(${RELEASE_BRANCH})$ ]]; then
-              python setup.py sdist bdist_wheel
+              python setup.py sdist --formats=gztar
               twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
             fi
