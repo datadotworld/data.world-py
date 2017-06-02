@@ -90,7 +90,7 @@ setup(
         'pandas<1.0a',
     ],
     extras_require={
-        'PANDAS': [
+        'pandas': [
             'pandas<1.0a',
         ],
     },

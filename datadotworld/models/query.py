@@ -101,6 +101,6 @@ class QueryResults(object):
             import pandas as pd
         except ImportError:
             raise RuntimeError('To enable dataframe support, '
-                               'run \'pip install datadotworld[PANDAS]\'')
+                               'run \'pip install datadotworld[pandas]\'')
 
         return pd.DataFrame.from_records(self.table, coerce_float=True)

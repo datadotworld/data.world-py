@@ -21,7 +21,7 @@ You can install it using ``pip`` directly from PyPI::
 
 Optionally, you can install the library including pandas support::
 
-    pip install datadotworld[PANDAS]
+    pip install datadotworld[pandas]
 
 Configure
 ---------
