@@ -76,7 +76,8 @@ class LocalDataset(object):
                             for r in self._datapackage.resources}
         self.__tabular_resources = {k: sanitize_resource_schema(r)
                                     for (k, r) in self.__resources.items()
-                                    if type(r) is TabularResource}
+                                    if type(r) is TabularResource and
+                                    r.descriptor['path'].startswith('data')}
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
         # All formats
