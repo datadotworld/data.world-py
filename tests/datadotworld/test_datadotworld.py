@@ -197,7 +197,8 @@ class TestDataDotWorld:
                                               anything()).raises(RestApiError)
 
         # Forced update
-        dataset = dw.load_dataset(dataset_key, force_update=True)
+        with pytest.warns(UserWarning):
+            dataset = dw.load_dataset(dataset_key, force_update=True)
         assert_that(api_client.download_datapackage,
                     called().times(1).with_args(equal_to(dataset_key),
                                                 anything()))

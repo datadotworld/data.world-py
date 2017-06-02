@@ -1,0 +1,44 @@
+{
+  "query_text": "SELECT yearID, teamID, Rank, FP, name, park FROM Teams LIMIT 10",
+  "query_lang": "SQL",
+  "metadata": [
+    {
+      "formatString": "0000",
+      "name": "yearID",
+      "type": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    {
+      "name": "teamID",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "Rank",
+      "type": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    {
+      "name": "FP",
+      "type": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    {
+      "name": "name",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    {
+      "name": "park",
+      "type": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  ],
+  "head": {
+    "vars": [
+      "v_0",
+      "v_1",
+      "v_2",
+      "v_3",
+      "v_4",
+      "v_5"
+    ]
+  },
+  "results": {
+    "bindings": []
+  }
+}

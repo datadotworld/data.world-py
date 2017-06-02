@@ -30,7 +30,7 @@ from datadotworld.models.query import QueryResults
 
 
 class TestQueryResults:
-    @pytest.fixture(params=['sql_select.json'])
+    @pytest.fixture(params=['sql_select.json'], ids=lambda x: x.split('.')[0])
     def query_result_example(self, test_queries_path, request):
         with open(path.join(test_queries_path, request.param),
                   'r') as json_results:
@@ -66,8 +66,9 @@ class TestQueryResults:
         'sparql_select.json',
         'sparql_select_hof.json',
         'sql_select.json',
-        'sql_select2.json'
-    ], indirect=True)
+        'sql_select2.json',
+        'sql_select_empty.json'
+    ], indirect=True, ids=lambda x: x.split('.')[0])
     def test_table_parameterized(self, query_result_example, query_results):
         if 'results' in query_result_example:
             assert_that(query_results.table,
