@@ -134,8 +134,8 @@ def infer_table_schema(sparql_results_json):
         A schema descriptor for the inferred schema
     """
     if ('results' in sparql_results_json and
-                'bindings' in sparql_results_json['results'] and
-                len(sparql_results_json['results']['bindings']) > 0):
+            'bindings' in sparql_results_json['results'] and
+            len(sparql_results_json['results']['bindings']) > 0):
 
         # SQL results include metadata, SPARQL results don't
         result_metadata = sparql_results_json.get('metadata', [])
@@ -204,8 +204,8 @@ def infer_table_schema_type_from_rdf_term(rdf_term):
         A Table Schema field type
     """
     if (rdf_term is not None and
-                rdf_term['type'] == 'literal' and
-                'datatype' in rdf_term):
+            rdf_term['type'] == 'literal' and
+            'datatype' in rdf_term):
         return _RDF_LITERAL_TYPE_MAPPING.get(rdf_term['datatype'],
                                              'string')
     else:
@@ -282,7 +282,7 @@ def _verify_unique_names(result_vars, metadata_names):
                       in Counter(result_vars).items()
                       if count > 1]
     if (metadata_name_duplicates != [] or
-                var_duplicates != []):
+            var_duplicates != []):
         raise ValueError('Ambiguous query results. '
                          'One or more columns appear multiple times: '
                          '{}'.format(metadata_name_duplicates or

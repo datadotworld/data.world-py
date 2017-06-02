@@ -19,13 +19,11 @@
 
 from __future__ import absolute_import
 
-import warnings
 from collections import OrderedDict
 
 from jsontableschema import Schema
 
 from datadotworld.models import table_schema
-from datadotworld.models.table_schema import fields_to_dtypes
 
 
 class QueryResults(object):

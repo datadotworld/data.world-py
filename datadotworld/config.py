@@ -180,7 +180,7 @@ class FileConfig(DefaultConfig):
         for section in config_parser.sections():
             # Doesn't include DEFAULTSECT, but checking nonetheless
             if (section != configparser.DEFAULTSECT and
-                        section.lower() == configparser.DEFAULTSECT.lower()):
+                    section.lower() == configparser.DEFAULTSECT.lower()):
                 invalid_defaults.append(section)
 
         if len(invalid_defaults) == 1:
