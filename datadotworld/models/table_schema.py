@@ -99,7 +99,7 @@ def fields_to_dtypes(schema):
     other_fields = {
         f['name']: _TABLE_SCHEMA_DTYPE_MAPPING.get(f['type'], 'object')
         for f in schema['fields']
-        if f['name'] not in datetime_fields}
+        if f['type'] not in datetime_types}
 
     return {'dates': datetime_fields, 'other': other_fields}
 

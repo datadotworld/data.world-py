@@ -174,16 +174,15 @@ class LocalDataset(object):
                                'run \'pip install datadotworld[PANDAS]\'')
 
         tabular_resource = self.__tabular_resources[resource_name]
-        date_fields, other_fields = fields_to_dtypes(
-            tabular_resource.descriptor['schema']).values()
+        field_dtypes = fields_to_dtypes(tabular_resource.descriptor['schema'])
 
         try:
             return pandas.read_csv(
                 path.join(
                     self.__base_path,
                     tabular_resource.descriptor['path']),
-                dtype=other_fields,
-                parse_dates=list(date_fields.keys()),
+                dtype=field_dtypes['other'],
+                parse_dates=list(field_dtypes['dates'].keys()),
                 infer_datetime_format=True)
         except ValueError as e:
             warnings.warn(
