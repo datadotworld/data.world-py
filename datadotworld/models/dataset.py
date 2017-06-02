@@ -171,7 +171,7 @@ class LocalDataset(object):
             import pandas
         except ImportError:
             raise RuntimeError('To enable dataframe support, '
-                               'run \'pip install datadotworld[PANDAS]\'')
+                               'run \'pip install datadotworld[pandas]\'')
 
         tabular_resource = self.__tabular_resources[resource_name]
         field_dtypes = fields_to_dtypes(tabular_resource.descriptor['schema'])
