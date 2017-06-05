@@ -48,7 +48,7 @@ class QueryResults(object):
         self._schema = table_schema.infer_table_schema(raw)
 
         self._table = None
-        self.__storage = None
+        self._dataframe = None
 
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, repr(self.raw_data))
@@ -62,13 +62,30 @@ class QueryResults(object):
     @property
     def table(self):
         """Build and cache a table from query results"""
-        if self._schema is None:  # Empty results
-            return []
-
         if self._table is None:
-            schema_obj = Schema(self._schema)
+            self._table = list(self._iter_rows())
 
-            table = []
+        return self._table
+
+    @property
+    def dataframe(self):
+        """Build and cache a dataframe from query results"""
+
+        if self._dataframe is None:
+            try:
+                import pandas as pd
+            except ImportError:
+                raise RuntimeError('To enable dataframe support, '
+                                   'run \'pip install datadotworld[pandas]\'')
+
+            self._dataframe = pd.DataFrame.from_records(self._iter_rows(),
+                                                        coerce_float=True)
+
+        return self._dataframe
+
+    def _iter_rows(self):
+        if self._schema is not None:  # Not empty results
+            schema_obj = Schema(self._schema)
             if 'results' in self.raw_data:
                 field_names = [field.name for field in schema_obj.fields]
                 result_vars = self.raw_data['head']['vars']
@@ -85,22 +102,7 @@ class QueryResults(object):
                             values.append(None)
 
                     table_row = schema_obj.cast_row(values)
-                    table.append(OrderedDict(zip(field_names, table_row)))
+                    yield OrderedDict(zip(field_names, table_row))
             elif 'boolean' in self.raw_data:
                 # Results of an ASK query
-                table = [{'boolean': self.raw_data['boolean']}]
-
-            self._table = table
-
-        return self._table
-
-    @property
-    def dataframe(self):
-        """Build and cache a dataframe from query results"""
-        try:
-            import pandas as pd
-        except ImportError:
-            raise RuntimeError('To enable dataframe support, '
-                               'run \'pip install datadotworld[pandas]\'')
-
-        return pd.DataFrame.from_records(self.table, coerce_float=True)
+                yield {'boolean': self.raw_data['boolean']}
