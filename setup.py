@@ -71,7 +71,7 @@ setup(
         'certifi>=2017.04.17',
         'click>=6.0,<7.0a',
         'configparser>=3.5.0,<4.0a',
-        'datapackage>=0.8.8,<1.0a',
+        'datapackage==0.8.8',
         'jsontableschema>=0.10.0,<1.0a',
         'python-dateutil>=2.6.0,<3.0a',
         'requests>=2.0.0,<3.0a',

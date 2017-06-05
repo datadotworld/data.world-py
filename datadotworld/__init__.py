@@ -30,7 +30,7 @@ import weakref
 from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.datadotworld import DataDotWorld
 
-__version__ = '1.2.4'
+__version__ = '1.2.5'
 
 # Convenience top-level functions
 
