@@ -303,10 +303,10 @@ def _check_type_homogeneity(result_vars, sparql_results_json):
         var_datatypes = set()
         for i in range(0, min(total_bindings, 10)):
             binding = sparql_results_json['results']['bindings'][i]
-            rdf_term = binding.get(result_var, defaultdict(
-                default_factory=lambda: None))
-            var_types.add(rdf_term.get('type'))
-            var_datatypes.add(rdf_term.get('datatype'))
+            rdf_term = binding.get(result_var)
+            if rdf_term is not None: # skip missing values
+                var_types.add(rdf_term.get('type'))
+                var_datatypes.add(rdf_term.get('datatype'))
         if len(var_types) > 1 or len(var_datatypes) > 1:
             return False
 
