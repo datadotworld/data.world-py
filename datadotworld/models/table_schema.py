@@ -150,28 +150,27 @@ def infer_table_schema(sparql_results_json):
                           if metadata_names != []
                           else result_vars)))
 
-        homogeneous_types = _check_type_homogeneity(
+        homogeneous_types = _get_types_from_sample(
             result_vars, sparql_results_json)
 
         fields = []
-        if not homogeneous_types:
+        if homogeneous_types is None:
             for result_var in result_vars:
                 fields.append({
                     'name': result_vars_mapping.get(result_var),
                     'type': 'string'
                 })
         else:
-            first_binding = sparql_results_json['results']['bindings'][0]
-            for index, rdf_term in enumerate(
-                    order_terms_in_binding(result_vars, first_binding)):
-
+            for index, var in enumerate(result_vars):
                 field = {
-                    'name': result_vars_mapping.get(result_vars[index]),
-                    'type': infer_table_schema_type_from_rdf_term(rdf_term)
-                }
+                    'name': result_vars_mapping.get(var),
+                    'type': infer_table_schema_type_from_rdf_term(
+                        homogeneous_types[var].get('type'),
+                        homogeneous_types[var].get('datatype')
+                    )}
 
-                if rdf_term is not None and 'datatype' in rdf_term:
-                    field['rdfType'] = rdf_term['datatype']
+                if 'datatype' in homogeneous_types.get(var):
+                    field['rdfType'] = homogeneous_types[var].get('datatype')
 
                 term_metadata = (result_metadata[index]
                                  if result_metadata != [] else {})
@@ -189,24 +188,24 @@ def infer_table_schema(sparql_results_json):
         return None
 
 
-def infer_table_schema_type_from_rdf_term(rdf_term):
+def infer_table_schema_type_from_rdf_term(term_type, term_datatype):
     """Map an RDF literal type to Table Schema field type
 
     Parameters
     ----------
-    rdf_term
-        A value of an item in a binding. A binding is an item in the
-        bindings section of the SPARQL results JSON.
+    term_type
+        type from RDF term
+    term_datatype
+        datatype from RDF term
 
     Returns
     -------
     str
         A Table Schema field type
     """
-    if (rdf_term is not None and
-            rdf_term['type'] == 'literal' and
-            'datatype' in rdf_term):
-        return _RDF_LITERAL_TYPE_MAPPING.get(rdf_term['datatype'],
+    if (term_type == 'literal' and
+            term_datatype is not None):
+        return _RDF_LITERAL_TYPE_MAPPING.get(term_datatype,
                                              'string')
     else:
         return 'string'
@@ -289,8 +288,8 @@ def _verify_unique_names(result_vars, metadata_names):
                                      var_duplicates))
 
 
-def _check_type_homogeneity(result_vars, sparql_results_json):
-    """Check if rows are typed homogeneously
+def _get_types_from_sample(result_vars, sparql_results_json):
+    """Return types if homogenous within sample
 
     Compare up to 10 rows of results to determine homogeneity.
 
@@ -298,16 +297,22 @@ def _check_type_homogeneity(result_vars, sparql_results_json):
     return heterogeneously typed rows.
     """
     total_bindings = len(sparql_results_json['results']['bindings'])
+    homogeneous_types = {}
     for result_var in result_vars:
         var_types = set()
         var_datatypes = set()
         for i in range(0, min(total_bindings, 10)):
             binding = sparql_results_json['results']['bindings'][i]
-            rdf_term = binding.get(result_var, defaultdict(
-                default_factory=lambda: None))
-            var_types.add(rdf_term.get('type'))
-            var_datatypes.add(rdf_term.get('datatype'))
+            rdf_term = binding.get(result_var)
+            if rdf_term is not None: # skip missing values
+                var_types.add(rdf_term.get('type'))
+                var_datatypes.add(rdf_term.get('datatype'))
         if len(var_types) > 1 or len(var_datatypes) > 1:
-            return False
+            return None  # Heterogeneous types
+        else:
+            homogeneous_types[result_var] = {
+                'type': var_types.pop() if var_types else None,
+                'datatype': var_datatypes.pop() if var_datatypes else None
+            }
 
-    return True
+    return homogeneous_types

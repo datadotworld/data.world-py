@@ -79,6 +79,10 @@ class TestQueryResults:
                         has_key('boolean'))
             assert_that(query_results.table, has_length(1))
 
+    @pytest.mark.parametrize('query_result_example', [
+        'sql_select.json',
+        'sql_select_missing_value.json'
+    ], indirect=True, ids=lambda x: x.split('.')[0])
     def test_dataframe(self, query_result_example, query_results):
         metadata_names = [c['name'] for c in query_result_example['metadata']]
         df = query_results.dataframe
