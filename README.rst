@@ -23,6 +23,11 @@ Optionally, you can install the library including pandas support::
 
     pip install datadotworld[pandas]
 
+If you use ``conda`` to manage your python distribution, you can install from the community-maintained [conda-forge](https://conda-forge.github.io/) channel::
+
+    conda install -c conda-forge datadotworld-py
+
+
 Configure
 ---------
 
