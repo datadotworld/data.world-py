@@ -20,6 +20,7 @@
 from __future__ import absolute_import
 
 import os
+import re
 from os import path
 
 import pytest
@@ -31,6 +32,7 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
 from datadotworld.client._swagger import DatasetsApi, UploadsApi
 from datadotworld.client._swagger.models import *
 from datadotworld.client.api import RestApiClient, RestApiError
+from datadotworld.filewriter import DataDotWorldFileWriter
 
 
 class TestApiClient:
@@ -110,6 +112,18 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
+
+    def test_open_file_writer(self, api_client, dataset_key):
+        file_name = 'filename.ext'
+        with responses.RequestsMock() as resp:
+            resp.add(resp.PUT, re.compile('.*'),
+                     body='{}', status=200, content_type='application/json')
+            w = api_client.open_file_writer(dataset_key, file_name)
+            assert_that(isinstance(w, DataDotWorldFileWriter))
+            try:
+                w.open()
+            finally:
+                w.close()
 
     def test_delete_files(self, api_client, datasets_api, dataset_key):
         files = ['filename.ext']

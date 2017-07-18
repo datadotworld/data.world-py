@@ -31,6 +31,7 @@ import requests
 
 from datadotworld.client import _swagger
 from datadotworld.util import parse_dataset_key, _user_agent
+from datadotworld.filewriter import DataDotWorldFileWriter
 
 
 class RestApiClient(object):
@@ -48,8 +49,9 @@ class RestApiClient(object):
         self._download_host = 'download.data.world'
 
         api_host = 'api.data.world'
+        self._host = "{}://{}/v0".format(self._protocol, api_host)
         swagger_client = _swagger.ApiClient(
-            host="{}://{}/v0".format(self._protocol, api_host),
+            host=self._host,
             header_name='Authorization',
             header_value='Bearer {}'.format(self._config.auth_token))
         swagger_client.user_agent = _user_agent()
@@ -333,6 +335,44 @@ class RestApiClient(object):
         try:
             self._uploads_api.upload_files(owner_id, dataset_id, files)
         except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def open_file_writer(self, dataset_key, file_name):
+        """Open a streaming writer to a data.world file
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        file_name: str
+            The name of the file to write
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>>
+        >>> with api_client.open_file_writer('username/test-dataset',
+        ...                                  'test.txt') as w:
+        ...   w.write("this is a test.")
+        >>>
+        >>> with api_client.open_file_writer('username/test-dataset',
+        ...                                  'test.jsonl') as w:
+        ...   w.write({'foo':42, 'bar':"A"})
+        ...   w.write({'foo':13, 'bar':"B"})
+        >>>
+        >>> import csv
+        >>> with api_client.open_file_writer('username/test-dataset',
+        ...                                  'test.csv') as w:
+        ...   csvw = csv.DictWriter(w, fieldnames=['foo', 'bar'])
+        ...   csvw.writeheader()
+        ...   csvw.writerow({'foo':42, 'bar':"A"})
+        ...   csvw.writerow({'foo':13, 'bar':"B"})
+        """
+        try:
+            return DataDotWorldFileWriter(self._config, dataset_key, file_name,
+                                          host=self._host)
+        except Exception as e:
             raise RestApiError(cause=e)
 
     def delete_files(self, dataset_key, names):
