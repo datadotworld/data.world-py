@@ -47,12 +47,9 @@ setup(
     author_email='help@data.world',
     license='Apache 2.0',
     packages=find_packages(),
-    keywords=[
-        'data.world',
-        'dataset',
-    ],
+    keywords='data.world dataset',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
