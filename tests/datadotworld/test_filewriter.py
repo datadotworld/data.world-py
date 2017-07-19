@@ -28,7 +28,7 @@ class TestDataDotWorldFileWriter:
     def test_basic(self):
         with responses.RequestsMock() as resp:
             def upload_endpoint(request):
-                assert "test" == ''.join(request.body)
+                assert "test" == ''.join([chunk.decode('utf-8') for chunk in request.body])
                 return 200, {}, json.dumps({})
             resp.add_callback(resp.PUT,
                               '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
@@ -40,7 +40,8 @@ class TestDataDotWorldFileWriter:
     def test_csv(self):
         with responses.RequestsMock() as resp:
             def upload_endpoint(request):
-                assert "a,b\r\n42,17\r\n420,178\r\n" == ''.join(request.body)
+                assert "a,b\r\n42,17\r\n420,178\r\n" == \
+                    ''.join([chunk.decode('utf-8') for chunk in request.body])
                 return 200, {}, json.dumps({})
             resp.add_callback(resp.PUT,
                               '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
