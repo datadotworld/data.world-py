@@ -34,6 +34,7 @@ from hamcrest import equal_to, calling, raises, has_length, anything, contains_s
 import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.datadotworld import DataDotWorld
+from datadotworld.filewriter import RemoteFile
 
 
 class TestDataDotWorld:
@@ -161,6 +162,19 @@ class TestDataDotWorld:
                     called().times(1).with_args(equal_to(dataset_key),
                                                 equal_to(dest_dir)))
         assert_that(dataset.raw_data, has_length(4))
+
+    def test_open_file_writer(self, dw, dataset_key):
+        file_name = 'filename.ext'
+        with responses.RequestsMock() as resp:
+            resp.add(resp.PUT, re.compile('.*'),
+                     body='{}', status=200, content_type='application/json')
+            w = dw.open_remote_file(dataset_key, file_name)
+            assert_that(isinstance(w, RemoteFile))
+            try:
+                w.open()
+            finally:
+                w.close()
+
 
     @pytest.mark.usefixtures('existing_dataset')
     def test_load_dataset_existing(self, api_client, dw, dataset_key):
