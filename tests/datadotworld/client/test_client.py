@@ -32,7 +32,7 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
 from datadotworld.client._swagger import DatasetsApi, UploadsApi
 from datadotworld.client._swagger.models import *
 from datadotworld.client.api import RestApiClient, RestApiError
-from datadotworld.filewriter import DataDotWorldFileWriter
+from datadotworld.filewriter import RemoteFile
 
 
 class TestApiClient:
@@ -119,7 +119,7 @@ class TestApiClient:
             resp.add(resp.PUT, re.compile('.*'),
                      body='{}', status=200, content_type='application/json')
             w = api_client.open_file_writer(dataset_key, file_name)
-            assert_that(isinstance(w, DataDotWorldFileWriter))
+            assert_that(isinstance(w, RemoteFile))
             try:
                 w.open()
             finally:

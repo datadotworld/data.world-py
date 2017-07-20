@@ -21,7 +21,7 @@ import json
 import responses
 import pytest
 from datadotworld.config import DefaultConfig
-from datadotworld.filewriter import DataDotWorldFileWriter, DataDotWorldFileWriterException
+from datadotworld.filewriter import RemoteFile, DataDotWorldFileWriterException
 
 class TestDataDotWorldFileWriter:
 
@@ -34,7 +34,7 @@ class TestDataDotWorldFileWriter:
                               '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
                                                                  'user', 'dataset', 'file.txt'),
                               callback=upload_endpoint)
-            with DataDotWorldFileWriter(DefaultConfig(), "user/dataset", "file.txt") as writer:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt") as writer:
                 writer.write("test")
 
     def test_csv(self):
@@ -47,7 +47,7 @@ class TestDataDotWorldFileWriter:
                               '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
                                                                  'user', 'dataset', 'file.csv'),
                               callback=upload_endpoint)
-            with DataDotWorldFileWriter(DefaultConfig(), "user/dataset", "file.csv") as writer:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv") as writer:
                 csvw = csv.DictWriter(writer, fieldnames=['a', 'b'])
                 csvw.writeheader()
                 csvw.writerow({'a': 42, 'b':17})
@@ -64,6 +64,6 @@ class TestDataDotWorldFileWriter:
                                   '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
                                                                      'user', 'dataset', 'file.txt'),
                                   callback=upload_endpoint)
-                with DataDotWorldFileWriter(DefaultConfig(), "user/dataset", "file.txt") as writer:
+                with RemoteFile(DefaultConfig(), "user/dataset", "file.txt") as writer:
                     writer.write("test")
 
