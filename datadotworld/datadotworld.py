@@ -195,7 +195,8 @@ class DataDotWorld(object):
 
         return LocalDataset(descriptor_file)
 
-    def open_remote_file(self, dataset_key, file_name):
+    def open_remote_file(self, dataset_key, file_name,
+                         mode='w'):
         """
         Open a streaming writer to a data.world file
 
@@ -205,6 +206,10 @@ class DataDotWorld(object):
             Dataset identifier, in the form of owner/id
         file_name: str
             The name of the file to write
+        mode: str, optional
+            the mode for the file - currently only 'w' (write string) or
+            'wb' (write binary) are supported, any other value will throw
+            an exception
 
         Examples
         --------
@@ -214,10 +219,11 @@ class DataDotWorld(object):
         ...                                  'test.txt') as w:
         ...   w.write("this is a test.")
         >>>
+        >>> import json
         >>> with dw.open_remote_file('username/test-dataset',
         ...                                  'test.jsonl') as w:
-        ...   w.write({'foo':42, 'bar':"A"})
-        ...   w.write({'foo':13, 'bar':"B"})
+        ...   json.dump({'foo':42, 'bar':"A"}, w)
+        ...   json.dump({'foo':13, 'bar':"B"}, w)
         >>>
         >>> import csv
         >>> with dw.open_remote_file('username/test-dataset',
@@ -228,7 +234,7 @@ class DataDotWorld(object):
         ...   csvw.writerow({'foo':13, 'bar':"B"})
         """
         try:
-            return RemoteFile(self._config, dataset_key, file_name)
+            return RemoteFile(self._config, dataset_key, file_name, mode)
         except Exception as e:
             raise RestApiError(cause=e)
 

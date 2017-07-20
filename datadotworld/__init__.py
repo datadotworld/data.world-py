@@ -138,7 +138,8 @@ def query(dataset_key, query, query_type='sql', profile='default',
                                         parameters=parameters)
 
 
-def open_remote_file(dataset_key, file_name, profile='default'):
+def open_remote_file(dataset_key, file_name, profile='default',
+                     mode='w'):
     """
     Open a streaming writer to a data.world file
 
@@ -150,6 +151,10 @@ def open_remote_file(dataset_key, file_name, profile='default'):
         The name of the file to write
     profile : str, optional
         Configuration profile (account) to use.
+    mode: str, optional
+        the mode for the file - currently only 'w' (write string) or
+        'wb' (write binary) are supported, any other value will throw
+        an exception
 
     Examples
     --------
@@ -159,10 +164,11 @@ def open_remote_file(dataset_key, file_name, profile='default'):
     ...                                  'test.txt') as w:
     ...   w.write("this is a test.")
     >>>
+    >>> import json
     >>> with dw.open_remote_file('username/test-dataset',
     ...                                  'test.jsonl') as w:
-    ...   w.write({'foo':42, 'bar':"A"})
-    ...   w.write({'foo':13, 'bar':"B"})
+    ...   json.dump({'foo':42, 'bar':"A"}, w)
+    ...   json.dump({'foo':13, 'bar':"B"}, w)
     >>>
     >>> import csv
     >>> with dw.open_remote_file('username/test-dataset',
@@ -172,7 +178,8 @@ def open_remote_file(dataset_key, file_name, profile='default'):
     ...   csvw.writerow({'foo':42, 'bar':"A"})
     ...   csvw.writerow({'foo':13, 'bar':"B"})
     """
-    return _get_instance(profile).open_remote_file(dataset_key, file_name)
+    return _get_instance(profile).open_remote_file(
+        dataset_key, file_name, mode)
 
 
 def api_client(profile='default'):
