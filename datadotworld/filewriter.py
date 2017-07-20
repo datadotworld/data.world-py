@@ -28,16 +28,15 @@ import requests
 from datadotworld.util import parse_dataset_key
 
 
-class DataDotWorldFileWriter:
+class RemoteFile:
     def __init__(self, config, dataset_key, file_name,
-                 host="https://api.data.world/v0",
                  timeout=None):
         """
         Construct a new data.world file writer - values written to the
         `write()` method are streamed to the data.world api and written into
         the specified file. The proper way to use this class is in a `with`
         block:
-        >>> with DataDotWorldFileWriter(config, "user/dataset", "file") as w
+        >>> with RemoteFile(config, "user/dataset", "file") as w
         >>>   w.write("")
         which will ensure that at the end of the `with` block the file is
         closed and the HTTP request completes
@@ -50,25 +49,15 @@ class DataDotWorldFileWriter:
         called before timing out (defaults to no timeout - the close() call
         by default will wait indefinitely for a response)
         """
+        self._api_host = "https://api.data.world/v0"
         self._queue = Queue(10)
+        self._response_queue = Queue(1)
         self._sentinel = None
         self._timeout = timeout
-        self._response_queue = Queue(1)
+        self._config = config
+        self._dataset_key = dataset_key
+        self._file_name = file_name
 
-        def put_request(body, response_queue):
-            ownerid, datasetid = parse_dataset_key(dataset_key)
-            response = requests.put(
-                "{}/uploads/{}/{}/files/{}".format(
-                    host, ownerid, datasetid, file_name),
-                data=body,
-                headers={
-                    'Authorization': 'Bearer {}'.format(config.auth_token)
-                })
-            response_queue.put(response)
-
-        body = iter(self._queue.get, self._sentinel)
-        self._thread = Thread(target=put_request,
-                              args=(body, self._response_queue))
 
     def write(self, value):
         """
@@ -88,6 +77,21 @@ class DataDotWorldFileWriter:
         """
         start the thread executing the HTTP request
         """
+        def put_request(body, response_queue, host, config, dataset_key, file_name):
+            ownerid, datasetid = parse_dataset_key(dataset_key)
+            response = requests.put(
+                "{}/uploads/{}/{}/files/{}".format(
+                    host, ownerid, datasetid, file_name),
+                data=body,
+                headers={
+                    'Authorization': 'Bearer {}'.format(config.auth_token)
+                })
+            response_queue.put(response)
+
+        body = iter(self._queue.get, self._sentinel)
+        self._thread = Thread(target=put_request,
+                              args=(body, self._response_queue, self._api_host,
+                                    self._config, self._dataset_key, self._file_name))
         self._thread.start()
 
     def close(self):

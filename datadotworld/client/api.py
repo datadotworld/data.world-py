@@ -31,7 +31,7 @@ import requests
 
 from datadotworld.client import _swagger
 from datadotworld.util import parse_dataset_key, _user_agent
-from datadotworld.filewriter import DataDotWorldFileWriter
+from datadotworld.filewriter import RemoteFile
 
 
 class RestApiClient(object):
@@ -370,8 +370,7 @@ class RestApiClient(object):
         ...   csvw.writerow({'foo':13, 'bar':"B"})
         """
         try:
-            return DataDotWorldFileWriter(self._config, dataset_key, file_name,
-                                          host=self._host)
+            return RemoteFile(self._config, dataset_key, file_name)
         except Exception as e:
             raise RestApiError(cause=e)
 
