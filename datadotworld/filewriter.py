@@ -40,14 +40,19 @@ class RemoteFile:
         >>>   w.write("")
         which will ensure that at the end of the `with` block the file is
         closed and the HTTP request completes
-        :param config: the data.world configuration object
-        :param dataset_key: key for the target dataset
-        :param file_name: name of file to write
-        :param host: hostname for the API - defaults to the standard
-        production API
-        :param timeout: how long to wait for a response when `close()` is
-        called before timing out (defaults to no timeout - the close() call
-        by default will wait indefinitely for a response)
+
+        Parameters
+        ----------
+        config: DefaultConfig
+            the data.world configuration object
+        dataset_key: str
+            key for the target dataset
+        file_name: str
+            name of file to write
+        timeout: float
+            how long to wait for a response when `close()` is
+            called before timing out (defaults to no timeout - the close()
+            call by default will wait indefinitely for a response)
         """
         self._api_host = "https://api.data.world/v0"
         self._queue = Queue(10)
@@ -64,7 +69,11 @@ class RemoteFile:
         write the given value to the stream - if the object is a bytearray,
         write it as-is - otherwise, convert the object to a string with
         `str()` and write the UTF-8 bytes
-        :param value: the value to write
+
+        Parameters
+        ----------
+        value: str or bytearray
+            the value to write
         """
         if isinstance(value, bytearray):
             self._queue.put(value)
