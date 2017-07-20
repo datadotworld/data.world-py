@@ -21,7 +21,7 @@ import json
 import responses
 import pytest
 from datadotworld.config import DefaultConfig
-from datadotworld.filewriter import RemoteFile, DataDotWorldFileWriterException
+from datadotworld.filewriter import RemoteFile, RemoteFileException
 
 class TestDataDotWorldFileWriter:
 
@@ -55,7 +55,7 @@ class TestDataDotWorldFileWriter:
 
 
     def test_error(self):
-        with pytest.raises(DataDotWorldFileWriterException) as e:
+        with pytest.raises(RemoteFileException) as e:
             with responses.RequestsMock() as resp:
                 def upload_endpoint(request):
                     return 400, {}, json.dumps({})
