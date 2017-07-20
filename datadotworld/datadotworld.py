@@ -32,6 +32,7 @@ from datadotworld.config import ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
+from datadotworld.filewriter import RemoteFile
 
 
 class DataDotWorld(object):
@@ -193,6 +194,43 @@ class DataDotWorld(object):
             shutil.rmtree(backup_dir, ignore_errors=True)
 
         return LocalDataset(descriptor_file)
+
+    def open_remote_file(self, dataset_key, file_name):
+        """
+        Open a streaming writer to a data.world file
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        file_name: str
+            The name of the file to write
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>>
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                                  'test.txt') as w:
+        ...   w.write("this is a test.")
+        >>>
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                                  'test.jsonl') as w:
+        ...   w.write({'foo':42, 'bar':"A"})
+        ...   w.write({'foo':13, 'bar':"B"})
+        >>>
+        >>> import csv
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                                  'test.csv') as w:
+        ...   csvw = csv.DictWriter(w, fieldnames=['foo', 'bar'])
+        ...   csvw.writeheader()
+        ...   csvw.writerow({'foo':42, 'bar':"A"})
+        ...   csvw.writerow({'foo':13, 'bar':"B"})
+        """
+        try:
+            return RemoteFile(self._config, dataset_key, file_name)
+        except Exception as e:
+            raise RestApiError(cause=e)
 
 
 # convert a literal into the SPARQL format expected by the REST endpoint

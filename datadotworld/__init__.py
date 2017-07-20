@@ -138,6 +138,43 @@ def query(dataset_key, query, query_type='sql', profile='default',
                                         parameters=parameters)
 
 
+def open_remote_file(dataset_key, file_name, profile='default'):
+    """
+    Open a streaming writer to a data.world file
+
+    Parameters
+    ----------
+    dataset_key : str
+        Dataset identifier, in the form of owner/id
+    file_name: str
+        The name of the file to write
+    profile : str, optional
+        Configuration profile (account) to use.
+
+    Examples
+    --------
+    >>> import datadotworld as dw
+    >>>
+    >>> with dw.open_remote_file('username/test-dataset',
+    ...                                  'test.txt') as w:
+    ...   w.write("this is a test.")
+    >>>
+    >>> with dw.open_remote_file('username/test-dataset',
+    ...                                  'test.jsonl') as w:
+    ...   w.write({'foo':42, 'bar':"A"})
+    ...   w.write({'foo':13, 'bar':"B"})
+    >>>
+    >>> import csv
+    >>> with dw.open_remote_file('username/test-dataset',
+    ...                                  'test.csv') as w:
+    ...   csvw = csv.DictWriter(w, fieldnames=['foo', 'bar'])
+    ...   csvw.writeheader()
+    ...   csvw.writerow({'foo':42, 'bar':"A"})
+    ...   csvw.writerow({'foo':13, 'bar':"B"})
+    """
+    return _get_instance(profile).open_remote_file(dataset_key, file_name)
+
+
 def api_client(profile='default'):
     """Return API client for access to data.world's REST API
 
