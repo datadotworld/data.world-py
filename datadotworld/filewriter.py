@@ -135,12 +135,12 @@ class RemoteFile:
         self._queue.put(self._sentinel)
         self._thread.join(timeout=self._timeout)
         if self._thread.is_alive():
-            raise DataDotWorldFileWriterException("Closing file timed out.")
+            raise RemoteFileException("Closing file timed out.")
         response = self._response_queue.get_nowait()
         try:
             response.raise_for_status()
         except Exception as e:
-            raise DataDotWorldFileWriterException(cause=e)
+            raise RemoteFileException(cause=e)
 
     def __enter__(self):
         """
@@ -156,11 +156,11 @@ class RemoteFile:
         self.close()
 
 
-class DataDotWorldFileWriterException(Exception):
+class RemoteFileException(Exception):
     """
-    Exception wrapper for exceptions arising from the DataDotWorldFileWriter
+    Exception wrapper for exceptions arising from the RemoteFile
     """
 
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
-        super(DataDotWorldFileWriterException, self).__init__(*args, **kwargs)
+        super(RemoteFileException, self).__init__(*args, **kwargs)
