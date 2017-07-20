@@ -23,13 +23,13 @@ try:
 except ImportError:
     from Queue import Queue
 from threading import Thread
-import json
 import requests
 from datadotworld.util import parse_dataset_key
 
 
 class RemoteFile:
     def __init__(self, config, dataset_key, file_name,
+                 mode='w',
                  timeout=None):
         """
         Construct a new data.world file writer - values written to the
@@ -49,7 +49,11 @@ class RemoteFile:
             key for the target dataset
         file_name: str
             name of file to write
-        timeout: float
+        mode: str, optional
+            the mode for the file - currently only 'w' (write string) or
+            'wb' (write binary) are supported, any other value will throw
+            an exception
+        timeout: float, optional
             how long to wait for a response when `close()` is
             called before timing out (defaults to no timeout - the close()
             call by default will wait indefinitely for a response)
@@ -62,6 +66,10 @@ class RemoteFile:
         self._config = config
         self._dataset_key = dataset_key
         self._file_name = file_name
+        if not(mode == 'w' or mode == 'wb'):
+            raise NotImplementedError(
+                "modes other than 'w' and 'wb' not supported")
+        self._mode = mode
 
 
     def write(self, value):
@@ -75,18 +83,30 @@ class RemoteFile:
         value: str or bytearray
             the value to write
         """
-        if isinstance(value, bytearray):
-            self._queue.put(value)
-        elif isinstance(value, dict) or isinstance(value, list):
-            self._queue.put(json.dumps(value).encode('utf-8'))
+        if 'w' == self._mode:
+            if isinstance(value, str):
+                self._queue.put(value.encode('utf-8'))
+            else:
+                raise TypeError(
+                    "write() argument must be str, not {}"
+                        .format(type(value)))
+        elif 'wb' == self._mode:
+            if (isinstance(value, (bytes, bytearray))):
+                self._queue.put(value)
+            else:
+                raise TypeError(
+                    "a bytes-like object is required, not {}"
+                        .format(type(value)))
         else:
-            self._queue.put(str(value).encode('utf-8'))
+            raise NotImplementedError(
+                "modes other than 'w' and 'wb' not supported")
 
     def open(self):
         """
         start the thread executing the HTTP request
         """
-        def put_request(body, response_queue, host, config, dataset_key, file_name):
+        def put_request(body, response_queue, host,
+                        config, dataset_key, file_name):
             ownerid, datasetid = parse_dataset_key(dataset_key)
             response = requests.put(
                 "{}/uploads/{}/{}/files/{}".format(
@@ -99,8 +119,12 @@ class RemoteFile:
 
         body = iter(self._queue.get, self._sentinel)
         self._thread = Thread(target=put_request,
-                              args=(body, self._response_queue, self._api_host,
-                                    self._config, self._dataset_key, self._file_name))
+                              args=(body,
+                                    self._response_queue,
+                                    self._api_host,
+                                    self._config,
+                                    self._dataset_key,
+                                    self._file_name))
         self._thread.start()
 
     def close(self):
