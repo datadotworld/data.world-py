@@ -34,7 +34,7 @@ from hamcrest import equal_to, calling, raises, has_length, anything, contains_s
 import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.datadotworld import DataDotWorld
-from datadotworld.filewriter import RemoteFile
+from datadotworld.files import RemoteFile
 
 
 class TestDataDotWorld:

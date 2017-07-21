@@ -21,7 +21,7 @@ import json
 import responses
 import pytest
 from datadotworld.config import DefaultConfig
-from datadotworld.filewriter import RemoteFile, RemoteFileException
+from datadotworld.files import RemoteFile, RemoteFileException
 
 class TestDataDotWorldFileWriter:
 
