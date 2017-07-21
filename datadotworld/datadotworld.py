@@ -216,22 +216,32 @@ class DataDotWorld(object):
         >>> import datadotworld as dw
         >>>
         >>> with dw.open_remote_file('username/test-dataset',
-        ...                                  'test.txt') as w:
+        ...                          'test.txt') as w:
         ...   w.write("this is a test.")
         >>>
         >>> import json
         >>> with dw.open_remote_file('username/test-dataset',
-        ...                                  'test.jsonl') as w:
+        ...                          'test.jsonl') as w:
         ...   json.dump({'foo':42, 'bar':"A"}, w)
         ...   json.dump({'foo':13, 'bar':"B"}, w)
         >>>
         >>> import csv
         >>> with dw.open_remote_file('username/test-dataset',
-        ...                                  'test.csv') as w:
+        ...                          'test.csv') as w:
         ...   csvw = csv.DictWriter(w, fieldnames=['foo', 'bar'])
         ...   csvw.writeheader()
         ...   csvw.writerow({'foo':42, 'bar':"A"})
         ...   csvw.writerow({'foo':13, 'bar':"B"})
+        >>>
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({'foo':[1,2,3,4],'bar':['a','b','c','d']})
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                          'dataframe.csv') as w:
+        ...   df.to_csv(w, index=False)
+        >>>
+        >>> with dw.open_remote_file('username/test-dataset',
+        >>>                          'test.txt', mode='wb') as w:
+        ...   w.write(bytes([100,97,116,97,46,119,111,114,108,100]))
         """
         try:
             return RemoteFile(self._config, dataset_key, file_name, mode)
