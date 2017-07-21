@@ -32,7 +32,7 @@ from datadotworld.config import ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
-from datadotworld.filewriter import RemoteFile
+from datadotworld.files import RemoteFile
 
 
 class DataDotWorld(object):
