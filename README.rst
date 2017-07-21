@@ -212,7 +212,7 @@ use a local file handle in write mode - so you can use it to serialize the conte
         >>> with dw.open_remote_file('username/test-dataset', 'dataframe.csv') as w:
         ...   df.to_csv(w, index=False)
 
-Or, to write a series of ``dict``s as a JSON Lines file...
+Or, to write a series of ``dict`` objects as a JSON Lines file...
 
 .. code-block:: python
 
@@ -222,7 +222,7 @@ Or, to write a series of ``dict``s as a JSON Lines file...
         ...   json.dump({'foo':13, 'bar':"B"}, w)
         >>>
 
-Or to write a series of ``dict``s as a CSV...
+Or to write a series of ``dict`` objects as a CSV...
 
 .. code-block:: python
 
