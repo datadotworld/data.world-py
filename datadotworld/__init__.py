@@ -141,7 +141,8 @@ def query(dataset_key, query, query_type='sql', profile='default',
 def open_remote_file(dataset_key, file_name, profile='default',
                      mode='w'):
     """
-    Open a streaming writer to a data.world file
+    Open a remote file object that can be used to write to a file in a
+    data.world dataset
 
     Parameters
     ----------

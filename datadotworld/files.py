@@ -25,6 +25,7 @@ except ImportError:
 from threading import Thread
 import requests
 from datadotworld.util import parse_dataset_key
+from datadotworld.client.api import RestApiError
 
 
 class RemoteFile:
@@ -32,7 +33,7 @@ class RemoteFile:
                  mode='w',
                  timeout=None):
         """
-        Construct a new data.world file writer - values written to the
+        Construct a new data.world file object - values written to the
         `write()` method are streamed to the data.world api and written into
         the specified file. The proper way to use this class is in a `with`
         block:
@@ -82,6 +83,16 @@ class RemoteFile:
         ----------
         value: str or bytearray
             the value to write
+
+        Raises
+        ------
+        TypeError
+            if the type of the value provided does not match the mode in
+            which the file was opened
+        NotImplementedError
+            if the mode of the file is not one of the supported values
+            (currently only "writing" modes for files are supported - leaving
+            the option to implement "read" modes open for future work)
         """
         if 'w' == self._mode:
             if isinstance(value, str):
@@ -140,7 +151,7 @@ class RemoteFile:
         try:
             response.raise_for_status()
         except Exception as e:
-            raise RemoteFileException(cause=e)
+            raise RestApiError(cause=e)
 
     def __enter__(self):
         """

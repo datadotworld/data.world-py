@@ -22,6 +22,8 @@ import responses
 import pytest
 from datadotworld.config import DefaultConfig
 from datadotworld.files import RemoteFile, RemoteFileException
+from datadotworld.client.api import RestApiError
+
 
 class TestDataDotWorldFileWriter:
 
@@ -55,7 +57,7 @@ class TestDataDotWorldFileWriter:
 
 
     def test_error(self):
-        with pytest.raises(RemoteFileException) as e:
+        with pytest.raises(RestApiError):
             with responses.RequestsMock() as resp:
                 def upload_endpoint(request):
                     return 400, {}, json.dumps({})
@@ -66,4 +68,10 @@ class TestDataDotWorldFileWriter:
                                   callback=upload_endpoint)
                 with RemoteFile(DefaultConfig(), "user/dataset", "file.txt") as writer:
                     writer.write("test")
+
+
+    def test_timeout_error(self):
+        with pytest.raises(RemoteFileException):
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", timeout=0.0) as writer:
+                writer.write("test")
 
