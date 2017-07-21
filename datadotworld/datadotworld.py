@@ -198,7 +198,8 @@ class DataDotWorld(object):
     def open_remote_file(self, dataset_key, file_name,
                          mode='w'):
         """
-        Open a streaming writer to a data.world file
+        Open a remote file object that can be used to write to a file in a
+        data.world dataset
 
         Parameters
         ----------
