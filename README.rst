@@ -183,6 +183,65 @@ For example:
                 {'name': 'PointsPerGame', 'type': 'number'},
                 {'name': 'AssistsPerGame', 'type': 'number'}]}
 
+Write to a dataset
+------------------
+
+The ``open_remote_file()`` function allows you to write data to a file in a data.world dataset.
+
+The object that is returned from the ``open_remote_file()`` call is similar to a file handle that
+would be used to write to a local file - it has a ``write()`` method, and contents sent to that
+method will be written to the file remotely.
+
+.. code-block:: python
+
+        >>> import datadotworld as dw
+        >>>
+        >>> with dw.open_remote_file('username/test-dataset', 'test.txt') as w:
+        ...   w.write("this is a test.")
+        >>>
+
+Of course, writing a text file isn't the primary use case for data.world - you want to write your
+data!  The return object from ``open_remote_file()`` should be usable anywhere you could normally
+use a local file handle in write mode - so you can use it to serialize the contents of a PANDAS
+``DataFrame`` to a CSV file...
+
+.. code-block:: python
+
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({'foo':[1,2,3,4],'bar':['a','b','c','d']})
+        >>> with dw.open_remote_file('username/test-dataset', 'dataframe.csv') as w:
+        ...   df.to_csv(w, index=False)
+
+Or, to write a series of ``dict``s as a JSON Lines file...
+
+.. code-block:: python
+
+        >>> import json
+        >>> with dw.open_remote_file('username/test-dataset', 'test.jsonl') as w:
+        ...   json.dump({'foo':42, 'bar':"A"}, w)
+        ...   json.dump({'foo':13, 'bar':"B"}, w)
+        >>>
+
+Or to write a series of ``dict``s as a CSV...
+
+.. code-block:: python
+
+        >>> import csv
+        >>> with dw.open_remote_file('username/test-dataset', 'test.csv') as w:
+        ...   csvw = csv.DictWriter(w, fieldnames=['foo', 'bar'])
+        ...   csvw.writeheader()
+        ...   csvw.writerow({'foo':42, 'bar':"A"})
+        ...   csvw.writerow({'foo':13, 'bar':"B"})
+        >>>
+
+And finally, you can write binary data by streaming ``bytes`` or ``bytearray`` objects, if you open the
+file in binary mode...
+
+.. code-block:: python
+
+        >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='wb') as w:
+        ...   w.write(bytes([100,97,116,97,46,119,111,114,108,100]))
+
 API Wrappers
 ------------
 
