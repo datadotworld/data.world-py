@@ -1,4 +1,5 @@
 import requests
+import json
 api_swagger = requests.get('https://api.data.world/v0/swagger.json').text
 api_swagger = api_swagger.encode('ascii', 'ignore').decode('ascii')
 api_swagger = json.loads(api_swagger)
