@@ -196,36 +196,47 @@ class DataDotWorld(object):
         return LocalDataset(descriptor_file)
 
     def open_remote_file(self, dataset_key, file_name,
-                         mode='w'):
+                         mode='w', **kwargs):
         """
-        Open a remote file object that can be used to write to a file in a
-        data.world dataset
+        Open a remote file object that can be used to write to or read from
+        a file in a data.world dataset
 
         Parameters
         ----------
         dataset_key : str
             Dataset identifier, in the form of owner/id
         file_name: str
-            The name of the file to write
+            The name of the file to open
         mode: str, optional
-            the mode for the file - currently only 'w' (write string) or
-            'wb' (write binary) are supported, any other value will throw
-            an exception
+            the mode for the file - must be 'w', 'wb', 'r', or 'rb' -
+            indicating read/write ('r'/'w') and optionally "binary"
+            handling of the file data.
+        chunk_size: int, optional
+            size of chunked bytes to return when reading streamed bytes
+            in 'rb' mode
+        decode_unicode: bool, optional
+            whether to decode textual responses as unicode when returning
+            streamed lines in 'r' mode
 
         Examples
         --------
         >>> import datadotworld as dw
         >>>
+        >>> # write a text file
         >>> with dw.open_remote_file('username/test-dataset',
         ...                          'test.txt') as w:
         ...   w.write("this is a test.")
         >>>
+        >>> # write a jsonlines file
         >>> import json
         >>> with dw.open_remote_file('username/test-dataset',
         ...                          'test.jsonl') as w:
         ...   json.dump({'foo':42, 'bar':"A"}, w)
+        ...   w.write("\\n")
         ...   json.dump({'foo':13, 'bar':"B"}, w)
+        ...   w.write("\\n")
         >>>
+        >>> # write a csv file
         >>> import csv
         >>> with dw.open_remote_file('username/test-dataset',
         ...                          'test.csv') as w:
@@ -234,18 +245,38 @@ class DataDotWorld(object):
         ...   csvw.writerow({'foo':42, 'bar':"A"})
         ...   csvw.writerow({'foo':13, 'bar':"B"})
         >>>
+        >>> # write a pandas dataframe as a csv file
         >>> import pandas as pd
         >>> df = pd.DataFrame({'foo':[1,2,3,4],'bar':['a','b','c','d']})
         >>> with dw.open_remote_file('username/test-dataset',
         ...                          'dataframe.csv') as w:
         ...   df.to_csv(w, index=False)
         >>>
+        >>> # write a binary file
         >>> with dw.open_remote_file('username/test-dataset',
         >>>                          'test.txt', mode='wb') as w:
         ...   w.write(bytes([100,97,116,97,46,119,111,114,108,100]))
+        >>>
+        >>> # read a text file
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                          'test.txt', mode='r') as r:
+        ...   print(r.read())
+        >>>
+        >>> # read a csv file
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                          'test.csv', mode='r') as r:
+        ...   csvr = csv.DictReader(r)
+        ...   for row in csvr:
+        ...      print(row['column a'], row['column b'])
+        >>>
+        >>> # read a binary file
+        >>> with dw.open_remote_file('username/test-dataset',
+        ...                          'test', mode='rb') as r:
+        ...   bytes = r.read()
         """
         try:
-            return RemoteFile(self._config, dataset_key, file_name, mode)
+            return RemoteFile(self._config, dataset_key, file_name,
+                              mode=mode, **kwargs)
         except Exception as e:
             raise RestApiError(cause=e)
 

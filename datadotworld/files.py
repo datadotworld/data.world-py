@@ -30,8 +30,7 @@ from datadotworld.client.api import RestApiError
 
 class RemoteFile:
     def __init__(self, config, dataset_key, file_name,
-                 mode='w',
-                 timeout=None):
+                 mode='w', **kwargs):
         """
         Construct a new data.world file object - values written to the
         `write()` method are streamed to the data.world api and written into
@@ -39,6 +38,9 @@ class RemoteFile:
         block:
         >>> with RemoteFile(config, "user/dataset", "file") as w
         >>>   w.write("")
+        or
+        >>> with RemoteFile(config, "user/dataset", "file", mode='r') as r
+        >>>   contents = r.read()
         which will ensure that at the end of the `with` block the file is
         closed and the HTTP request completes
 
@@ -58,20 +60,32 @@ class RemoteFile:
             how long to wait for a response when `close()` is
             called before timing out (defaults to no timeout - the close()
             call by default will wait indefinitely for a response)
+        chunk_size: int, optional
+            size of chunked bytes to return when reading streamed bytes
+            in 'rb' mode
+        decode_unicode: bool, optional
+            whether to decode textual responses as unicode when returning
+            streamed lines in 'r' mode
         """
         self._api_host = "https://api.data.world/v0"
-        self._queue = Queue(10)
-        self._response_queue = Queue(1)
-        self._sentinel = None
-        self._timeout = timeout
+        self._query_host = "https://query.data.world"
         self._config = config
         self._dataset_key = dataset_key
         self._file_name = file_name
-        if not(mode == 'w' or mode == 'wb'):
-            raise NotImplementedError(
-                "modes other than 'w' and 'wb' not supported")
         self._mode = mode
-
+        if mode in {'w', 'wb'}:
+            self._queue = Queue(10)
+            self._response_queue = Queue(1)
+            self._sentinel = None
+            self._thread = None
+            self._timeout = kwargs.get('timeout')
+        elif mode in {'r', 'rb'}:
+            self._read_response = None
+            self._chunk_size = kwargs.get('chunk_size', 1)
+            self._decode_unicode = kwargs.get('decode_unicode', True)
+        else:
+            raise NotImplementedError(
+                "modes other than 'w', 'wb', 'r', and 'rb' not supported")
 
     def write(self, value):
         """
@@ -94,27 +108,74 @@ class RemoteFile:
             (currently only "writing" modes for files are supported - leaving
             the option to implement "read" modes open for future work)
         """
-        if 'w' == self._mode:
-            if isinstance(value, str):
-                self._queue.put(value.encode('utf-8'))
-            else:
-                raise TypeError(
-                    "write() argument must be str, not {}"
-                        .format(type(value)))
-        elif 'wb' == self._mode:
-            if (isinstance(value, (bytes, bytearray))):
+        if 'w' == self._mode and isinstance(value, str):
+            self._queue.put(value.encode('utf-8'))
+        elif self._mode in {'w', 'wb'}:
+            if isinstance(value, (bytes, bytearray)):
                 self._queue.put(value)
             else:
                 raise TypeError(
-                    "a bytes-like object is required, not {}"
-                        .format(type(value)))
+                    "a string or bytes object is required, not {}".format(
+                        type(value)))
         else:
-            raise NotImplementedError(
-                "modes other than 'w' and 'wb' not supported")
+            raise IOError("File not opened in write mode.")
+
+    def read(self):
+        """
+        read the contents of the file that's been opened in read mode
+        """
+        if 'r' == self._mode:
+            return self._read_response.text
+        elif 'rb' == self._mode:
+            return self._read_response.content
+        else:
+            raise IOError("File not opened in read mode.")
+
+    def __iter__(self):
+        """
+        in 'r' mode, iterates the lines of the response text in unicode -
+        in 'rb' mode, iterates the bytes of the binary response.
+        """
+        if 'r' == self._mode:
+            return self._read_response.iter_lines(
+                decode_unicode=self._decode_unicode)
+        elif 'rb' == self._mode:
+            return self._read_response.iter_content(
+                chunk_size=self._chunk_size)
+        else:
+            raise IOError("File not opened in read mode.")
 
     def open(self):
         """
-        start the thread executing the HTTP request
+        in write mode, start the thread executing the HTTP request.  in read
+        mode, execute the GET request and hold on to the response.
+        """
+        if self._mode.find('w') >= 0:
+            self._open_for_write()
+        else:
+            self._open_for_read()
+
+    def _open_for_read(self):
+        """
+        open the file in read mode
+        """
+        ownerid, datasetid = parse_dataset_key(self._dataset_key)
+        response = requests.get(
+            '{}/file_download/{}/{}/{}'.format(
+                self._query_host, ownerid, datasetid, self._file_name),
+            headers={
+                'Authorization': 'Bearer {}'.format(
+                    self._config.auth_token)
+            }, stream=True)
+        try:
+            response.raise_for_status()
+        except Exception as e:
+            raise RestApiError(cause=e)
+        self._read_response = response
+
+    def _open_for_write(self):
+        """
+        open the file in write mode
         """
         def put_request(body, response_queue, host,
                         config, dataset_key, file_name):
@@ -140,18 +201,23 @@ class RemoteFile:
 
     def close(self):
         """
-        closing the writer adds the sentinel value into the queue and joins
-        the thread executing the HTTP request
+        in write mode, closing the handle adds the sentinel value into the
+        queue and joins the thread executing the HTTP request.  in read mode,
+        this clears out the read response object so there are no references
+        to it, and the resources can be reclaimed.
         """
-        self._queue.put(self._sentinel)
-        self._thread.join(timeout=self._timeout)
-        if self._thread.is_alive():
-            raise RemoteFileException("Closing file timed out.")
-        response = self._response_queue.get_nowait()
-        try:
-            response.raise_for_status()
-        except Exception as e:
-            raise RestApiError(cause=e)
+        if self._mode.find('w') >= 0:
+            self._queue.put(self._sentinel)
+            self._thread.join(timeout=self._timeout)
+            if self._thread.is_alive():
+                raise RemoteFileException("Closing file timed out.")
+            response = self._response_queue.get_nowait()
+            try:
+                response.raise_for_status()
+            except Exception as e:
+                raise RestApiError(cause=e)
+        else:
+            self._read_response = None
 
     def __enter__(self):
         """
@@ -171,7 +237,6 @@ class RemoteFileException(Exception):
     """
     Exception wrapper for exceptions arising from the RemoteFile
     """
-
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
         super(RemoteFileException, self).__init__(*args, **kwargs)
