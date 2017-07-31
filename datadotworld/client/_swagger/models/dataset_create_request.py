@@ -73,8 +73,10 @@ class DatasetCreateRequest(object):
           self.summary = summary
         if tags is not None:
           self.tags = tags
-        self.title = title
-        self.visibility = visibility
+        if title is not None:
+          self.title = title
+        if visibility is not None:
+          self.visibility = visibility
 
     @property
     def description(self):

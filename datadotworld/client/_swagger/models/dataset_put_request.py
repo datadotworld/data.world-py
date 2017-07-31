@@ -75,7 +75,8 @@ class DatasetPutRequest(object):
           self.tags = tags
         if title is not None:
           self.title = title
-        self.visibility = visibility
+        if visibility is not None:
+          self.visibility = visibility
 
     @property
     def description(self):

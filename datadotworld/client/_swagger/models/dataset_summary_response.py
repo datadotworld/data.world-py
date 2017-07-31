@@ -78,23 +78,30 @@ class DatasetSummaryResponse(object):
         self._updated = None
         self._visibility = None
 
-        self.created = created
+        if created is not None:
+          self.created = created
         if description is not None:
           self.description = description
         if files is not None:
           self.files = files
-        self.id = id
+        if id is not None:
+          self.id = id
         if license is not None:
           self.license = license
-        self.owner = owner
-        self.status = status
+        if self.owner is not None:
+          self.owner = owner
+        if self.status is not None:
+          self.status = status
         if summary is not None:
           self.summary = summary
         if tags is not None:
           self.tags = tags
-        self.title = title
-        self.updated = updated
-        self.visibility = visibility
+        if title is not None:
+          self.title = title
+        if updated is not None:
+          self.updated = updated
+        if visibility is not None:
+          self.visibility = visibility
 
     @property
     def created(self):
