@@ -186,7 +186,8 @@ For example:
 Write to a dataset
 ------------------
 
-The ``open_remote_file()`` function allows you to write data to a file in a data.world dataset.
+The ``open_remote_file()`` function allows you to write data to or read data from a file in a
+data.world dataset.
 
 The object that is returned from the ``open_remote_file()`` call is similar to a file handle that
 would be used to write to a local file - it has a ``write()`` method, and contents sent to that
@@ -241,6 +242,31 @@ file in binary mode...
 
         >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='wb') as w:
         ...   w.write(bytes([100,97,116,97,46,119,111,114,108,100]))
+
+You can also read data from a file in a similar fashion
+.. code-block:: python
+
+        >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='r') as r:
+        ...   print(r.read)
+
+
+Reading from the file into common parsing libraries works naturally, too - when opened in 'r' mode, the
+file object acts as an Iterator of the lines in the file:
+.. code-block:: python
+
+        >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='r') as r:
+        ...   csvr = csv.DictReader(r)
+        ...   for row in csvr:
+        ...      print(row['column a'], row['column b'])
+
+
+Reading binary files works naturally, too - when opened in 'rb' mode, ``read()`` returns the contents of
+the file as a byte array, and the file object acts as an iterator of bytes:
+.. code-block:: python
+
+        >>> with dw.open_remote_file('username/test-dataset', 'test', mode='rb') as r:
+        ...   bytes = r.read()
+
 
 API Wrappers
 ------------
