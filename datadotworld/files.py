@@ -24,7 +24,7 @@ except ImportError:
     from Queue import Queue
 from threading import Thread
 import requests
-from datadotworld.util import parse_dataset_key
+from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.client.api import RestApiError
 
 
@@ -73,6 +73,7 @@ class RemoteFile:
         self._dataset_key = dataset_key
         self._file_name = file_name
         self._mode = mode
+        self._user_agent = kwargs.get('user_agent', _user_agent())
         if mode in {'w', 'wb'}:
             self._queue = Queue(10)
             self._response_queue = Queue(1)
@@ -164,6 +165,7 @@ class RemoteFile:
             '{}/file_download/{}/{}/{}'.format(
                 self._query_host, ownerid, datasetid, self._file_name),
             headers={
+                'User-Agent': self._user_agent,
                 'Authorization': 'Bearer {}'.format(
                     self._config.auth_token)
             }, stream=True)
@@ -177,26 +179,20 @@ class RemoteFile:
         """
         open the file in write mode
         """
-        def put_request(body, response_queue, host,
-                        config, dataset_key, file_name):
-            ownerid, datasetid = parse_dataset_key(dataset_key)
+        def put_request(body):
+            ownerid, datasetid = parse_dataset_key(self._dataset_key)
             response = requests.put(
                 "{}/uploads/{}/{}/files/{}".format(
-                    host, ownerid, datasetid, file_name),
+                    self._api_host, ownerid, datasetid, self._file_name),
                 data=body,
                 headers={
-                    'Authorization': 'Bearer {}'.format(config.auth_token)
+                    'User-Agent': self._user_agent,
+                    'Authorization': 'Bearer {}'.format(self._config.auth_token)
                 })
-            response_queue.put(response)
+            self._response_queue.put(response)
 
         body = iter(self._queue.get, self._sentinel)
-        self._thread = Thread(target=put_request,
-                              args=(body,
-                                    self._response_queue,
-                                    self._api_host,
-                                    self._config,
-                                    self._dataset_key,
-                                    self._file_name))
+        self._thread = Thread(target=put_request, args=(body,))
         self._thread.start()
 
     def close(self):
