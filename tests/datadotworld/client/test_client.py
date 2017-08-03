@@ -30,6 +30,7 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
                       empty, raises, calling)
 
 from datadotworld.client._swagger import DatasetsApi, UploadsApi
+from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import *
 from datadotworld.client.api import RestApiClient, RestApiError
 
@@ -119,6 +120,14 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
+
+    def test_rest_api_error(self):
+        apix = ApiException(status=400, reason="boom")
+        e = RestApiError(cause=apix)
+        assert_that(e.status, equal_to(400))
+        assert_that(e.reason, equal_to("boom"))
+        assert_that(e.body, equal_to(None))
+        assert_that(e.cause, equal_to(apix))
 
     # TODO Test CRUD exception cases
 
