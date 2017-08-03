@@ -473,6 +473,7 @@ class RestApiError(Exception):
 
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
+        self.status, self.reason, self.body = None, None, None
         if self.cause is not None:
             if type(self.cause) is _swagger.rest.ApiException:
                 self.status = self.cause.status
@@ -486,9 +487,9 @@ class RestApiError(Exception):
                     self.body = requests_response.content
                     self.json = requests_response.json  # Delegates to requests
 
-        self.status = kwargs.pop('status', None)
-        self.reason = kwargs.pop('reason', None)
-        self.body = kwargs.pop('body', None)
+        self.status = kwargs.pop('status', self.status)
+        self.reason = kwargs.pop('reason', self.reason)
+        self.body = kwargs.pop('body', self.body)
         super(RestApiError, self).__init__(*args, **kwargs)
 
     def json(self):
