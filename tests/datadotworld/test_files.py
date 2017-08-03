@@ -24,6 +24,7 @@ import struct
 from datadotworld.config import DefaultConfig
 from datadotworld.files import RemoteFile, RemoteFileException
 from datadotworld.client.api import RestApiError
+from datadotworld.util import _user_agent
 
 
 class TestDataDotWorldFileWriter:
@@ -31,6 +32,7 @@ class TestDataDotWorldFileWriter:
         with responses.RequestsMock() as resp:
             def upload_endpoint(request):
                 assert "test" == ''.join([chunk.decode('utf-8') for chunk in request.body])
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, json.dumps({})
 
             resp.add_callback(resp.PUT,
@@ -45,6 +47,7 @@ class TestDataDotWorldFileWriter:
             def upload_endpoint(request):
                 assert "a,b\r\n42,17\r\n420,178\r\n" == \
                        ''.join([chunk.decode('utf-8') for chunk in request.body])
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, json.dumps({})
 
             resp.add_callback(resp.PUT,
@@ -61,6 +64,7 @@ class TestDataDotWorldFileWriter:
         with pytest.raises(RestApiError):
             with responses.RequestsMock() as resp:
                 def upload_endpoint(request):
+                    assert request.headers.get('User-Agent') == _user_agent()
                     return 400, {}, json.dumps({})
 
                 resp.add_callback(resp.PUT,
@@ -78,6 +82,7 @@ class TestDataDotWorldFileWriter:
     def test_read_basic(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test."
 
             resp.add_callback(resp.GET,
@@ -91,6 +96,7 @@ class TestDataDotWorldFileWriter:
     def test_read_non_utf_8(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test.".encode('utf-16')
 
             resp.add_callback(resp.GET,
@@ -104,6 +110,7 @@ class TestDataDotWorldFileWriter:
     def test_read_binary_basic(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test."
 
             resp.add_callback(resp.GET,
@@ -117,6 +124,7 @@ class TestDataDotWorldFileWriter:
     def test_read_binary_bytes(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, struct.pack('BBBB', 0, 1, 254, 255)
 
             resp.add_callback(resp.GET,
@@ -130,6 +138,7 @@ class TestDataDotWorldFileWriter:
     def test_read_binary_iter(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "abcdef"
 
             resp.add_callback(resp.GET,
@@ -143,6 +152,7 @@ class TestDataDotWorldFileWriter:
     def test_read_binary_iter_chunks(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "abcdef"
 
             resp.add_callback(resp.GET,
@@ -157,6 +167,7 @@ class TestDataDotWorldFileWriter:
     def test_read_binary_bytes_iter(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, struct.pack('BBBB', 0, 1, 254, 255)
 
             resp.add_callback(resp.GET,
@@ -171,6 +182,7 @@ class TestDataDotWorldFileWriter:
         with pytest.raises(RestApiError):
             with responses.RequestsMock() as resp:
                 def download_endpoint(request):
+                    assert request.headers.get('User-Agent') == _user_agent()
                     return 400, {}, json.dumps({'message': 'bad request'})
 
                 resp.add_callback(resp.GET,
@@ -184,6 +196,7 @@ class TestDataDotWorldFileWriter:
     def test_read_csv(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "A,B,C\n1,2,3\n4,5,6"
 
             resp.add_callback(resp.GET,
@@ -199,6 +212,7 @@ class TestDataDotWorldFileWriter:
     def test_read_jsonl(self):
         with responses.RequestsMock() as resp:
             def download_endpoint(request):
+                assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, '{"A":"1", "B":"2", "C":"3"}\n' \
                                 '{"A":"4", "B":"5", "C":"6"}\n'
 
