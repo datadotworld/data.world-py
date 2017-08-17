@@ -183,11 +183,14 @@ For example:
                 {'name': 'PointsPerGame', 'type': 'number'},
                 {'name': 'AssistsPerGame', 'type': 'number'}]}
 
-Write to a dataset
-------------------
+Work with files
+---------------
 
 The ``open_remote_file()`` function allows you to write data to or read data from a file in a
 data.world dataset.
+
+Writing files
+.............
 
 The object that is returned from the ``open_remote_file()`` call is similar to a file handle that
 would be used to write to a local file - it has a ``write()`` method, and contents sent to that
@@ -243,7 +246,11 @@ file in binary mode...
         >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='wb') as w:
         ...   w.write(bytes([100,97,116,97,46,119,111,114,108,100]))
 
+Reading files
+.............
+
 You can also read data from a file in a similar fashion
+
 .. code-block:: python
 
         >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='r') as r:
@@ -252,6 +259,7 @@ You can also read data from a file in a similar fashion
 
 Reading from the file into common parsing libraries works naturally, too - when opened in 'r' mode, the
 file object acts as an Iterator of the lines in the file:
+
 .. code-block:: python
 
         >>> with dw.open_remote_file('username/test-dataset', 'test.txt', mode='r') as r:
@@ -262,6 +270,7 @@ file object acts as an Iterator of the lines in the file:
 
 Reading binary files works naturally, too - when opened in 'rb' mode, ``read()`` returns the contents of
 the file as a byte array, and the file object acts as an iterator of bytes:
+
 .. code-block:: python
 
         >>> with dw.open_remote_file('username/test-dataset', 'test', mode='rb') as r:
