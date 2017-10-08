@@ -73,7 +73,7 @@ setup(
         'python-dateutil>=2.6.0,<3.0a',
         'requests>=2.0.0,<3.0a',
         'six>=1.5.0,<2.0a',
-        'tabulator<2.0a',
+        'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
     ],
     setup_requires=[
