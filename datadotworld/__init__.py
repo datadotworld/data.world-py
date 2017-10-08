@@ -30,7 +30,7 @@ import weakref
 from datadotworld.config import FileConfig, ChainedConfig
 from datadotworld.datadotworld import DataDotWorld, UriParam
 
-__version__ = '1.4.2'
+__version__ = '1.4.3'
 
 # Convenience top-level functions
 
