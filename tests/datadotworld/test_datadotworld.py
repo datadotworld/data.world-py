@@ -125,12 +125,14 @@ class TestDataDotWorld:
              '%24data_world_param0%3D%22USA%22'
          ]
          ),
-        ('sparql', 'notreallysparql', {'$aString': "USA", '$anInt': 10, '$aDecimal': 100.0, '$aBool': False},
+        ('sparql', 'notreallysparql', {'$aString': "USA", '$anInt': 10, '$aDecimal': 100.0, '$aBool': False,
+                                       '$uUri': datadotworld.UriParam('https://example.com/something#something')},
          [
              '%24anInt%3D%2210%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23integer%3E',
              '%24aDecimal%3D%22100.0%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal%3E',
              '%24aString%3D%22USA%22',
              '%24aBool%3D%22false%22%5E%5E%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23boolean%3E',
+             '%3Chttps%3A%2F%2Fexample.com%2Fsomething%23something%3E'
          ]
          )
     ]

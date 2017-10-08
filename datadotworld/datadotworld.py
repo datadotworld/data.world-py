@@ -281,6 +281,25 @@ class DataDotWorld(object):
             raise RestApiError(cause=e)
 
 
+class UriParam():
+    """
+    Represents a URI value as a parameter to a SPARQL query
+    """
+    def __init__(self, uri):
+        """
+        Initialize the UriParam value
+        :param uri: the uri value to wrap
+        """
+        self._uri = uri
+
+    def __repr__(self):
+        """
+        The official string representation for the URI
+        :return: the string representation for the URI
+        """
+        return self._uri
+
+
 # convert a literal into the SPARQL format expected by the REST endpoint
 def convert_to_sparql_literal(value):
     if isinstance(value, bool):
@@ -292,6 +311,8 @@ def convert_to_sparql_literal(value):
     elif isinstance(value, numbers.Number):
         return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#decimal>".format(
             value)
+    elif isinstance(value, UriParam):
+        return "<{}>".format(repr(value))
     else:
         return "\"{}\"".format(value)
 
