@@ -102,6 +102,24 @@ class QueryResults(object):
                             values.append(None)
 
                     table_row = schema_obj.cast_row(values)
+
+                    # when the column is a string value, the jsontableschema
+                    # library is incorrectly mapping the several literal
+                    # string values ('null', 'none', '-', etc.) to the python
+                    # `None` value - a deeper fix might be to reconsider using
+                    # that library, or maybe fixing this issue in that
+                    # library (since it's probably not a good idea to render
+                    # a number of strings un-representable) - this fixes the
+                    # problem for our result sets.  Essentially, this zips
+                    # over each result set and checks whether we mapped a
+                    # non-null value to `None` in a string field, and if
+                    # so it restores the non-null value before continuing
+                    table_row = map(lambda field, original, mapped:
+                                    original if (not mapped) and original
+                                       and field.type == 'string'
+                                    else mapped,
+                                    schema_obj.fields, values, table_row)
+
                     yield OrderedDict(zip(field_names, table_row))
             elif 'boolean' in self.raw_data:
                 # Results of an ASK query
