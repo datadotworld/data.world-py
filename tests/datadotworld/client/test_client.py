@@ -39,7 +39,8 @@ class TestApiClient:
     @pytest.fixture()
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(
+                owner=o, id=d)
             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
             return api

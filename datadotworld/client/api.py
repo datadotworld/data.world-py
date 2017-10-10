@@ -90,8 +90,9 @@ class RestApiClient(object):
         'An Intro to data.world Dataset'
         """
         try:
+            owner, id = parse_dataset_key(dataset_key)
             return self._datasets_api.get_dataset(
-                *(parse_dataset_key(dataset_key))).to_dict()
+                owner, id).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
