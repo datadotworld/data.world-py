@@ -94,5 +94,15 @@ class TestQueryResults:
                     equal_to((len(query_result_example['results']['bindings']),
                               len(metadata_names))))
 
+    def test_str_column(self, query_results):
+        '''
+        Test added for https://github.com/datadotworld/data.world-py/issues/68
+        added a value in the `st.name` column in sql_select.json of "NONE",
+        which was previously mapped to Python `None` - this verifies that we
+        have fixed that issue.
+        '''
+        for value in query_results.dataframe['st.name']:
+            assert_that(value)
+
     def test_str(self, query_results, query_result_example):
         assert_that(str(query_results), equal_to(str(query_result_example)))
