@@ -29,7 +29,8 @@ from doublex import assert_that, Spy, called
 from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
                       empty, raises, calling)
 
-from datadotworld.client._swagger import DatasetsApi, UploadsApi
+from datadotworld.client._swagger import (DatasetsApi, DownloadApi, SparqlApi,
+                                          SqlApi, UploadsApi, UserApi)
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import *
 from datadotworld.client.api import RestApiClient, RestApiError
@@ -51,10 +52,41 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
-    def api_client(self, config, datasets_api, uploads_api):
+    def download_api(self):
+        with Spy(DownloadApi) as api:
+            api.download_dataset
+            api.download_file
+            return api
+
+    @pytest.fixture()
+    def sql_api(self):
+        with Spy(SqlApi) as api:
+            api.sql_get
+            api.sql_post
+            return api
+
+    @pytest.fixture()
+    def sparql_api(self):
+        with Spy(SparqlApi) as api:
+            api.sparql_get
+            api.sparql_post
+            return api
+
+    @pytest.fixture()
+    def user_api(self):
+        with Spy(UserApi) as api:
+            api.get_user_data = lambda : UserDataResponse()
+            return api
+
+    @pytest.fixture()
+    def api_client(self, config, datasets_api, uploads_api, download_api, sql_api, sparql_api, user_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._uploads_api = uploads_api
+        client._download_api = download_api
+        client._sql_api = sql_api
+        client._sparql_api = sparql_api
+        client._user_api = user_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -190,3 +222,44 @@ class TestApiClient:
             calling(api_client.download_datapackage).with_args(
                 dataset_key, config.cache_dir),
             raises(ValueError))
+
+    def test_download_dataset(self, api_client, dataset_key, download_api):
+        api_client.download_dataset(dataset_key)
+        assert_that(download_api.download_dataset,
+                    called().times(1).with_args('agentid', 'datasetid'))
+
+    def test_download_file(self, api_client, dataset_key, download_api):
+        api_client.download_file(dataset_key, 'file')
+        assert_that(download_api.download_file,
+                    called().times(1).with_args('agentid', 'datasetid', 'file'))
+
+    def test_sql_get(self, api_client, dataset_key, sql_api):
+        api_client.sql_get(dataset_key, 'query')
+        assert_that(sql_api.sql_get,
+                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+
+    def test_sql_post(self, api_client, dataset_key, sql_api):
+        api_client.sql_post(dataset_key, 'query')
+        assert_that(sql_api.sql_post,
+                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+
+    def test_sparql_get(self, api_client, dataset_key, sparql_api):
+        api_client.sparql_get(dataset_key, 'query')
+        assert_that(sparql_api.sparql_get,
+                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+
+    def test_sparql_post(self, api_client, dataset_key, sparql_api):
+        api_client.sparql_post(dataset_key, 'query')
+        assert_that(sparql_api.sparql_post,
+                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+
+    def test_get_user_data(self, api_client, user_api):
+        sample_user_data = {
+            'avatar_url': None,
+            'created': None,
+            'display_name': None,
+            'id': None,
+            'updated': None
+        }
+        user_data_response = api_client.get_user_data()
+        assert_that(user_data_response, has_properties(sample_user_data))
