@@ -1,8 +1,17 @@
 # Contributing Guidelines
 
 ### General
-### Issues
+* Keep in mind that this is a design project. Contributions of all kinds (issues, ideas, proposals), not just code, are highly appreciated.
+* Pull requests are welcome with the understanding that changes proposed to actual operations, parameters and responses will be carefully evaluated and discussed, and may not always be accepted.
+* All contributions including documentation, filenames and discussions should be written in English language.
 
+### Issues
+Our issue tracker can be used to report issues and propose changes to the current or next version of the data.world API specification.
+
+Please follow these guidelines before opening an issue:
+
+- Make sure your issue is not a duplicate.
+- Make sure your issue is relevant to the specification.
 # Contribute Code
 
 ### Fork the Project
@@ -92,19 +101,48 @@ it should now be running on you local machine at http://127.0.0.1:3001 if the po
 * You can also import the `swagger-dwapi-def.json` file into Postman.
 
 ### Create a Feature Branch
+```sh
+$ git checkout master
+$ git pull upstream master
+$ git checkout -b my-feature-branch
+```
 
 ### Write Tests
+Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add tests to spec.
+
+We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
 
 ### Write Code
 
+Implement your feature or bug fix. Make sure that all tests pass without errors
+
 ### Write Documentation
+
+Document any external behavior in the [README](https://github.com/datadotworld/data.world-py/blob/master/README.rst).
 
 ### Commit Changes
 
+Make sure git knows your name and email address:
+
+```sh
+git config --global user.name "Your Name"
+git config --global user.email "contributor@example.com"
+```
+
+Writing good commit logs is important. A commit log should describe what changed and why.
+```sh
+git add ...
+git commit
+```
+
 ### Push
 
-### Make a Pull Request
+```sh
+git push origin my-feature-branch
+```
 
-### Conventions
+### Make a Pull Request
+Go to https://github.com/[YOUR_GITHUB_NAME]/data.world-py.git and select your feature branch. Click the 'Pull Request' button and fill out the form. Pull requests are usually reviewed within a few days.
 
 ### Thank you!
+Thank you in advance, for contributing to this project!
