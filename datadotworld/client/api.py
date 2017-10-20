@@ -57,6 +57,10 @@ class RestApiClient(object):
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
+        self._user_api = _swagger.UserApi(swagger_client)
+        self._sql_api = _swagger.SqlApi(swagger_client)
+        self._sparql_api = _swagger.SparqlApi(swagger_client)
+        self._download_api = _swagger.DownloadApi(swagger_client)
 
     # Dataset Operations
 
@@ -440,6 +444,314 @@ class RestApiClient(object):
         shutil.rmtree(unzip_dir, ignore_errors=True)
 
         return path.join(dest_dir, 'datapackage.json')
+
+    # User Operations
+
+    def get_user_data(self):
+        """Retrieve data for authenticated user
+
+        Parameters
+        ----------
+        no parameters
+
+        Returns
+        -------
+        dict
+            User data, with all attributes
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_data = api_client.get_user_data()
+        >>> user_data.displayName
+        'Name User'
+        """
+        try:
+            return self._user_api.get_user_data()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_contributing_datasets(self):
+        """Fetch datasets that the authenticated user has access to
+
+        Parameters
+        ----------
+        limit : str, optional
+            Maximum number of items to include in a page of results
+        next : str, optional
+            Token from previous result page (to be used when requesting a subsequent page)
+        sort : str, optional
+            Property name to sort
+
+        Returns
+        -------
+        dict
+            Authenticated user dataset
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_dataset = api_client.fetch_contributing_datasets()
+        {'count': 0, 'records': [], 'next_page_token': None}
+        """
+        try:
+            return self._user_api.fetch_contributing_datasets()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_liked_datasets(self):
+        """Fetch datasets that authenticated user likes
+
+        Parameters
+        ----------
+        limit : str, optional
+            Maximum number of items to include in a page of results
+        next : str, optional
+            Token from previous result page (to be used when requesting a subsequent page)
+        sort : str, optional
+            Property name to sort
+
+        Returns
+        -------
+        dict
+            Dataset definition, with all attributes
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_liked_dataset = api_client.fetch_liked_datasets()
+        >>> user_liked_dataset.count
+        1
+        """
+        try:
+            return self._user_api.fetch_liked_datasets()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_datasets(self):
+        """Fetch authenticated user owned datasets
+
+        Parameters
+        ----------
+        limit : str, optional
+            Maximum number of items to include in a page of results
+        next : str, optional
+            Token from previous result page (to be used when requesting a subsequent page)
+        sort : str, optional
+            Property name to sort
+
+        Returns
+        -------
+        dict
+            Dataset definition, with all attributes
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_owned_dataset = api_client.fetch_datasets()
+        >>> user_owned_dataset.records
+        []
+        """
+        try:
+            return self._user_api.fetch_datasets()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Sql Operations
+
+    def sql_get(self, dataset_key, query):
+        """Executes SQL queries against a dataset via GET
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        query : str
+            SQL query
+        include_table_schema : bool
+            Flags indicating to include table schema in the response
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> query = 'SELECT * FROM test-dataset'
+        >>> api_client.sql_get('username/test-dataset', query)
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._sql_api.sql_get(owner_id, dataset_id, query)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def sql_post(self, dataset_key, query):
+        """Executes SQL queries against a dataset via POST
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        query : str
+            SQL query
+        include_table_schema : bool
+            Flags indicating to include table schema in the response
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sql_post('username/test-dataset', query)
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._sql_api.sql_post(owner_id, dataset_id, query)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Sparql Operations
+
+    def sparql_get(self, dataset_key, query):
+        """Executes SPARQL queries against a dataset via GET
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        query : str
+            SPARQL query
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sparql_get('username/test-dataset', query)
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._sparql_api.sparql_get(owner_id, dataset_id, query)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def sparql_post(self, dataset_key, query):
+        """Executes SPARQL queries against a dataset via POST
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        query : str
+            SPARQL query
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sparql_post('username/test-dataset', query)
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._sparql_api.sparql_post(owner_id, dataset_id, query)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Download Operations
+
+    def download_dataset(self, dataset_key):
+        """Return a .zip containing all files within the dataset as uploaded.
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.download_dataset('username/test-dataset')
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._download_api.download_dataset(owner_id, dataset_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def download_file(self, dataset_key, file):
+        """Return a .zip of a files within the dataset as uploaded.
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+
+        file : str
+            File path to be returned
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.download_file('username/test-dataset', ['/my/local/example.csv'])
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._download_api.download_file(owner_id, dataset_id, file)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
 
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
