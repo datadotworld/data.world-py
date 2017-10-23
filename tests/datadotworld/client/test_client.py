@@ -263,3 +263,18 @@ class TestApiClient:
         }
         user_data_response = api_client.get_user_data()
         assert_that(user_data_response, has_properties(sample_user_data))
+
+    def test_fetch_liked_datasets(self, api_client, user_api):
+        api_client.fetch_liked_datasets()
+        assert_that(user_api.fetch_liked_datasets,
+                    called().times(1))
+
+    def test_fetch_contributing_datasets(self, api_client, user_api):
+        api_client.fetch_contributing_datasets()
+        assert_that(user_api.fetch_contributing_datasets,
+                    called().times(1))
+
+    def test_fetch_datasets(self, api_client, user_api):
+        api_client.fetch_datasets()
+        assert_that(user_api.fetch_datasets,
+                    called().times(1))
