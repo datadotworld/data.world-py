@@ -1,10 +1,5 @@
 # Contributing Guidelines
 
-### General
-* Keep in mind that this is a design project. Contributions of all kinds (issues, ideas, proposals), not just code, are highly appreciated.
-* Pull requests are welcome with the understanding that changes proposed to actual operations, parameters and responses will be carefully evaluated and discussed, and may not always be accepted.
-* All contributions including documentation, filenames and discussions should be written in English language.
-
 ### Issues
 Our issue tracker can be used to report issues and propose changes to the current or next version of the data.world API specification.
 
@@ -40,11 +35,9 @@ $ python setup.py test
 
 ### Updating Swagger Definition
 
-Once new API endpoints/paths are introduced, there is a need to update `data.world-py/datadotworld/client/swagger-dwapi-def.json` file with [data.world APIs swagger.json](https://api.data.world/v0/swagger.json).
+Once new API endpoints/paths are introduced, there is a need to update `data.world-py/datadotworld/client/swagger-dwapi-def.json` file with [data.world APIs swagger.json](https://api.data.world/v0/swagger.json) and also need to re-generate `_swagger` package. Running the Makefile in the project folder root allows us do the updates and regenerating with one command.
 
-So, navigate to [data.world APIs swagger.json](https://api.data.world/v0/swagger.json), copy the and paste the json into the `data.world-py/datadotworld/client/swagger-dwapi-def.json` file in your project folder.
-
-You will also need to re-generate `_swagger` package. This can be done be installing [swagger-codegen](https://swagger.io/swagger-codegen/).
+First, install [swagger-codegen](https://swagger.io/swagger-codegen/).
 
 #### Installing swagger-codegen with Homebrew
 
@@ -54,9 +47,7 @@ $ brew install swagger-codegen
 
 `swagger-codegen` should now be a recognisable command.
 
-Alternatively, there's a Makefile in the project folder root that allows us do the updates and regenerating with one command.
-
-Once you have installed [swagger-codegen](https://swagger.io/swagger-codegen/), run;
+Run;
 
 ```sh
 $ make update_swagger_codegen
@@ -64,7 +55,7 @@ $ make update_swagger_codegen
 
 This will update `data.world-py/datadotworld/client/swagger-dwapi-def.json` and also regenerate `_swagger` package.
 
-You can also run tests by:
+You can also run tests:
 
 ```sh
 $ make test
