@@ -142,10 +142,12 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetCreateRequest(),
-            lambda name, url: _swagger.FileCreateRequest(
-                name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+            lambda name, url, description, labels : _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels),
             kwargs)
-
         try:
             (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
                 owner_id, request, _return_http_data_only=False)
@@ -159,6 +161,8 @@ class RestApiClient(object):
 
         Parameters
         ----------
+        title: str, optional
+            Dataset title
         description : str, optional
             Dataset description
         summary : str, optional
@@ -188,9 +192,11 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url: _swagger.FileCreateOrUpdateRequest(
+            lambda name, url, description, labels: _swagger.FileCreateOrUpdateRequest(
                 name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url)),
+                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+                description=description,
+                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -206,6 +212,8 @@ class RestApiClient(object):
 
         Parameters
         ----------
+        title: str, optional
+            Dataset title
         description : str, optional
             Dataset description
         summary : str, optional
@@ -236,8 +244,11 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPutRequest(),
-            lambda name, url: _swagger.FileCreateRequest(
-                name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+            lambda name, url, description, labels: _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -246,9 +257,42 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    def delete_dataset(self, dataset_key):
+        """Deletes a dataset and all associated data
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+
+        Returns
+        -------
+        str
+            Success message for deleted dataset
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.delete_dataset(
+        ...     'jonloyens/an-intro-to-dataworld-dataset')
+        >>> del_dataset.message
+        'Dataset has been successfully deleted.'
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._datasets_api.delete_dataset(owner_id, dataset_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     # File Operations
 
-    def add_files_via_url(self, dataset_key, files={}):
+    def add_files_via_url(self, dataset_key, files={}, **kwargs):
         """Add or update dataset files linked to source URLs
 
         Parameters
@@ -256,7 +300,9 @@ class RestApiClient(object):
         dataset_key : str
             Dataset identifier, in the form of owner/id
         files : dict
-            File names and source URLs to add or update
+            File names, description, labels and source URLs to add or update
+
+        *description and labels are both optional.*
 
         Raises
         ------
@@ -270,12 +316,13 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.add_files_via_url(
         ...    'username/test-dataset',
-        ...    {'example.csv': url})  # doctest: +SKIP
+        ...    {'example.csv': url}, description='file description')  # doctest: +SKIP
         """
+
         file_requests = [_swagger.FileCreateOrUpdateRequest(
             name=name,
-            source=_swagger.FileSourceCreateOrUpdateRequest(url=url))
-                         for name, url in files.items()]
+            source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+            **kwargs) for name, url in files.items()]
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -311,7 +358,7 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def upload_files(self, dataset_key, files):
+    def upload_files(self, dataset_key, files, **kwargs):
         """Upload dataset files
 
         Parameters
@@ -320,6 +367,8 @@ class RestApiClient(object):
             Dataset identifier, in the form of owner/id
         files : list of str
             The list of names/paths for files stored in the local filesystem
+        expand_archives: bool optional
+            Boolean value to indicate files should be expanded upon upload
 
         Raises
         ------
@@ -336,7 +385,38 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files)
+            self._uploads_api.upload_files(owner_id, dataset_id, files, **kwargs)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def upload_file(self, dataset_key, name, **kwargs):
+        """Upload one file to a dataset
+
+        Parameters
+        ----------
+        dataset_key : str
+            Dataset identifier, in the form of owner/id
+        name : str
+            File name
+        expand_archive: bool optional
+            Boolean value to indicate files should be expanded upon upload
+
+        Raises
+        ------
+        RestApiException
+            If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.upload_file(
+        ...     'username/test-dataset',
+        ...     'example.csv')  # doctest: +SKIP
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
