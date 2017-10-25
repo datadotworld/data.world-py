@@ -663,37 +663,7 @@ class RestApiClient(object):
 
     # Sql Operations
 
-    def sql_get(self, dataset_key, query):
-        """Executes SQL queries against a dataset via GET
-
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        query : str
-            SQL query
-        include_table_schema : bool
-            Flags indicating to include table schema in the response
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
-
-        Examples
-        --------
-        >>> import datadotworld as dw
-        >>> api_client = dw.api_client()
-        >>> query = 'SELECT * FROM test-dataset'
-        >>> api_client.sql_get('username/test-dataset', query)
-        """
-        owner_id, dataset_id = parse_dataset_key(dataset_key)
-        try:
-            return self._sql_api.sql_get(owner_id, dataset_id, query)
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
-
-    def sql_post(self, dataset_key, query):
+    def sql(self, dataset_key, query):
         """Executes SQL queries against a dataset via POST
 
         Parameters
@@ -705,6 +675,11 @@ class RestApiClient(object):
         include_table_schema : bool
             Flags indicating to include table schema in the response
 
+        Returns
+        -------
+        NoneType
+            None
+
         Raises
         ------
         RestApiException
@@ -715,6 +690,7 @@ class RestApiClient(object):
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
         >>> api_client.sql_post('username/test-dataset', query)
+        None
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -724,34 +700,7 @@ class RestApiClient(object):
 
     # Sparql Operations
 
-    def sparql_get(self, dataset_key, query):
-        """Executes SPARQL queries against a dataset via GET
-
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        query : str
-            SPARQL query
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
-
-        Examples
-        --------
-        >>> import datadotworld as dw
-        >>> api_client = dw.api_client()
-        >>> api_client.sparql_get('username/test-dataset', query)
-        """
-        owner_id, dataset_id = parse_dataset_key(dataset_key)
-        try:
-            return self._sparql_api.sparql_get(owner_id, dataset_id, query)
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
-
-    def sparql_post(self, dataset_key, query):
+    def sparql(self, dataset_key, query):
         """Executes SPARQL queries against a dataset via POST
 
         Parameters
@@ -760,6 +709,11 @@ class RestApiClient(object):
             Dataset identifier, in the form of owner/id
         query : str
             SPARQL query
+
+        Returns
+        -------
+        NoneType
+            None
 
         Raises
         ------
@@ -771,6 +725,7 @@ class RestApiClient(object):
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
         >>> api_client.sparql_post('username/test-dataset', query)
+        None
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -788,6 +743,11 @@ class RestApiClient(object):
         dataset_key : str
             Dataset identifier, in the form of owner/id
 
+        Returns
+        -------
+        NoneType
+            None
+
         Raises
         ------
         RestApiException
@@ -798,6 +758,7 @@ class RestApiClient(object):
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
         >>> api_client.download_dataset('username/test-dataset')
+        None
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -806,7 +767,7 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     def download_file(self, dataset_key, file):
-        """Return a .zip of a files within the dataset as uploaded.
+        """Return a file within the dataset as uploaded.
 
         Parameters
         ----------
@@ -815,6 +776,11 @@ class RestApiClient(object):
 
         file : str
             File path to be returned
+
+        Returns
+        -------
+        NoneType
+            None
 
         Raises
         ------
@@ -825,7 +791,7 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> api_client.download_file('username/test-dataset', ['/my/local/example.csv'])
+        >>> api_client.download_file('username/test-dataset', '/my/local/example.csv')
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
