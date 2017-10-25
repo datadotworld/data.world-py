@@ -801,9 +801,14 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(name, url)
-                  for name, url in args['files'].items()]
-                 if 'files' in args else None)
+        labels = args.get('labels')
+        description = args.get('description')
+        if 'files' in args:
+            name = args['files'].keys()[0]
+            url = args['files'].values()[0]
+            files = [file_constructor(name, url, labels=labels, description=description)]
+        else:
+            files = None
 
         dataset = dataset_constructor()
         if 'title' in args:
