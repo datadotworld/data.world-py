@@ -61,14 +61,12 @@ class TestApiClient:
     @pytest.fixture()
     def sql_api(self):
         with Spy(SqlApi) as api:
-            api.sql_get
             api.sql_post
             return api
 
     @pytest.fixture()
     def sparql_api(self):
         with Spy(SparqlApi) as api:
-            api.sparql_get
             api.sparql_post
             return api
 
@@ -118,6 +116,12 @@ class TestApiClient:
                                                 has_properties(
                                                     replace_request)))
 
+    def test_delete_dataset(self, api_client, datasets_api, dataset_key):
+        api_client.delete_dataset(dataset_key)
+        assert_that(datasets_api.delete_dataset,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('datasetid')))
+
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
         file_update_request = {'filename.ext': 'https://acme.inc/filename.ext'}
         file_update_object = FileBatchUpdateRequest(
@@ -144,6 +148,14 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
+
+    def test_upload_file(self, api_client, uploads_api, dataset_key):
+        name = 'filename.ext'
+        api_client.upload_file(dataset_key, name)
+        assert_that(uploads_api.upload_file,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('datasetid'),
+                                                equal_to(name)))
 
     def test_delete_files(self, api_client, datasets_api, dataset_key):
         files = ['filename.ext']
@@ -233,23 +245,13 @@ class TestApiClient:
         assert_that(download_api.download_file,
                     called().times(1).with_args('agentid', 'datasetid', 'file'))
 
-    def test_sql_get(self, api_client, dataset_key, sql_api):
-        api_client.sql_get(dataset_key, 'query')
-        assert_that(sql_api.sql_get,
-                    called().times(1).with_args('agentid', 'datasetid', 'query'))
-
-    def test_sql_post(self, api_client, dataset_key, sql_api):
-        api_client.sql_post(dataset_key, 'query')
+    def test_sql(self, api_client, dataset_key, sql_api):
+        api_client.sql(dataset_key, 'query')
         assert_that(sql_api.sql_post,
                     called().times(1).with_args('agentid', 'datasetid', 'query'))
 
-    def test_sparql_get(self, api_client, dataset_key, sparql_api):
-        api_client.sparql_get(dataset_key, 'query')
-        assert_that(sparql_api.sparql_get,
-                    called().times(1).with_args('agentid', 'datasetid', 'query'))
-
-    def test_sparql_post(self, api_client, dataset_key, sparql_api):
-        api_client.sparql_post(dataset_key, 'query')
+    def test_sparql(self, api_client, dataset_key, sparql_api):
+        api_client.sparql(dataset_key, 'query')
         assert_that(sparql_api.sparql_post,
                     called().times(1).with_args('agentid', 'datasetid', 'query'))
 
