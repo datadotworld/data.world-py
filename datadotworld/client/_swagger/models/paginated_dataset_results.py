@@ -51,8 +51,10 @@ class PaginatedDatasetResults(object):
         self._records = None
         self._next_page_token = None
 
-        self.count = count
-        self.records = records
+        if count is not None:
+            self.count = count
+        if records is not None:
+            self.records = records
         if next_page_token is not None:
           self.next_page_token = next_page_token
 

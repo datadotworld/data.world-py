@@ -27,7 +27,7 @@ import pytest
 import responses
 from doublex import assert_that, Spy, called
 from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
-                      empty, raises, calling)
+                      empty, raises, calling, has_key)
 
 from datadotworld.client._swagger import (DatasetsApi, DownloadApi, SparqlApi,
                                           SqlApi, UploadsApi, UserApi)
@@ -74,6 +74,9 @@ class TestApiClient:
     def user_api(self):
         with Spy(UserApi) as api:
             api.get_user_data = lambda : UserDataResponse()
+            api.fetch_liked_datasets = lambda : PaginatedDatasetResults()
+            api.fetch_datasets = lambda : PaginatedDatasetResults()
+            api.fetch_contributing_datasets = lambda : PaginatedDatasetResults()
             return api
 
     @pytest.fixture()
@@ -123,7 +126,7 @@ class TestApiClient:
                                                 equal_to('datasetid')))
 
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
-        file_update_request = {'filename.ext': 'https://acme.inc/filename.ext'}
+        file_update_request = {'filename.ext': {'url': 'https://acme.inc/filename.ext'}}
         file_update_object = FileBatchUpdateRequest(
             files=[FileCreateOrUpdateRequest(
                 name='filename.ext',
@@ -255,28 +258,22 @@ class TestApiClient:
         assert_that(sparql_api.sparql_post,
                     called().times(1).with_args('agentid', 'datasetid', 'query'))
 
-    def test_get_user_data(self, api_client, user_api):
-        sample_user_data = {
-            'avatar_url': None,
-            'created': None,
-            'display_name': None,
-            'id': None,
-            'updated': None
-        }
+    def test_get_user_data(self, api_client):
         user_data_response = api_client.get_user_data()
-        assert_that(user_data_response, has_properties(sample_user_data))
+        assert_that(user_data_response,
+                    has_key(equal_to('display_name')))
 
     def test_fetch_liked_datasets(self, api_client, user_api):
-        api_client.fetch_liked_datasets()
-        assert_that(user_api.fetch_liked_datasets,
-                    called().times(1))
+        liked_datasets = api_client.fetch_liked_datasets()
+        assert_that(user_api.fetch_liked_datasets(),
+                    has_properties(liked_datasets))
 
     def test_fetch_contributing_datasets(self, api_client, user_api):
-        api_client.fetch_contributing_datasets()
-        assert_that(user_api.fetch_contributing_datasets,
-                    called().times(1))
+        contributing_datasets = api_client.fetch_contributing_datasets()
+        assert_that(user_api.fetch_contributing_datasets(),
+                    has_properties(contributing_datasets))
 
     def test_fetch_datasets(self, api_client, user_api):
-        api_client.fetch_datasets()
-        assert_that(user_api.fetch_datasets,
-                    called().times(1))
+        user_datasets = api_client.fetch_datasets()
+        assert_that(user_api.fetch_datasets(),
+                    has_properties(user_datasets))
