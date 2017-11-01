@@ -220,6 +220,16 @@ class TestDataDotWorld:
                                                 anything()))
         assert_that(dataset.raw_data, has_length(3))
 
+    @pytest.mark.usefixtures('existing_dataset')
+    def test_load_dataset_existing_expired_auto_update(self, monkeypatch,
+                                                api_client, dw, dataset_key):
+      monkeypatch.setattr(os.path, 'getmtime', lambda _: 1468195199)
+      dataset = dw.load_dataset(dataset_key, auto_update=True)
+      assert_that(api_client.download_datapackage,
+                  called().times(1).with_args(equal_to(dataset_key),
+                                              anything()))
+      assert_that(dataset.raw_data, has_length(4))
+
 
 # Top-level methods
 
@@ -245,6 +255,9 @@ def test_toplevel_load_dataset(dw_instances, profile):
     assert_that(dw_instances[profile].load_dataset,
                 called().times(1).with_args(equal_to('agentid/datasetid'),
                                             force_update=equal_to(False)))
+    assert_that(dw_instances[profile].load_dataset,
+                called().times(1).with_args(equal_to('agentid/datasetid'),
+                                            auto_update=equal_to(False)))
 
 
 def test_toplevel_query(dw_instances, profile):

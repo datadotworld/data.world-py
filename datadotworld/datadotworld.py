@@ -160,8 +160,7 @@ class DataDotWorld(object):
         if path.isdir(cache_dir) and force_update:
             backup_dir = path.join(self._config.cache_dir, owner_id,
                                dataset_id, 'backup')
-            move_cache_dir_to_backup_dir(owner_id, dataset_id,
-                                        backup_dir, cache_dir)
+            move_cache_dir_to_backup_dir(backup_dir, cache_dir)
 
         descriptor_file = path.join(cache_dir, 'datapackage.json')
         if not path.isfile(descriptor_file):
@@ -184,8 +183,7 @@ class DataDotWorld(object):
                         path.getmtime(str(descriptor_file)))):
                     if auto_update:
                         backup_dir = path.join(self._config.cache_dir, owner_id,dataset_id, 'backup')
-                        move_cache_dir_to_backup_dir(owner_id, dataset_id,
-                                                    backup_dir, cache_dir)
+                        move_cache_dir_to_backup_dir(backup_dir, cache_dir)
                         descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
                     else:
                         warn('You are using an outdated copy of {}. '
@@ -323,7 +321,7 @@ def convert_to_sparql_literal(value):
         return "\"{}\"".format(value)
 
 # move cache directory into backup directory
-def move_cache_dir_to_backup_dir(owner_id, dataset_id, backup_dir, cache_dir):
+def move_cache_dir_to_backup_dir(backup_dir, cache_dir):
     if path.isdir(backup_dir):
         shutil.rmtree(backup_dir)
     shutil.move(cache_dir, backup_dir)
