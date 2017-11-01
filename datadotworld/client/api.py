@@ -303,7 +303,7 @@ class RestApiClient(object):
         dataset_key : str
             Dataset identifier, in the form of owner/id
         files : dict
-            Dict containing the name of files
+            Dict containing the name of files and metadata
             name : dict
                 File description, labels and source URLs to add or update
         *description and labels are optional.*
@@ -325,16 +325,13 @@ class RestApiClient(object):
         ...         'labels': ['raw data'],
         ...         'description': 'file description'})  # doctest: +SKIP
         """
-        file_requests = []
-        for file_name, file_info in files.items():
-            file_requests.append(
-                _swagger.FileCreateOrUpdateRequest(
-                    name=file_name,
-                    source=_swagger.FileSourceCreateOrUpdateRequest(url=file_info['url']),
-                    description=file_info.get('description'),
-                    labels=file_info.get('labels'),
-                )
-            )
+        file_requests = [_swagger.FileCreateOrUpdateRequest(
+                            name=file_name,
+                            source=_swagger.FileSourceCreateOrUpdateRequest(url=file_info['url']),
+                            description=file_info.get('description'),
+                            labels=file_info.get('labels'),
+                        ) for file_name, file_info in files.items()]
+
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._datasets_api.add_files_by_source(
@@ -369,7 +366,7 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def upload_files(self, dataset_key, files, **kwargs):
+    def upload_files(self, dataset_key, files, files_metadata={}, **kwargs):
         """Upload dataset files
 
         Parameters
@@ -380,6 +377,10 @@ class RestApiClient(object):
             The list of names/paths for files stored in the local filesystem
         expand_archives: bool optional
             Boolean value to indicate files should be expanded upon upload
+        files_metadata: dict optional
+            Dict containing the name of files and metadata
+            name : dict
+                File description, labels and source URLs to add or update. 
 
         Raises
         ------
@@ -397,10 +398,12 @@ class RestApiClient(object):
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._uploads_api.upload_files(owner_id, dataset_id, files, **kwargs)
+            if files_metadata:
+                self.update_dataset(dataset_key, files=files_metadata)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def upload_file(self, dataset_key, name, **kwargs):
+    def upload_file(self, dataset_key, name, file_metadata={}, **kwargs):
         """Upload one file to a dataset
 
         Parameters
@@ -411,6 +414,10 @@ class RestApiClient(object):
             Name/path for files stored in the local filesystem
         expand_archive: bool optional
             Boolean value to indicate files should be expanded upon upload
+        file_metadata: dict optional
+            Dict containing the name of files and metadata
+            name : dict
+                File description, labels and source URLs to add or update. 
 
         Raises
         ------
@@ -428,6 +435,8 @@ class RestApiClient(object):
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
+            if file_metadata:
+                self.update_dataset(dataset_key, files=file_metadata)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
