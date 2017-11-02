@@ -29,7 +29,7 @@ from os import path
 
 import requests
 
-from datadotworld.client import _swagger
+from datadotworld.client import _swagger, content_negotiating_api_client
 from datadotworld.util import parse_dataset_key, _user_agent
 
 
@@ -577,7 +577,7 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def fetch_contributing_datasets(self):
+    def fetch_contributing_datasets(self, **kwargs):
         """Fetch datasets that the authenticated user has access to
 
         Parameters
@@ -607,11 +607,11 @@ class RestApiClient(object):
         {'count': 0, 'records': [], 'next_page_token': None}
         """
         try:
-            return self._user_api.fetch_contributing_datasets().to_dict()
+            return self._user_api.fetch_contributing_datasets(**kwargs).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def fetch_liked_datasets(self):
+    def fetch_liked_datasets(self, **kwargs):
         """Fetch datasets that authenticated user likes
 
         Parameters
@@ -640,11 +640,11 @@ class RestApiClient(object):
         >>> user_liked_dataset = api_client.fetch_liked_datasets() # doctest: +SKIP
         """
         try:
-            return self._user_api.fetch_liked_datasets().to_dict()
+            return self._user_api.fetch_liked_datasets(**kwargs).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def fetch_datasets(self):
+    def fetch_datasets(self, **kwargs):
         """Fetch authenticated user owned datasets
 
         Parameters
@@ -673,13 +673,13 @@ class RestApiClient(object):
         >>> user_owned_dataset = api_client.fetch_datasets() # doctest: +SKIP
         """
         try:
-            return self._user_api.fetch_datasets().to_dict()
+            return self._user_api.fetch_datasets(**kwargs).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
     # Sql Operations
 
-    def sql(self, dataset_key, query):
+    def sql(self, dataset_key, query, desired_mimetype="application/json", **kwargs):
         """Executes SQL queries against a dataset via POST
 
         Parameters
@@ -706,17 +706,24 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> api_client.sql('username/test-dataset', query) # doctest: +SKIP
+        >>> api_client.sql('username/test-dataset', 'query') # doctest: +SKIP
         """
+        sql_api_client = content_negotiating_api_client.ContentNegotiatingApiClient(
+            host=self._host,
+            header_name='Authorization',
+            header_value='Bearer {}'.format(self._config.auth_token),
+            default_mimetype=desired_mimetype)
+        sql_api_client.user_agent = _user_agent()
+        sql_api = _swagger.SqlApi(sql_api_client)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._sql_api.sql_post(owner_id, dataset_id, query)
+            return sql_api.sql_post(owner_id, dataset_id, query, **kwargs)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
     # Sparql Operations
 
-    def sparql(self, dataset_key, query):
+    def sparql(self, dataset_key, query, desired_mimetype="application/json"):
         """Executes SPARQL queries against a dataset via POST
 
         Parameters
@@ -743,9 +750,16 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.sparql_post('username/test-dataset', query) # doctest: +SKIP
         """
+        sparql_api_client = content_negotiating_api_client.ContentNegotiatingApiClient(
+            host=self._host,
+            header_name='Authorization',
+            header_value='Bearer {}'.format(self._config.auth_token),
+            default_mimetype=desired_mimetype)
+        sparql_api_client.user_agent = _user_agent()
+        sparql_api_client= _swagger.SparqlApi(sparql_api_client)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._sparql_api.sparql_post(owner_id, dataset_id, query)
+            return sparql_api_client.sparql_post(owner_id, dataset_id, query)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
