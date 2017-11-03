@@ -26,6 +26,11 @@ jobs:
           name: tox
           command: tox --pre
 
+      - run:
+          name: run linting and metrics
+          command: |
+            flake8 ./ --exclude=datadotworld/client/_swagger/
+
       - save_cache:
           key: tox_cache-{{ checksum "tox.ini" }}
           paths:
