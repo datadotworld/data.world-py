@@ -75,7 +75,6 @@ setup(
         'six>=1.5.0,<2.0a',
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
-        'flake8>=2.6.0,<3.5.0',
         'coverage>=4.4.1',
     ],
     setup_requires=[

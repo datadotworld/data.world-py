@@ -23,6 +23,11 @@ jobs:
             pyenv local 2.7.13 3.4.5 3.5.2 3.6.0
 
       - run:
+          name: install dependencies
+          command: |
+            pip install -r requirements.txt
+
+      - run:
           name: run linting and metrics
           command: |
             flake8 . --exclude=datadotworld/client/_swagger/
