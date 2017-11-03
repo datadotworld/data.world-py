@@ -23,13 +23,14 @@ jobs:
             pyenv local 2.7.13 3.4.5 3.5.2 3.6.0
 
       - run:
-          name: tox
-          command: tox --pre
-
-      - run:
           name: run linting and metrics
           command: |
-            flake8 ./ --exclude=datadotworld/client/_swagger/
+            flake8 . --exclude=datadotworld/client/_swagger/
+
+      - run:
+          name: tox
+          command: |
+            tox --pre
 
       - save_cache:
           key: tox_cache-{{ checksum "tox.ini" }}
