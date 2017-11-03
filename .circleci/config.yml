@@ -30,7 +30,7 @@ jobs:
       - run:
           name: run linting and metrics
           command: |
-            flake8 . --exclude=datadotworld/client/_swagger/
+            flake8 . --exclude=datadotworld/client/_swagger/ --ignore=W292,F401,E501,E126,E121,F403,F405
 
       - run:
           name: tox

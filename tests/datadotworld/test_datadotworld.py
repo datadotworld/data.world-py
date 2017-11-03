@@ -29,7 +29,14 @@ from os import path
 import pytest
 import responses
 from doublex import assert_that, Spy, when, called, never, Stub
-from hamcrest import equal_to, calling, raises, has_length, anything, contains_string, is_
+from hamcrest import (
+    equal_to, calling,
+    raises,
+    has_length,
+    anything,
+    contains_string,
+    is_
+)
 
 import datadotworld
 from datadotworld.client.api import RestApiClient, RestApiError
@@ -148,7 +155,8 @@ class TestDataDotWorld:
                 return(200, {}, json.dumps(query_response_json))
 
             rsps.add_callback(rsps.GET, re.compile(r'https?://query\.data\.world/.*'),
-                              callback = request_callback, content_type="application/json",
+                              callback=request_callback,
+                              content_type="application/json",
                               match_querystring=True)
 
             dw.query(dataset_key, query, query_type=type, parameters=parameters)
@@ -176,7 +184,6 @@ class TestDataDotWorld:
                 w.open()
             finally:
                 w.close()
-
 
     @pytest.mark.usefixtures('existing_dataset')
     def test_load_dataset_existing(self, api_client, dw, dataset_key):
