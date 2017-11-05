@@ -76,6 +76,7 @@ setup(
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
         'coverage>=4.4.1',
+        'flake8>=2.6.0,<3.4.1a',
     ],
     setup_requires=[
         'pytest-runner>=2.11,<3.0a',
