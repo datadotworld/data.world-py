@@ -109,7 +109,7 @@ class DataDotWorld(object):
                           for i, x in enumerate(parameters)}
             params["parameters"] = ",".join(["{}={}".format(
                 k, convert_to_sparql_literal(parameters[k]))
-                                             for k in parameters.keys()])
+                for k in parameters.keys()])
         url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
                                              query_type, owner_id, dataset_id)
         headers = {

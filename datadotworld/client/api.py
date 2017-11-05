@@ -271,7 +271,7 @@ class RestApiClient(object):
         file_requests = [_swagger.FileCreateOrUpdateRequest(
             name=name,
             source=_swagger.FileSourceCreateOrUpdateRequest(url=url))
-                         for name, url in files.items()]
+            for name, url in files.items()]
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:

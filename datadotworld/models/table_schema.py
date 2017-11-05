@@ -18,7 +18,6 @@
 # data.world, Inc.(http://data.world/).
 
 from collections import OrderedDict, Counter
-from collections import defaultdict
 
 #: Mapping of Table Schema field types to all suitable dtypes (pandas)
 from warnings import warn
