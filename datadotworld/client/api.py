@@ -35,11 +35,9 @@ from datadotworld.util import parse_dataset_key, _user_agent
 
 class RestApiClient(object):
     """REST API client
-
-    Parameters
-    ----------
-    profile : str, optional
-        Name of the configuration profile to use
+    
+    :param profile: Name of the configuration profile to use
+    :type profile: str optional
     """
 
     def __init__(self, config):
@@ -65,20 +63,11 @@ class RestApiClient(object):
 
         This method retrieves metadata about an existing
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-
-        Returns
-        -------
-        dict
-            Dataset definition, with all attributes
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :returns: Dataset definition, with all attributes
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -98,35 +87,27 @@ class RestApiClient(object):
     def create_dataset(self, owner_id, **kwargs):
         """Create a new dataset
 
-        Parameters
-        ----------
-        owner_id : str
-            Username of the owner of the new dataset
-        title : str
-            Dataset title (will be used to generate dataset id on creation)
-        description : str, optional
-            Dataset description
-        summary : str, optional
-            Dataset summary markdown
-        tags : list, optional
-            Dataset tags
-        license : {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
-                   'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param owner_id: Username of the owner of the new dataset
+        :type owner_id: str
+        :param title: Dataset title (will be used to generate dataset id on creation)
+        :type title: str
+        :param description: Dataset description
+        :type description: str, optional
+        :param summary: Dataset summary markdown
+        :type summary: str, optional
+        :param tags: Dataset tags
+        :type tags: list, optional
+        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
             Dataset license
-        visibility : {'OPEN', 'PRIVATE'}
-            Dataset visibility
-        files : dict, optional
-            File names and source URLs
-
-        Returns
-        -------
-        str
-            Newly created dataset key
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :param visibility: Dataset visibility
+        :type visibility: {'OPEN', 'PRIVATE'}
+        :param files: File names and source URLs
+        :type files: dict, optional
+        :param **kwargs:
+        :returns: Newly created dataset key
+        :rtype: str
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -153,26 +134,22 @@ class RestApiClient(object):
     def update_dataset(self, dataset_key, **kwargs):
         """Update an existing dataset
 
-        Parameters
-        ----------
-        description : str, optional
-            Dataset description
-        summary : str, optional
-            Dataset summary markdown
-        tags : list, optional
-            Dataset tags
-        license : {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
-                   'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param description: Dataset description
+        :type description: str, optional
+        :param summary: Dataset summary markdown
+        :type summary: str, optional
+        :param tags: Dataset tags
+        :type tags: list, optional
+        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
             Dataset license
-        visibility : {'OPEN', 'PRIVATE'}, optional
-            Dataset visibility
-        files : dict, optional
-            File names and source URLs to add or update
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :param visibility: Dataset visibility
+        :type visibility: {'OPEN', 'PRIVATE'}, optional
+        :param files: File names and source URLs to add or update
+        :type files: dict, optional
+        :param dataset_key:
+        :param **kwargs:
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -200,26 +177,22 @@ class RestApiClient(object):
 
         *This method will completely overwrite an existing dataset.*
 
-        Parameters
-        ----------
-        description : str, optional
-            Dataset description
-        summary : str, optional
-            Dataset summary markdown
-        tags : list, optional
-            Dataset tags
-        license : {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
-                   'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param description: Dataset description
+        :type description: str, optional
+        :param summary: Dataset summary markdown
+        :type summary: str, optional
+        :param tags: Dataset tags
+        :type tags: list, optional
+        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
             Dataset license
-        visibility : {'OPEN', 'PRIVATE'}
-            Dataset visibility
-        files : dict, optional
-            File names and source URLs to add or update
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :param visibility: Dataset visibility
+        :type visibility: {'OPEN', 'PRIVATE'}
+        :param files: File names and source URLs to add or update
+        :type files: dict, optional
+        :param dataset_key:
+        :param **kwargs:
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -247,17 +220,11 @@ class RestApiClient(object):
     def add_files_via_url(self, dataset_key, files={}):
         """Add or update dataset files linked to source URLs
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        files : dict
-            File names and source URLs to add or update
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param files: File names and source URLs to add or update (Default value = {})
+        :type files: dict
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -282,19 +249,12 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     def sync_files(self, dataset_key):
-        """
-        Trigger synchronization process to update all dataset files linked to
+        """Trigger synchronization process to update all dataset files linked to
         source URLs.
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -310,17 +270,11 @@ class RestApiClient(object):
     def upload_files(self, dataset_key, files):
         """Upload dataset files
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        files : list of str
-            The list of names/paths for files stored in the local filesystem
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param files: The list of names/paths for files stored in the local filesystem
+        :type files: list of str
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -339,17 +293,11 @@ class RestApiClient(object):
     def delete_files(self, dataset_key, names):
         """Delete dataset file(s)
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        names : list of str
-            The list of names for files to be deleted
-
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param names: The list of names for files to be deleted
+        :type names: list of str
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -368,28 +316,16 @@ class RestApiClient(object):
     # Datapackage
 
     def download_datapackage(self, dataset_key, dest_dir):
-        """
-        Download and unzip a dataset's datapackage
+        """Download and unzip a dataset's datapackage
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        dest_dir : str or path
-            Directory under which datapackage should be saved
-
-        Returns
-        -------
-        path
-            Location of the datapackage descriptor (datapackage.json) in the
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param dest_dir: Directory under which datapackage should be saved
+        :type dest_dir: str or path
+        :returns: Location of the datapackage descriptor (datapackage.json) in the
             local filesystem
+        :rtype: path
 
-        Raises
-        ------
-        RestApiException
-            If a server error occurs
-
-        Examples
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
         >>> datapackage_descriptor = api_client.download_datapackage(
@@ -467,9 +403,8 @@ class RestApiClient(object):
 
 
 class RestApiError(Exception):
-    """
-    Exception wrapper for errors raised by requests or by the swagger client
-    """
+    """Exception wrapper for errors raised by requests or by
+    the swagger client"""
 
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
@@ -495,13 +430,11 @@ class RestApiError(Exception):
     def json(self):
         """Attempts to parse json in the body of response to failed requests
 
-        Data.world often includes a JSON body for errors; however, there are no
-        guarantees.
+        Data.world often includes a JSON body for errors;
+        however, there are no guarantees.
 
-        Returns
-        -------
-        json
-            The JSON body if one is included. Otherwise, None.
+        :returns: The JSON body if one is included. Otherwise, None.
+        :rtype: dict (json)
         """
         try:
             return json.loads(self.body)

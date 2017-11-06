@@ -42,10 +42,8 @@ class LocalDataset(object):
               Datapackage.
               See specs at http://specs.frictionlessdata.io/data-package/
 
-    Parameters
-    ----------
-    descriptor_file : str or file-like object
-        Path or handle for the descriptor of the dataset (datapackage.json)
+    :param descriptor_file: Path or handle for the descriptor of the dataset (datapackage.json)
+    :type descriptor_file: str or file-like object
 
     Attributes
     ----------
@@ -60,7 +58,6 @@ class LocalDataset(object):
     dataframes : dict of `pandas.DataFrame`
         Mapping of resource names to their `DataFrame` representation for all
         *tabular* data contained  in the dataset.
-
     """
 
     def __init__(self, descriptor_file):
@@ -99,18 +96,13 @@ class LocalDataset(object):
     def describe(self, resource=None):
         """Describe dataset or resource within dataset
 
-        Parameters
-        ----------
-        resource : str, optional
-            The name of a specific resource (i.e. file or table) contained in
+        :param resource: The name of a specific resource (i.e. file or table) contained in
             the dataset. If ``resource`` is None, this method will describe
-            the dataset itself.
-
-        Returns
-        -------
-        dict
-            The descriptor of the dataset or of a specific resource, if
-            ``resource`` is specified in the call.
+            the dataset itself. (Default value = None)
+        :type resource: str, optional
+        :returns: The descriptor of the dataset or of a specific resource, if
+        ``resource`` is specified in the call.
+        :rtype: dict
         """
         if resource is None:
             # Show simpler descriptor, omitting schema definitions
@@ -123,7 +115,10 @@ class LocalDataset(object):
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_raw_data(self, resource_name):
-        """Extract raw data from resource"""
+        """Extract raw data from resource
+
+        :param resource_name:
+        """
         # Instantiating the resource again as a simple `Resource` ensures that
         # ``data`` will be returned as bytes.
         upcast_resource = datapackage.Resource(
@@ -133,7 +128,10 @@ class LocalDataset(object):
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
-        """Build table structure from resource data"""
+        """Build table structure from resource data
+
+        :param resource_name:
+        """
         tabular_resource = self.__tabular_resources[resource_name]
 
         try:
@@ -167,6 +165,8 @@ class LocalDataset(object):
 
         Lazy load any optional dependencies in order to allow users to
         use package without installing pandas if so they wish.
+
+        :param resource_name:
         """
         try:
             import pandas

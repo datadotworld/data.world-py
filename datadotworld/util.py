@@ -32,22 +32,11 @@ DATASET_KEY_PATTERN = re.compile(
 def parse_dataset_key(dataset_key):
     """Parse a dataset URL or path and return the owner and the dataset id
 
-    Parameters
-    ----------
-    dataset_key : str
-        Dataset key (in the form of owner/id) or dataset URL
-
-    Returns
-    -------
-    dataset_owner
-        User name of the dataset owner
-    dataset_id
-        ID of the dataset
-
-    Raises
-    ------
-    ValueError
-        If the provided key does comply to the expected pattern
+    :param dataset_key: Dataset key (in the form of owner/id) or dataset URL
+    :type dataset_key: str
+    :returns: User name of the dataset owner and ID of the dataset
+    :rtype: dataset_owner, dataset_id
+    :raises ValueError: If the provided key does comply to the expected pattern
 
     Examples
     --------
@@ -77,10 +66,8 @@ class LazyLoadedDict(Mapping):
     use the dictionary like they would normally use any dictionary, without
     concern for the fact that `LazyLoadedValue` instances are ``callable``.
 
-    Parameters
-    ----------
-    lazy_loaded_items : dict
-        Mapping of keys to values of type `LazyLoadedValue`
+    :param lazy_loaded_items: Mapping of keys to values of type `LazyLoadedValue`
+    :type lazy_loaded_items: dict
     """
 
     def __init__(self, lazy_loaded_items):
@@ -92,21 +79,15 @@ class LazyLoadedDict(Mapping):
 
         Accepts a ``loader_func`` that is to be applied to all ``keys``.
 
-        Parameters
-        ----------
-        keys : iterable
-            List of keys to create the dictionary with
-        loader_func : function
-            Function to be applied to all keys
-        type_hint : str
-            Expected type of lazy loaded values.
-            Used by `LazyLoadedValue`.
-
-        Returns
-        -------
-        LazyLoadedDict
-            A properly constructed lazy loaded dictionary
-
+        :param keys: List of keys to create the dictionary with
+        :type keys: iterable
+        :param loader_func: Function to be applied to all keys
+        :type loader_func: function
+        :param type_hint: Expected type of lazy loaded values.
+            Used by `LazyLoadedValue`. (Default value = None)
+        :type type_hint: str
+        :returns: A properly constructed lazy loaded dictionary
+        :rtype: LazyLoadedDict
         """
         return cls({k: LazyLoadedValue(
             lambda k=k: loader_func(k), type_hint=type_hint) for k in keys})
@@ -146,10 +127,10 @@ class LazyLoadedValue(object):
 
 
 class memoized(object):
-    '''Decorator. Caches a function's return value each time it is called.
+    """Decorator. Caches a function's return value each time it is called.
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
-    '''
+    """
 
     def __init__(self, key_mapper=None):
         self.key_mapper = key_mapper
@@ -157,6 +138,10 @@ class memoized(object):
 
     def __call__(self, func):
         def wrapper(*args):
+            """
+
+            :param *args:
+            """
             key = self.key_mapper(*args) or args
             if not isinstance(key, collections.Hashable):
                 # uncacheable. a list, for instance.

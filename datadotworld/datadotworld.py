@@ -42,10 +42,8 @@ class DataDotWorld(object):
               All functions are conveniently wrapped and exposed at the
               `datadotworld` package level.
 
-    Parameters
-    ----------
-    profile : str, optional
-        Configuration profile (account) to use
+    :param profile: Configuration profile (account) to use
+    :type profile: str, optional
 
     Attributes
     ----------
@@ -64,31 +62,22 @@ class DataDotWorld(object):
     def query(self, dataset_key, query, query_type="sql", parameters=None):
         """Query an existing dataset
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id or of a url
-        query : str
-            SQL or SPARQL query
-        query_type : {'sql', 'sparql'}, optional
-            The type of the query. Must be either 'sql' or 'sparql'.
-        parameters: query parameters, optional
-            parameters to the query - if SPARQL query, this should be a dict
+        :param dataset_key: Dataset identifier, in the form of owner/id or of a url
+        :type dataset_key: str
+        :param query: SQL or SPARQL query
+        :type query: str
+        :param query_type: The type of the query. Must be either 'sql' or 'sparql'. (Default value = "sql")
+        :type query_type: {'sql', 'sparql'}, optional
+        :param parameters: parameters to the query - if SPARQL query, this should be a dict
             containing named parameters, if SQL query, then this should be a
             list containing positional parameters.  Boolean values will be
             converted to xsd:boolean, Integer values to xsd:integer, and other
             Numeric values to xsd:decimal. anything else is treated as a String
-            literal
-
-        Returns
-        -------
-        Results
-            Object containing the results of the query
-
-        Raises
-        ------
-        RuntimeError
-            If a server error occurs
+            literal (Default value = None)
+        :type parameters: query parameters, optional
+        :returns: Object containing the results of the query
+        :rtype: Results
+        :raises RuntimeError: If a server error occurs
         """
         # TODO Move network request to RestApiClient
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -124,8 +113,7 @@ class DataDotWorld(object):
             'Error executing query: {}'.format(response.content))
 
     def load_dataset(self, dataset_key, force_update=False):
-        """
-        Load a dataset from the local filesystem, downloading it from
+        """Load a dataset from the local filesystem, downloading it from
         data.world first, if necessary.
 
         This function returns an object of type `LocalDataset`. The object
@@ -133,23 +121,14 @@ class DataDotWorld(object):
         data via three properties `raw_data`, `tables` and `dataframes`, all
         of which are mappings (dict-like structures).
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id or of a url
-        force_update : bool
-            Flag, indicating if a new copy of the dataset should be downloaded
-            replacing any previously downloaded copy
-
-        Returns
-        -------
-        LocalDataset
-            The object representing the dataset
-
-        Raises
-        ------
-        RestApiError
-            If a server error occurs
+        :param dataset_key: Dataset identifier, in the form of owner/id or of a url
+        :type dataset_key: str
+        :param force_update: Flag, indicating if a new copy of the dataset should be downloaded
+            replacing any previously downloaded copy (Default value = False)
+        :type force_update: bool
+        :returns: The object representing the dataset
+        :rtype: LocalDataset
+        :raises RestApiError: If a server error occurs
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         cache_dir = path.join(self._config.cache_dir, owner_id, dataset_id,
@@ -197,26 +176,24 @@ class DataDotWorld(object):
 
     def open_remote_file(self, dataset_key, file_name,
                          mode='w', **kwargs):
-        """
-        Open a remote file object that can be used to write to or read from
+        """Open a remote file object that can be used to write to or read from
         a file in a data.world dataset
 
-        Parameters
-        ----------
-        dataset_key : str
-            Dataset identifier, in the form of owner/id
-        file_name: str
-            The name of the file to open
-        mode: str, optional
-            the mode for the file - must be 'w', 'wb', 'r', or 'rb' -
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param file_name: The name of the file to open
+        :type file_name: str
+        :param mode: the mode for the file - must be 'w', 'wb', 'r', or 'rb' -
             indicating read/write ('r'/'w') and optionally "binary"
-            handling of the file data.
-        chunk_size: int, optional
-            size of chunked bytes to return when reading streamed bytes
+            handling of the file data. (Default value = 'w')
+        :type mode: str, optional
+        :param chunk_size: size of chunked bytes to return when reading streamed bytes
             in 'rb' mode
-        decode_unicode: bool, optional
-            whether to decode textual responses as unicode when returning
+        :type chunk_size: int, optional
+        :param decode_unicode: whether to decode textual responses as unicode when returning
             streamed lines in 'r' mode
+        :type decode_unicode: bool, optional
+        :param **kwargs:
 
         Examples
         --------
@@ -282,9 +259,7 @@ class DataDotWorld(object):
 
 
 class UriParam():
-    """
-    Represents a URI value as a parameter to a SPARQL query
-    """
+    """Represents a URI value as a parameter to a SPARQL query"""
     def __init__(self, uri):
         """
         Initialize the UriParam value
@@ -302,6 +277,10 @@ class UriParam():
 
 # convert a literal into the SPARQL format expected by the REST endpoint
 def convert_to_sparql_literal(value):
+    """
+
+    :param value:
+    """
     if isinstance(value, bool):
         return "\"{}\"^^<http://www.w3.org/2001/XMLSchema#boolean>".format(
             str(value).lower())
