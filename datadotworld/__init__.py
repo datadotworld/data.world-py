@@ -48,7 +48,7 @@ def _get_instance(profile):
     return instance
 
 
-def load_dataset(dataset_key, force_update=False, profile='default'):
+def load_dataset(dataset_key, force_update=False, auto_update=False, profile='default'):
     """
     Load a dataset from the local filesystem, downloading it from data.world
     first, if necessary.
@@ -66,6 +66,8 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
     force_update : bool
         Flag, indicating if a new copy of the dataset should be downloaded
         replacing any previously downloaded copy
+    auto_update: bool
+        Flag, indicating that dataset be updated to the latest version
     profile : str, optional
         Configuration profile (account) to use.
 
@@ -87,7 +89,8 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
     ['changelog', 'datadotworldbballstats', 'datadotworldbballteam']
     """
     return _get_instance(profile).load_dataset(dataset_key,
-                                               force_update=force_update)
+                                               force_update=force_update,
+                                               auto_update=auto_update)
 
 
 def query(dataset_key, query, query_type='sql', profile='default',
