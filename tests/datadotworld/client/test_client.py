@@ -168,7 +168,7 @@ class TestApiClient:
         datapackage_zip = path.join(test_datapackages_path,
                                     'the-simpsons-by-the-data.zip')
         with responses.RequestsMock() as rsps, open(datapackage_zip,
-                                                    'rb'):
+                                                    'rb') as file:
             @helpers.validate_request_headers()
             def datapackage_endpoint(_):
                 return 400, {}, ''
