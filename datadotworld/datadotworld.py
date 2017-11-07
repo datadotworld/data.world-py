@@ -22,7 +22,7 @@ from __future__ import absolute_import
 import shutil
 from datetime import datetime
 from os import path
-from warnings import warn
+from warnings import warn, filterwarnings
 import numbers
 
 import requests
@@ -186,6 +186,8 @@ class DataDotWorld(object):
                         move_cache_dir_to_backup_dir(backup_dir, cache_dir)
                         descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
                     else:
+                        filterwarnings('always',
+                            message='You are using an outdated copy')
                         warn('You are using an outdated copy of {}. '
                             'If you wish to use the latest version, call this '
                             'function with the argument '
