@@ -75,7 +75,6 @@ setup(
         'six>=1.5.0,<2.0a',
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
-        'coverage>=4.4.1',
         'flake8>=2.6.0,<3.4.1a',
     ],
     setup_requires=[
@@ -87,6 +86,7 @@ setup(
         'responses>=0.5.1,<1.0a',
         'pytest>=3.0.7,<4.0a',
         'pandas<1.0a',
+        'coverage>=4.4.1',
     ],
     extras_require={
         'pandas': [
