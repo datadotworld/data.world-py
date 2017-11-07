@@ -22,7 +22,7 @@ from __future__ import absolute_import
 import shutil
 from datetime import datetime
 from os import path
-from warnings import warn, simplefilter
+from warnings import warn, filterwarnings
 import numbers
 
 import requests
@@ -182,7 +182,8 @@ class DataDotWorld(object):
                                                   '%Y-%m-%dT%H:%M:%S.%fZ')
                 if (last_modified > datetime.utcfromtimestamp(
                         path.getmtime(str(descriptor_file)))):
-                    simplefilter('always', UserWarning)
+                    filterwarnings('always',
+                                    message='You are using an outdated copy')
                     warn('You are using an outdated copy of {}. '
                          'If you wish to use the latest version, call this '
                          'function with the argument '
