@@ -159,7 +159,7 @@ class DataDotWorld(object):
         backup_dir = None
         if path.isdir(cache_dir) and force_update:
             backup_dir = path.join(self._config.cache_dir, owner_id,
-                               dataset_id, 'backup')
+                                   dataset_id, 'backup')
             move_cache_dir_to_backup_dir(backup_dir, cache_dir)
 
         descriptor_file = path.join(cache_dir, 'datapackage.json')
@@ -182,15 +182,17 @@ class DataDotWorld(object):
                 if (last_modified > datetime.utcfromtimestamp(
                         path.getmtime(str(descriptor_file)))):
                     if auto_update:
-                        backup_dir = path.join(self._config.cache_dir, owner_id,dataset_id, 'backup')
+                        backup_dir = path.join(self._config.cache_dir,
+                                               owner_id, dataset_id, 'backup')
                         move_cache_dir_to_backup_dir(backup_dir, cache_dir)
-                        descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
+                        descriptor_file = self.api_client \
+                            .download_datapackage(dataset_key, cache_dir)
                     else:
                         warn('You are using an outdated copy of {}. '
-                            'If you wish to use the latest version, call this '
-                            'function with the argument '
-                            'auto_update=True or '
-                            'force_update=True'.format(dataset_key))
+                             'If you wish to use the latest version, call '
+                             'this function with the argument '
+                             'auto_update=True or '
+                             'force_update=True'.format(dataset_key))
             except RestApiError:
                 # Not a critical step
                 pass
@@ -285,6 +287,7 @@ class DataDotWorld(object):
         except Exception as e:
             raise RestApiError(cause=e)
 
+
 class UriParam():
     """
     Represents a URI value as a parameter to a SPARQL query
@@ -320,11 +323,13 @@ def convert_to_sparql_literal(value):
     else:
         return "\"{}\"".format(value)
 
+
 # move cache directory into backup directory
 def move_cache_dir_to_backup_dir(backup_dir, cache_dir):
     if path.isdir(backup_dir):
         shutil.rmtree(backup_dir)
     shutil.move(cache_dir, backup_dir)
+
 
 if __name__ == "__main__":
     import doctest

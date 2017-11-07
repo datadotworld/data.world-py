@@ -240,7 +240,7 @@ def order_terms_in_binding(result_vars, binding):
 def _sanitize_schema(schema_descriptor):
     missing_type_support = False
     try:
-        from jsontableschema import YearType, YearMonthType, DurationType
+        from jsontableschema import YearType, YearMonthType, DurationType  # noqa
     except ImportError:
         missing_type_support = True
 

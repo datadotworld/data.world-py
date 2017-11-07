@@ -20,7 +20,6 @@
 from __future__ import absolute_import
 
 import os
-import re
 from os import path
 
 import pytest
@@ -31,7 +30,7 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
 
 from datadotworld.client._swagger import DatasetsApi, UploadsApi
 from datadotworld.client._swagger.rest import ApiException
-from datadotworld.client._swagger.models import *
+from datadotworld.client._swagger.models import *  # noqa: F403
 from datadotworld.client.api import RestApiClient, RestApiError
 
 
@@ -39,7 +38,7 @@ class TestApiClient:
     @pytest.fixture()
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)  # noqa
             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
             return api
@@ -47,7 +46,7 @@ class TestApiClient:
     @pytest.fixture()
     def uploads_api(self):
         with Spy(UploadsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)  # noqa
             return api
 
     @pytest.fixture()
@@ -88,10 +87,10 @@ class TestApiClient:
 
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
         file_update_request = {'filename.ext': 'https://acme.inc/filename.ext'}
-        file_update_object = FileBatchUpdateRequest(
-            files=[FileCreateOrUpdateRequest(
+        file_update_object = FileBatchUpdateRequest(  # noqa
+            files=[FileCreateOrUpdateRequest(  # noqa
                 name='filename.ext',
-                source=FileSourceCreateOrUpdateRequest(
+                source=FileSourceCreateOrUpdateRequest(  # noqa
                     url='https://acme.inc/filename.ext'))])
 
         api_client.add_files_via_url(dataset_key, file_update_request)
@@ -168,7 +167,7 @@ class TestApiClient:
         datapackage_zip = path.join(test_datapackages_path,
                                     'the-simpsons-by-the-data.zip')
         with responses.RequestsMock() as rsps, open(datapackage_zip,
-                                                    'rb') as file:
+                                                    'rb') as file:  # noqa
             @helpers.validate_request_headers()
             def datapackage_endpoint(_):
                 return 400, {}, ''
