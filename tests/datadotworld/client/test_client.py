@@ -249,14 +249,16 @@ class TestApiClient:
                     called().times(1).with_args('agentid', 'datasetid', 'file'))
 
     def test_sql(self, api_client, dataset_key, sql_api):
-        api_client.sql(dataset_key, 'query')
+        api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
         assert_that(sql_api.sql_post,
-                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+                    called().times(1).with_args('agentid', 'datasetid', 'query',
+                        sql_api_mock=sql_api))
 
     def test_sparql(self, api_client, dataset_key, sparql_api):
-        api_client.sparql(dataset_key, 'query')
+        api_client.sparql(dataset_key, 'query', sparql_api_mock=sparql_api)
         assert_that(sparql_api.sparql_post,
-                    called().times(1).with_args('agentid', 'datasetid', 'query'))
+                    called().times(1).with_args('agentid', 'datasetid', 'query',
+                        sparql_api_mock=sparql_api))
 
     def test_get_user_data(self, api_client):
         user_data_response = api_client.get_user_data()

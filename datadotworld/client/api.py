@@ -714,7 +714,13 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token),
             default_mimetype=desired_mimetype)
         sql_api_client.user_agent = _user_agent()
-        sql_api = _swagger.SqlApi(sql_api_client)
+
+        sql_api = None
+        if "sql_api_mock" in kwargs:  # test scenario
+            sql_api = kwargs["sql_api_mock"]
+        else:  # production scenario
+            sql_api = _swagger.SqlApi(sql_api_client)
+
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return sql_api.sql_post(owner_id, dataset_id, query, **kwargs)
@@ -723,7 +729,7 @@ class RestApiClient(object):
 
     # Sparql Operations
 
-    def sparql(self, dataset_key, query, desired_mimetype="application/json"):
+    def sparql(self, dataset_key, query, desired_mimetype="application/json", **kwargs):
         """Executes SPARQL queries against a dataset via POST
 
         Parameters
@@ -756,10 +762,16 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token),
             default_mimetype=desired_mimetype)
         sparql_api_client.user_agent = _user_agent()
-        sparql_api_client= _swagger.SparqlApi(sparql_api_client)
+
+        sparql_api = None
+        if "sparql_api_mock" in kwargs:  # test scenario
+            sparql_api = kwargs["sparql_api_mock"]
+        else:  # production scenario
+            sparql_api = _swagger.SparqlApi(sparql_api_client)
+
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return sparql_api_client.sparql_post(owner_id, dataset_id, query)
+            return sparql_api.sparql_post(owner_id, dataset_id, query, **kwargs)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
