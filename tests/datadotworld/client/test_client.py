@@ -26,9 +26,10 @@ import pytest
 import responses
 from doublex import assert_that, Spy, called
 from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
-                      empty, raises, calling)
+                      empty, raises, calling, has_key)
 
-from datadotworld.client._swagger import DatasetsApi, UploadsApi
+from datadotworld.client._swagger import (DatasetsApi, DownloadApi, SparqlApi,
+                                          SqlApi, UploadsApi, UserApi)
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
     DatasetSummaryResponse,
@@ -55,10 +56,42 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
-    def api_client(self, config, datasets_api, uploads_api):
+    def download_api(self):
+        with Spy(DownloadApi) as api:
+            api.download_dataset
+            api.download_file
+            return api
+
+    @pytest.fixture()
+    def sql_api(self):
+        with Spy(SqlApi) as api:
+            api.sql_post
+            return api
+
+    @pytest.fixture()
+    def sparql_api(self):
+        with Spy(SparqlApi) as api:
+            api.sparql_post
+            return api
+
+    @pytest.fixture()
+    def user_api(self):
+        with Spy(UserApi) as api:
+            api.get_user_data = lambda : UserDataResponse()
+            api.fetch_liked_datasets = lambda : PaginatedDatasetResults()
+            api.fetch_datasets = lambda : PaginatedDatasetResults()
+            api.fetch_contributing_datasets = lambda : PaginatedDatasetResults()
+            return api
+
+    @pytest.fixture()
+    def api_client(self, config, datasets_api, uploads_api, download_api, sql_api, sparql_api, user_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._uploads_api = uploads_api
+        client._download_api = download_api
+        client._sql_api = sql_api
+        client._sparql_api = sparql_api
+        client._user_api = user_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -90,8 +123,14 @@ class TestApiClient:
                                                 has_properties(
                                                     replace_request)))
 
+    def test_delete_dataset(self, api_client, datasets_api, dataset_key):
+        api_client.delete_dataset(dataset_key)
+        assert_that(datasets_api.delete_dataset,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('datasetid')))
+
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
-        file_update_request = {'filename.ext': 'https://acme.inc/filename.ext'}
+        file_update_request = {'filename.ext': {'url': 'https://acme.inc/filename.ext'}}
         file_update_object = FileBatchUpdateRequest(
             files=[FileCreateOrUpdateRequest(
                 name='filename.ext',
@@ -116,6 +155,14 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
+
+    def test_upload_file(self, api_client, uploads_api, dataset_key):
+        name = 'filename.ext'
+        api_client.upload_file(dataset_key, name)
+        assert_that(uploads_api.upload_file,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('datasetid'),
+                                                equal_to(name)))
 
     def test_delete_files(self, api_client, datasets_api, dataset_key):
         files = ['filename.ext']
@@ -194,3 +241,45 @@ class TestApiClient:
             calling(api_client.download_datapackage).with_args(
                 dataset_key, config.cache_dir),
             raises(ValueError))
+
+    def test_download_dataset(self, api_client, dataset_key, download_api):
+        api_client.download_dataset(dataset_key)
+        assert_that(download_api.download_dataset,
+                    called().times(1).with_args('agentid', 'datasetid'))
+
+    def test_download_file(self, api_client, dataset_key, download_api):
+        api_client.download_file(dataset_key, 'file')
+        assert_that(download_api.download_file,
+                    called().times(1).with_args('agentid', 'datasetid', 'file'))
+
+    def test_sql(self, api_client, dataset_key, sql_api):
+        api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
+        assert_that(sql_api.sql_post,
+                    called().times(1).with_args('agentid', 'datasetid', 'query',
+                        sql_api_mock=sql_api))
+
+    def test_sparql(self, api_client, dataset_key, sparql_api):
+        api_client.sparql(dataset_key, 'query', sparql_api_mock=sparql_api)
+        assert_that(sparql_api.sparql_post,
+                    called().times(1).with_args('agentid', 'datasetid', 'query',
+                        sparql_api_mock=sparql_api))
+
+    def test_get_user_data(self, api_client):
+        user_data_response = api_client.get_user_data()
+        assert_that(user_data_response,
+                    has_key(equal_to('display_name')))
+
+    def test_fetch_liked_datasets(self, api_client, user_api):
+        liked_datasets = api_client.fetch_liked_datasets()
+        assert_that(user_api.fetch_liked_datasets(),
+                    has_properties(liked_datasets))
+
+    def test_fetch_contributing_datasets(self, api_client, user_api):
+        contributing_datasets = api_client.fetch_contributing_datasets()
+        assert_that(user_api.fetch_contributing_datasets(),
+                    has_properties(contributing_datasets))
+
+    def test_fetch_datasets(self, api_client, user_api):
+        user_datasets = api_client.fetch_datasets()
+        assert_that(user_api.fetch_datasets(),
+                    has_properties(user_datasets))
