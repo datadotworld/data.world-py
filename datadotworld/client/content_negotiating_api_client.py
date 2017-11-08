@@ -4,7 +4,9 @@ from ._swagger.api_client import ApiClient
 class ContentNegotiatingApiClient(ApiClient):
 
     def __init__(self, host, header_name, header_value, default_mimetype):
-        super(ContentNegotiatingApiClient, self).__init__(host, header_name, header_value, default_mimetype)
+        super(ContentNegotiatingApiClient, self).__init__(host, header_name,
+                                                          header_value,
+                                                          default_mimetype)
         self.default_mimetype = default_mimetype
 
     def select_header_accept(self, accepts):

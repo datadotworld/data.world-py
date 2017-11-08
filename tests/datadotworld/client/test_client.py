@@ -36,6 +36,8 @@ from datadotworld.client._swagger.models import (
     FileBatchUpdateRequest,
     FileCreateOrUpdateRequest,
     FileSourceCreateOrUpdateRequest,
+    PaginatedDatasetResults,
+    UserDataResponse,
 )
 from datadotworld.client.api import RestApiClient, RestApiError
 
@@ -77,14 +79,15 @@ class TestApiClient:
     @pytest.fixture()
     def user_api(self):
         with Spy(UserApi) as api:
-            api.get_user_data = lambda : UserDataResponse()
-            api.fetch_liked_datasets = lambda : PaginatedDatasetResults()
-            api.fetch_datasets = lambda : PaginatedDatasetResults()
-            api.fetch_contributing_datasets = lambda : PaginatedDatasetResults()
+            api.get_user_data = lambda: UserDataResponse()
+            api.fetch_liked_datasets = lambda: PaginatedDatasetResults()
+            api.fetch_datasets = lambda: PaginatedDatasetResults()
+            api.fetch_contributing_datasets = lambda: PaginatedDatasetResults()
             return api
 
     @pytest.fixture()
-    def api_client(self, config, datasets_api, uploads_api, download_api, sql_api, sparql_api, user_api):
+    def api_client(self, config, datasets_api, uploads_api, download_api,
+                   sql_api, sparql_api, user_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._uploads_api = uploads_api
@@ -130,7 +133,8 @@ class TestApiClient:
                                                 equal_to('datasetid')))
 
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
-        file_update_request = {'filename.ext': {'url': 'https://acme.inc/filename.ext'}}
+        file_update_request = {'filename.ext':
+                               {'url': 'https://acme.inc/filename.ext'}}
         file_update_object = FileBatchUpdateRequest(
             files=[FileCreateOrUpdateRequest(
                 name='filename.ext',
@@ -250,19 +254,21 @@ class TestApiClient:
     def test_download_file(self, api_client, dataset_key, download_api):
         api_client.download_file(dataset_key, 'file')
         assert_that(download_api.download_file,
-                    called().times(1).with_args('agentid', 'datasetid', 'file'))
+                    called().times(1).with_args('agentid', 'datasetid',
+                                                'file'))
 
     def test_sql(self, api_client, dataset_key, sql_api):
         api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
         assert_that(sql_api.sql_post,
-                    called().times(1).with_args('agentid', 'datasetid', 'query',
-                        sql_api_mock=sql_api))
+                    called().times(1).with_args('agentid', 'datasetid',
+                                                'query', sql_api_mock=sql_api))
 
     def test_sparql(self, api_client, dataset_key, sparql_api):
         api_client.sparql(dataset_key, 'query', sparql_api_mock=sparql_api)
         assert_that(sparql_api.sparql_post,
-                    called().times(1).with_args('agentid', 'datasetid', 'query',
-                        sparql_api_mock=sparql_api))
+                    called().times(1).with_args('agentid', 'datasetid',
+                                                'query',
+                                                sparql_api_mock=sparql_api))
 
     def test_get_user_data(self, api_client):
         user_data_response = api_client.get_user_data()
