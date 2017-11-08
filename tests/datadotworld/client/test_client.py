@@ -30,7 +30,12 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
 
 from datadotworld.client._swagger import DatasetsApi, UploadsApi
 from datadotworld.client._swagger.rest import ApiException
-from datadotworld.client._swagger.models import *  # noqa: F403
+from datadotworld.client._swagger.models import (
+    DatasetSummaryResponse,
+    FileBatchUpdateRequest,
+    FileCreateOrUpdateRequest,
+    FileSourceCreateOrUpdateRequest,
+)
 from datadotworld.client.api import RestApiClient, RestApiError
 
 
@@ -38,7 +43,7 @@ class TestApiClient:
     @pytest.fixture()
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)  # noqa
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
             return api
@@ -46,7 +51,7 @@ class TestApiClient:
     @pytest.fixture()
     def uploads_api(self):
         with Spy(UploadsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)  # noqa
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
             return api
 
     @pytest.fixture()
@@ -87,10 +92,10 @@ class TestApiClient:
 
     def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
         file_update_request = {'filename.ext': 'https://acme.inc/filename.ext'}
-        file_update_object = FileBatchUpdateRequest(  # noqa
-            files=[FileCreateOrUpdateRequest(  # noqa
+        file_update_object = FileBatchUpdateRequest(
+            files=[FileCreateOrUpdateRequest(
                 name='filename.ext',
-                source=FileSourceCreateOrUpdateRequest(  # noqa
+                source=FileSourceCreateOrUpdateRequest(
                     url='https://acme.inc/filename.ext'))])
 
         api_client.add_files_via_url(dataset_key, file_update_request)
