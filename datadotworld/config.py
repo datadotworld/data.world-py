@@ -85,10 +85,8 @@ class FileConfig(DefaultConfig):
     Multiple configurations profiles can be saved in the same file and are
     identified by their profile name.
 
-    Parameters
-    ----------
-    profile: str
-        Name of configuration profile.
+    :param profile: Name of configuration profile.
+    :type profile: str
     """
 
     def __init__(self, profile='default', **kwargs):
@@ -129,6 +127,11 @@ class FileConfig(DefaultConfig):
 
     @auth_token.setter
     def auth_token(self, auth_token):
+        """
+
+        :param auth_token:
+
+        """
         if (self._section != configparser.DEFAULTSECT and
                 not self._config_parser.has_section(self._section)):
             self._config_parser.add_section(self._section)
@@ -196,8 +199,7 @@ class FileConfig(DefaultConfig):
 
 
 class ChainedConfig(DefaultConfig):
-    """Checks for env config first, then file-based config
-    """
+    """Checks for env config first, then file-based config"""
 
     def __init__(self, **kwargs):
         # Overrides (for testing)
@@ -215,18 +217,11 @@ class ChainedConfig(DefaultConfig):
     def _first_not_none(seq, supplier_func):
         """Applies supplier_func to each element in seq, returns 1st not None
 
-        Parameters
-        ----------
-        seq: iterable
-            Sequence of object
-        supplier_func: function
-            Function that extracts the desired value from elements in seq
-
-        Returns
-        -------
-        object
-            The desired value, or None if value is not provided
-            by elemens in seq
+        :param seq: Sequence of object
+        :type seq: iterable
+        :param supplier_func: Function that extracts the desired value from
+            elements in seq
+        :type supplier_func: function
         """
         for i in seq:
             obj = supplier_func(i)

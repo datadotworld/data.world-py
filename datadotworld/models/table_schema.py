@@ -88,7 +88,10 @@ _RDF_LITERAL_TYPE_MAPPING = {xsd_type: ts_type
 
 
 def fields_to_dtypes(schema):
-    """Maps table schema fields types to dtypes separating date fields"""
+    """Maps table schema fields types to dtypes separating date fields
+
+    :param schema:
+    """
     datetime_types = ['date', 'datetime']
     datetime_fields = {
         f['name']: _TABLE_SCHEMA_DTYPE_MAPPING.get(f['type'], 'object')
@@ -109,6 +112,8 @@ def sanitize_resource_schema(r):
     Up to version 0.9.0 jsontableschema did not support
     year, yearmonth and duration field types
     https://github.com/frictionlessdata/jsontableschema-py/pull/152
+
+    :param r:
     """
     if 'schema' in r.descriptor:
         r.descriptor['schema'] = _sanitize_schema(r.descriptor['schema'])
@@ -122,15 +127,9 @@ def infer_table_schema(sparql_results_json):
     SPARQL JSON Results Spec:
     https://www.w3.org/TR/2013/REC-sparql11-results-json-20130321
 
-    Parameters
-    ----------
-    sparql_results_json
-        SPARQL JSON results of a query
-
-    Returns
-    -------
-    dict (json)
-        A schema descriptor for the inferred schema
+    :param sparql_results_json: SPARQL JSON results of a query
+    :returns: A schema descriptor for the inferred schema
+    :rtype: dict (json)
     """
     if ('results' in sparql_results_json and
             'bindings' in sparql_results_json['results'] and
@@ -190,17 +189,8 @@ def infer_table_schema(sparql_results_json):
 def infer_table_schema_type_from_rdf_term(term_type, term_datatype):
     """Map an RDF literal type to Table Schema field type
 
-    Parameters
-    ----------
-    term_type
-        type from RDF term
-    term_datatype
-        datatype from RDF term
-
-    Returns
-    -------
-    str
-        A Table Schema field type
+    :param term_type: type from RDF term
+    :param term_datatype: datatype from RDF term
     """
     if (term_type == 'literal' and
             term_datatype is not None):
@@ -211,33 +201,33 @@ def infer_table_schema_type_from_rdf_term(term_type, term_datatype):
 
 
 def order_columns_in_row(fields, unordered_row):
-    """Ensure columns appear in the same order for every row in table"""
+    """Ensure columns appear in the same order for every row in table
+
+    :param fields:
+    :param unordered_row:
+    """
     fields_idx = {f: pos for pos, f in enumerate(fields)}
     return OrderedDict(sorted(unordered_row.items(),
                               key=lambda i: fields_idx[i[0]]))
 
 
 def order_terms_in_binding(result_vars, binding):
-    """
-    Convert a binding into a complete ordered list of terms ordered
+    """Convert a binding into a complete ordered list of terms ordered
     in accordance with result_vars
 
-    Parameters
-    ----------
-    result_vars
-        Vars list from SPARQL JSON results
-    binding
-        Item in bindings section of SPARQL results JSON
-
-    Returns
-    -------
-    list
-        A list of RDF terms
+    :param result_vars: Vars list from SPARQL JSON results
+    :param binding: Item in bindings section of SPARQL results JSON
+    :returns: A list of RDF terms
+    :rtype: list
     """
     return [binding.get(result_var) for result_var in result_vars]
 
 
 def _sanitize_schema(schema_descriptor):
+    """
+
+    :param schema_descriptor:
+    """
     missing_type_support = False
     try:
         from jsontableschema import YearType, YearMonthType, DurationType  # noqa
@@ -271,6 +261,11 @@ def _sanitize_schema(schema_descriptor):
 
 
 def _verify_unique_names(result_vars, metadata_names):
+    """
+
+    :param result_vars:
+    :param metadata_names:
+    """
     metadata_name_duplicates = [name_duplicate
                                 for name_duplicate, count
                                 in Counter(metadata_names).items()
@@ -293,7 +288,9 @@ def _get_types_from_sample(result_vars, sparql_results_json):
     Compare up to 10 rows of results to determine homogeneity.
 
     DESCRIBE and CONSTRUCT queries, for example,
-    return heterogeneously typed rows.
+
+    :param result_vars:
+    :param sparql_results_json:
     """
     total_bindings = len(sparql_results_json['results']['bindings'])
     homogeneous_types = {}

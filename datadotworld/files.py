@@ -29,6 +29,7 @@ from datadotworld.client.api import RestApiError
 
 
 class RemoteFile:
+    """ """
     def __init__(self, config, dataset_key, file_name,
                  mode='w', **kwargs):
         """
@@ -89,25 +90,18 @@ class RemoteFile:
                 "modes other than 'w', 'wb', 'r', and 'rb' not supported")
 
     def write(self, value):
-        """
-        write the given value to the stream - if the object is a bytearray,
+        """write the given value to the stream - if the object is a bytearray,
         write it as-is - otherwise, convert the object to a string with
         `str()` and write the UTF-8 bytes
 
-        Parameters
-        ----------
-        value: str or bytearray
-            the value to write
-
-        Raises
-        ------
-        TypeError
-            if the type of the value provided does not match the mode in
-            which the file was opened
-        NotImplementedError
-            if the mode of the file is not one of the supported values
-            (currently only "writing" modes for files are supported - leaving
-            the option to implement "read" modes open for future work)
+        :param value: the value to write
+        :type value: str or bytearray
+        :raises TypeError: if the type of the value provided does not match
+            the mode in which the file was opened.
+        :raises NotImplementedError: if the mode of the file is not one of the
+        supported values (currently only "writing" modes for files are
+        supported - leaving the option to implement "read" modes open for
+        future work)
         """
         if 'w' == self._mode and isinstance(value, str):
             self._queue.put(value.encode('utf-8'))
@@ -122,9 +116,7 @@ class RemoteFile:
             raise IOError("File not opened in write mode.")
 
     def read(self):
-        """
-        read the contents of the file that's been opened in read mode
-        """
+        """read the contents of the file that's been opened in read mode"""
         if 'r' == self._mode:
             return self._read_response.text
         elif 'rb' == self._mode:
@@ -147,9 +139,10 @@ class RemoteFile:
             raise IOError("File not opened in read mode.")
 
     def open(self):
-        """
-        in write mode, start the thread executing the HTTP request.  in read
+        """in write mode, start the thread executing the HTTP request.  in read
         mode, execute the GET request and hold on to the response.
+
+
         """
         if self._mode.find('w') >= 0:
             self._open_for_write()
@@ -157,9 +150,7 @@ class RemoteFile:
             self._open_for_read()
 
     def _open_for_read(self):
-        """
-        open the file in read mode
-        """
+        """open the file in read mode"""
         ownerid, datasetid = parse_dataset_key(self._dataset_key)
         response = requests.get(
             '{}/file_download/{}/{}/{}'.format(
@@ -176,10 +167,12 @@ class RemoteFile:
         self._read_response = response
 
     def _open_for_write(self):
-        """
-        open the file in write mode
-        """
+        """open the file in write mode"""
         def put_request(body):
+            """
+
+            :param body:
+            """
             ownerid, datasetid = parse_dataset_key(self._dataset_key)
             response = requests.put(
                 "{}/uploads/{}/{}/files/{}".format(
@@ -197,11 +190,12 @@ class RemoteFile:
         self._thread.start()
 
     def close(self):
-        """
-        in write mode, closing the handle adds the sentinel value into the
+        """in write mode, closing the handle adds the sentinel value into the
         queue and joins the thread executing the HTTP request.  in read mode,
         this clears out the read response object so there are no references
         to it, and the resources can be reclaimed.
+
+
         """
         if self._mode.find('w') >= 0:
             self._queue.put(self._sentinel)
@@ -231,9 +225,7 @@ class RemoteFile:
 
 
 class RemoteFileException(Exception):
-    """
-    Exception wrapper for exceptions arising from the RemoteFile
-    """
+    """ """
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
         super(RemoteFileException, self).__init__(*args, **kwargs)
