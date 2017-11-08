@@ -109,7 +109,7 @@ class DataDotWorld(object):
                           for i, x in enumerate(parameters)}
             params["parameters"] = ",".join(["{}={}".format(
                 k, convert_to_sparql_literal(parameters[k]))
-                                             for k in parameters.keys()])
+                for k in parameters.keys()])
         url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
                                              query_type, owner_id, dataset_id)
         headers = {
@@ -159,7 +159,7 @@ class DataDotWorld(object):
         backup_dir = None
         if path.isdir(cache_dir) and force_update:
             backup_dir = path.join(self._config.cache_dir, owner_id,
-                               dataset_id, 'backup')
+                                   dataset_id, 'backup')
             move_cache_dir_to_backup_dir(backup_dir, cache_dir)
 
         descriptor_file = path.join(cache_dir, 'datapackage.json')
@@ -187,26 +187,28 @@ class DataDotWorld(object):
                 if auto_update:
                     try:
                         backup_dir = path.join(self._config.cache_dir,
-                                                owner_id,dataset_id,
-                                                'backup')
+                                               owner_id, dataset_id,
+                                               'backup')
                         move_cache_dir_to_backup_dir(backup_dir,
                                                      cache_dir)
-                        descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
+                        descriptor_file = self.api_client. \
+                            download_datapackage(dataset_key, cache_dir)
                     except RestApiError as e:
                         if backup_dir is not None:
                             shutil.move(backup_dir, cache_dir)
                             warn('Unable to auto update datapackage ({}). '
-                                 'Loading previously saved version.'.format(e.reason))
+                                 'Loading previously saved version.'
+                                 .format(e.reason))
                         else:
                             raise
                 else:
                     filterwarnings('always',
-                        message='You are using an outdated copy')
+                                   message='You are using an outdated copy')
                     warn('You are using an outdated copy of {}. '
-                        'If you wish to use the latest version, call this '
-                        'function with the argument '
-                        'auto_update=True or '
-                        'force_update=True'.format(dataset_key))
+                         'If you wish to use the latest version, call this '
+                         'function with the argument '
+                         'auto_update=True or '
+                         'force_update=True'.format(dataset_key))
 
         if backup_dir is not None:
             shutil.rmtree(backup_dir, ignore_errors=True)
@@ -298,6 +300,7 @@ class DataDotWorld(object):
         except Exception as e:
             raise RestApiError(cause=e)
 
+
 class UriParam():
     """
     Represents a URI value as a parameter to a SPARQL query
@@ -333,11 +336,13 @@ def convert_to_sparql_literal(value):
     else:
         return "\"{}\"".format(value)
 
+
 # move cache directory into backup directory
 def move_cache_dir_to_backup_dir(backup_dir, cache_dir):
     if path.isdir(backup_dir):
         shutil.rmtree(backup_dir)
     shutil.move(cache_dir, backup_dir)
+
 
 if __name__ == "__main__":
     import doctest

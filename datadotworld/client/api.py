@@ -146,7 +146,7 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetCreateRequest(),
-            lambda name, url, description, labels : _swagger.FileCreateRequest(
+            lambda name, url, description, labels: _swagger.FileCreateRequest(
                 name=name,
                 source=_swagger.FileSourceCreateRequest(url=url),
                 description=description,
@@ -198,11 +198,12 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, description, labels: _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
+            lambda name, url, description, labels:
+                _swagger.FileCreateOrUpdateRequest(
+                    name=name,
+                    source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+                    description=description,
+                    labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -327,7 +328,8 @@ class RestApiClient(object):
         """
         file_requests = [_swagger.FileCreateOrUpdateRequest(
                             name=file_name,
-                            source=_swagger.FileSourceCreateOrUpdateRequest(url=file_info['url']),
+                            source=_swagger.FileSourceCreateOrUpdateRequest(
+                                url=file_info['url']),
                             description=file_info.get('description'),
                             labels=file_info.get('labels'),
                         ) for file_name, file_info in files.items()]
@@ -380,7 +382,7 @@ class RestApiClient(object):
         files_metadata: dict optional
             Dict containing the name of files and metadata
             name : dict
-                File description, labels and source URLs to add or update. 
+                File description, labels and source URLs to add or update.
 
         Raises
         ------
@@ -397,7 +399,8 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files, **kwargs)
+            self._uploads_api.upload_files(owner_id, dataset_id, files,
+                                           **kwargs)
             if files_metadata:
                 self.update_dataset(dataset_key, files=files_metadata)
         except _swagger.rest.ApiException as e:
@@ -417,7 +420,7 @@ class RestApiClient(object):
         file_metadata: dict optional
             Dict containing the name of files and metadata
             name : dict
-                File description, labels and source URLs to add or update. 
+                File description, labels and source URLs to add or update.
 
         Raises
         ------
@@ -585,7 +588,8 @@ class RestApiClient(object):
         limit : str, optional
             Maximum number of items to include in a page of results
         next : str, optional
-            Token from previous result page (to be used when requesting a subsequent page)
+            Token from previous result page (to be used when requesting
+            a subsequent page)
         sort : str, optional
             Property name to sort
 
@@ -607,7 +611,8 @@ class RestApiClient(object):
         {'count': 0, 'records': [], 'next_page_token': None}
         """
         try:
-            return self._user_api.fetch_contributing_datasets(**kwargs).to_dict()
+            return self._user_api.fetch_contributing_datasets(
+                                                        **kwargs).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -619,7 +624,8 @@ class RestApiClient(object):
         limit : str, optional
             Maximum number of items to include in a page of results
         next : str, optional
-            Token from previous result page (to be used when requesting a subsequent page)
+            Token from previous result page (to be used when requesting
+            a subsequent page)
         sort : str, optional
             Property name to sort
 
@@ -637,7 +643,8 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> user_liked_dataset = api_client.fetch_liked_datasets() # doctest: +SKIP
+        >>> user_liked_dataset = api_client.\
+        >>> fetch_liked_datasets() # doctest: +SKIP
         """
         try:
             return self._user_api.fetch_liked_datasets(**kwargs).to_dict()
@@ -652,7 +659,8 @@ class RestApiClient(object):
         limit : str, optional
             Maximum number of items to include in a page of results
         next : str, optional
-            Token from previous result page (to be used when requesting a subsequent page)
+            Token from previous result page (to be used when requesting
+            a subsequent page)
         sort : str, optional
             Property name to sort
 
@@ -679,7 +687,8 @@ class RestApiClient(object):
 
     # Sql Operations
 
-    def sql(self, dataset_key, query, desired_mimetype='application/json', **kwargs):
+    def sql(self, dataset_key, query, desired_mimetype='application/json',
+            **kwargs):
         """Executes SQL queries against a dataset via POST
 
         Parameters
@@ -708,11 +717,12 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.sql('username/test-dataset', 'query') # doctest: +SKIP
         """
-        sql_api_client = content_negotiating_api_client.ContentNegotiatingApiClient(
-            host=self._host,
-            header_name='Authorization',
-            header_value='Bearer {}'.format(self._config.auth_token),
-            default_mimetype=desired_mimetype)
+        sql_api_client = content_negotiating_api_client. \
+            ContentNegotiatingApiClient(
+                host=self._host,
+                header_name='Authorization',
+                header_value='Bearer {}'.format(self._config.auth_token),
+                default_mimetype=desired_mimetype)
         sql_api_client.user_agent = _user_agent()
         sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(sql_api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -723,7 +733,8 @@ class RestApiClient(object):
 
     # Sparql Operations
 
-    def sparql(self, dataset_key, query, desired_mimetype='application/json', **kwargs):
+    def sparql(self, dataset_key, query, desired_mimetype='application/json',
+               **kwargs):
         """Executes SPARQL queries against a dataset via POST
 
         Parameters
@@ -748,19 +759,22 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> api_client.sparql_post('username/test-dataset', query) # doctest: +SKIP
+        >>> api_client.sparql_post('username/test-dataset',\
+        >>> query) # doctest: +SKIP
         """
-        sparql_api_client = content_negotiating_api_client.ContentNegotiatingApiClient(
-            host=self._host,
-            header_name='Authorization',
-            header_value='Bearer {}'.format(self._config.auth_token),
-            default_mimetype=desired_mimetype)
+        sparql_api_client = content_negotiating_api_client. \
+            ContentNegotiatingApiClient(
+                host=self._host,
+                header_name='Authorization',
+                header_value='Bearer {}'.format(self._config.auth_token),
+                default_mimetype=desired_mimetype)
         sparql_api_client.user_agent = _user_agent()
         sparql_api = kwargs.get('sparql_api_mock',
-                                 _swagger.SparqlApi(sparql_api_client))
+                                _swagger.SparqlApi(sparql_api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return sparql_api.sparql_post(owner_id, dataset_id, query, **kwargs)
+            return sparql_api.sparql_post(owner_id, dataset_id, query,
+                                          **kwargs)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -821,7 +835,8 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> api_client.download_file('username/test-dataset', '/my/local/example.csv')
+        >>> api_client.download_file('username/test-dataset',\
+        >>> '/my/local/example.csv')
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -833,9 +848,9 @@ class RestApiClient(object):
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
                 name,
-                url = file_info.get('url'),
-                description = file_info.get('description'),
-                labels = file_info.get('labels'))
+                url=file_info.get('url'),
+                description=file_info.get('description'),
+                labels=file_info.get('labels'))
                     for name, file_info in args['files'].items()]
                     if 'files' in args else None)
         dataset = dataset_constructor()

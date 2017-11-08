@@ -11,3 +11,6 @@ docs/_build
 # PyCharm files
 *.iml
 .idea
+
+# Coverage
+.coverage

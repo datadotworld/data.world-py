@@ -18,7 +18,6 @@
 # data.world, Inc.(http://data.world/).
 
 from collections import OrderedDict, Counter
-from collections import defaultdict
 
 #: Mapping of Table Schema field types to all suitable dtypes (pandas)
 from warnings import warn
@@ -241,7 +240,7 @@ def order_terms_in_binding(result_vars, binding):
 def _sanitize_schema(schema_descriptor):
     missing_type_support = False
     try:
-        from jsontableschema import YearType, YearMonthType, DurationType
+        from jsontableschema import YearType, YearMonthType, DurationType  # noqa
     except ImportError:
         missing_type_support = True
 
@@ -304,7 +303,7 @@ def _get_types_from_sample(result_vars, sparql_results_json):
         for i in range(0, min(total_bindings, 10)):
             binding = sparql_results_json['results']['bindings'][i]
             rdf_term = binding.get(result_var)
-            if rdf_term is not None: # skip missing values
+            if rdf_term is not None:  # skip missing values
                 var_types.add(rdf_term.get('type'))
                 var_datatypes.add(rdf_term.get('datatype'))
         if len(var_types) > 1 or len(var_datatypes) > 1:

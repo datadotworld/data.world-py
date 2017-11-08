@@ -31,30 +31,35 @@ class TestDataDotWorldFileWriter:
     def test_write_basic(self):
         with responses.RequestsMock() as resp:
             def upload_endpoint(request):
-                assert "test" == ''.join([chunk.decode('utf-8') for chunk in request.body])
+                assert "test" == ''.join([chunk.decode('utf-8')
+                                          for chunk in request.body])
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, json.dumps({})
 
             resp.add_callback(resp.PUT,
-                              '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
-                                                                 'user', 'dataset', 'file.txt'),
+                              '{}/uploads/{}/{}/files/{}'
+                              .format('https://api.data.world/v0',
+                                      'user', 'dataset', 'file.txt'),
                               callback=upload_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt") as writer:
+            with RemoteFile(DefaultConfig(),
+                            "user/dataset", "file.txt") as writer:
                 writer.write("test")
 
     def test_write_csv(self):
         with responses.RequestsMock() as resp:
             def upload_endpoint(request):
                 assert "a,b\r\n42,17\r\n420,178\r\n" == \
-                       ''.join([chunk.decode('utf-8') for chunk in request.body])
+                       ''.join([chunk.decode('utf-8')
+                                for chunk in request.body])
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, json.dumps({})
 
-            resp.add_callback(resp.PUT,
-                              '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
-                                                                 'user', 'dataset', 'file.csv'),
+            resp.add_callback(resp.PUT, '{}/uploads/{}/{}/files/{}'
+                              .format('https://api.data.world/v0',
+                                      'user', 'dataset', 'file.csv'),
                               callback=upload_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv") as writer:
+            with RemoteFile(DefaultConfig(),
+                            "user/dataset", "file.csv") as writer:
                 csvw = csv.DictWriter(writer, fieldnames=['a', 'b'])
                 csvw.writeheader()
                 csvw.writerow({'a': 42, 'b': 17})
@@ -67,16 +72,18 @@ class TestDataDotWorldFileWriter:
                     assert request.headers.get('User-Agent') == _user_agent()
                     return 400, {}, json.dumps({})
 
-                resp.add_callback(resp.PUT,
-                                  '{}/uploads/{}/{}/files/{}'.format('https://api.data.world/v0',
-                                                                     'user', 'dataset', 'file.txt'),
+                resp.add_callback(resp.PUT, '{}/uploads/{}/{}/files/{}'
+                                  .format('https://api.data.world/v0',
+                                          'user', 'dataset', 'file.txt'),
                                   callback=upload_endpoint)
-                with RemoteFile(DefaultConfig(), "user/dataset", "file.txt") as writer:
+                with RemoteFile(DefaultConfig(),
+                                "user/dataset", "file.txt") as writer:
                     writer.write("test")
 
     def test_write_timeout_error(self):
         with pytest.raises(RemoteFileException):
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", timeout=0.0) as writer:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            timeout=0.0) as writer:
                 writer.write("test")
 
     def test_read_basic(self):
@@ -85,11 +92,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test."
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                        'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="r") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="r") as reader:
                 contents = reader.read()
                 assert "this is the test." == contents
 
@@ -99,11 +107,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test.".encode('utf-16')
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="rb") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="rb") as reader:
                 contents = reader.read()
                 assert "this is the test." == contents.decode('utf-16')
 
@@ -113,11 +122,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "this is the test."
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="rb") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="rb") as reader:
                 contents = reader.read()
                 assert b"this is the test." == contents
 
@@ -127,11 +137,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, struct.pack('BBBB', 0, 1, 254, 255)
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="rb") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="rb") as reader:
                 contents = reader.read()
                 assert b"\x00\x01\xfe\xff" == contents
 
@@ -141,11 +152,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "abcdef"
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="rb") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="rb") as reader:
                 contents = list(reader)
                 assert [b'a', b'b', b'c', b'd', b'e', b'f'] == contents
 
@@ -155,9 +167,9 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "abcdef"
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
             with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
                             mode="rb", chunk_size=4) as reader:
@@ -170,11 +182,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, struct.pack('BBBB', 0, 1, 254, 255)
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.txt'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.txt'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="rb") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                            mode="rb") as reader:
                 contents = list(reader)
                 assert [b"\x00", b"\x01", b"\xfe", b"\xff"] == contents
 
@@ -185,11 +198,12 @@ class TestDataDotWorldFileWriter:
                     assert request.headers.get('User-Agent') == _user_agent()
                     return 400, {}, json.dumps({'message': 'bad request'})
 
-                resp.add_callback(resp.GET,
-                                  '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                     'user', 'dataset', 'file.txt'),
+                resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                                  .format('https://query.data.world',
+                                          'user', 'dataset', 'file.txt'),
                                   callback=download_endpoint)
-                with RemoteFile(DefaultConfig(), "user/dataset", "file.txt", mode="r") as reader:
+                with RemoteFile(DefaultConfig(), "user/dataset", "file.txt",
+                                mode="r") as reader:
                     contents = reader.read()
                     assert "this is the test." == contents
 
@@ -199,11 +213,12 @@ class TestDataDotWorldFileWriter:
                 assert request.headers.get('User-Agent') == _user_agent()
                 return 200, {}, "A,B,C\n1,2,3\n4,5,6"
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.csv'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.csv'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv", mode="r") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv",
+                            mode="r") as reader:
                 csvr = csv.DictReader(reader)
                 rows = list(csvr)
                 assert rows[0] == {'A': '1', 'B': '2', 'C': '3'}
@@ -216,11 +231,12 @@ class TestDataDotWorldFileWriter:
                 return 200, {}, '{"A":"1", "B":"2", "C":"3"}\n' \
                                 '{"A":"4", "B":"5", "C":"6"}\n'
 
-            resp.add_callback(resp.GET,
-                              '{}/file_download/{}/{}/{}'.format('https://query.data.world',
-                                                                 'user', 'dataset', 'file.csv'),
+            resp.add_callback(resp.GET, '{}/file_download/{}/{}/{}'
+                              .format('https://query.data.world',
+                                      'user', 'dataset', 'file.csv'),
                               callback=download_endpoint)
-            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv", mode="r") as reader:
+            with RemoteFile(DefaultConfig(), "user/dataset", "file.csv",
+                            mode="r") as reader:
                 rows = [json.loads(line) for line in reader if line.strip()]
                 assert rows[0] == {'A': '1', 'B': '2', 'C': '3'}
                 assert rows[1] == {'A': '4', 'B': '5', 'C': '6'}

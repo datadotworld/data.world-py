@@ -28,7 +28,7 @@ from __future__ import absolute_import
 import weakref
 
 from datadotworld.config import FileConfig, ChainedConfig
-from datadotworld.datadotworld import DataDotWorld, UriParam
+from datadotworld.datadotworld import DataDotWorld, UriParam  # noqa: F401
 
 __version__ = '1.4.3'
 
@@ -48,7 +48,8 @@ def _get_instance(profile):
     return instance
 
 
-def load_dataset(dataset_key, force_update=False, auto_update=False, profile='default'):
+def load_dataset(dataset_key, force_update=False, auto_update=False,
+                 profile='default'):
     """
     Load a dataset from the local filesystem, downloading it from data.world
     first, if necessary.
