@@ -219,7 +219,8 @@ class ChainedConfig(DefaultConfig):
 
         :param seq: Sequence of object
         :type seq: iterable
-        :param supplier_func: Function that extracts the desired value from elements in seq
+        :param supplier_func: Function that extracts the desired value from
+            elements in seq
         :type supplier_func: function
         """
         for i in seq:

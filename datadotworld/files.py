@@ -96,8 +96,8 @@ class RemoteFile:
 
         :param value: the value to write
         :type value: str or bytearray
-        :raises TypeError: if the type of the value provided does not match the mode
-        in which the file was opened.
+        :raises TypeError: if the type of the value provided does not match
+            the mode in which the file was opened.
         :raises NotImplementedError: if the mode of the file is not one of the
         supported values (currently only "writing" modes for files are
         supported - leaving the option to implement "read" modes open for

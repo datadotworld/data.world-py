@@ -66,7 +66,8 @@ class LazyLoadedDict(Mapping):
     use the dictionary like they would normally use any dictionary, without
     concern for the fact that `LazyLoadedValue` instances are ``callable``.
 
-    :param lazy_loaded_items: Mapping of keys to values of type `LazyLoadedValue`
+    :param lazy_loaded_items: Mapping of keys to values of type
+        `LazyLoadedValue`
     :type lazy_loaded_items: dict
     """
 

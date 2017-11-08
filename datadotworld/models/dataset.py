@@ -42,7 +42,8 @@ class LocalDataset(object):
               Datapackage.
               See specs at http://specs.frictionlessdata.io/data-package/
 
-    :param descriptor_file: Path or handle for the descriptor of the dataset (datapackage.json)
+    :param descriptor_file: Path or handle for the descriptor of the dataset
+        (datapackage.json)
     :type descriptor_file: str or file-like object
 
     Attributes
@@ -96,9 +97,9 @@ class LocalDataset(object):
     def describe(self, resource=None):
         """Describe dataset or resource within dataset
 
-        :param resource: The name of a specific resource (i.e. file or table) contained in
-            the dataset. If ``resource`` is None, this method will describe
-            the dataset itself. (Default value = None)
+        :param resource: The name of a specific resource (i.e. file or table)
+            contained in the dataset. If ``resource`` is None, this method
+            will describe the dataset itself. (Default value = None)
         :type resource: str, optional
         :returns: The descriptor of the dataset or of a specific resource, if
         ``resource`` is specified in the call.
