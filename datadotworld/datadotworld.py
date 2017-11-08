@@ -177,25 +177,36 @@ class DataDotWorld(object):
         else:
             try:
                 dataset_info = self.api_client.get_dataset(dataset_key)
-                last_modified = datetime.strptime(dataset_info['updated'],
-                                                  '%Y-%m-%dT%H:%M:%S.%fZ')
-                if (last_modified > datetime.utcfromtimestamp(
-                        path.getmtime(str(descriptor_file)))):
-                    if auto_update:
-                        backup_dir = path.join(self._config.cache_dir, owner_id,dataset_id, 'backup')
-                        move_cache_dir_to_backup_dir(backup_dir, cache_dir)
+            except RestApiError as e:
+                return LocalDataset(descriptor_file)
+
+            last_modified = datetime.strptime(dataset_info['updated'],
+                                              '%Y-%m-%dT%H:%M:%S.%fZ')
+            if (last_modified > datetime.utcfromtimestamp(
+                    path.getmtime(str(descriptor_file)))):
+                if auto_update:
+                    try:
+                        backup_dir = path.join(self._config.cache_dir,
+                                                owner_id,dataset_id,
+                                                'backup')
+                        move_cache_dir_to_backup_dir(backup_dir,
+                                                     cache_dir)
                         descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
-                    else:
-                        filterwarnings('always',
-                            message='You are using an outdated copy')
-                        warn('You are using an outdated copy of {}. '
-                            'If you wish to use the latest version, call this '
-                            'function with the argument '
-                            'auto_update=True or '
-                            'force_update=True'.format(dataset_key))
-            except RestApiError:
-                # Not a critical step
-                pass
+                    except RestApiError as e:
+                        if backup_dir is not None:
+                            shutil.move(backup_dir, cache_dir)
+                            warn('Unable to auto update datapackage ({}). '
+                                 'Loading previously saved version.'.format(e.reason))
+                        else:
+                            raise
+                else:
+                    filterwarnings('always',
+                        message='You are using an outdated copy')
+                    warn('You are using an outdated copy of {}. '
+                        'If you wish to use the latest version, call this '
+                        'function with the argument '
+                        'auto_update=True or '
+                        'force_update=True'.format(dataset_key))
 
         if backup_dir is not None:
             shutil.rmtree(backup_dir, ignore_errors=True)
