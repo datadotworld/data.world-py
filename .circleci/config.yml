@@ -26,10 +26,6 @@ jobs:
           name: tox
           command: tox --pre
 
-      - run:
-          name: coverage report
-          command: coverage report --fail-under=90
-
       - save_cache:
           key: tox_cache-{{ checksum "tox.ini" }}
           paths:
