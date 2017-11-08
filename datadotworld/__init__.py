@@ -28,7 +28,7 @@ from __future__ import absolute_import
 import weakref
 
 from datadotworld.config import FileConfig, ChainedConfig
-from datadotworld.datadotworld import DataDotWorld, UriParam
+from datadotworld.datadotworld import DataDotWorld, UriParam  # noqa: F401
 
 __version__ = '1.4.3'
 
@@ -53,7 +53,8 @@ def _get_instance(profile):
     return instance
 
 
-def load_dataset(dataset_key, force_update=False, profile='default'):
+def load_dataset(dataset_key, force_update=False, auto_update=False,
+                 profile='default'):
     """Load a dataset from the local filesystem, downloading it from data.world
     first, if necessary.
 
@@ -64,10 +65,15 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
 
     :param dataset_key: Dataset identifier, in the form of owner/id or of a url
     :type dataset_key: str
-    :param force_update: Flag, indicating if a new copy of the dataset should be
-        downloaded replacing any previously downloaded copy (Default value = False)
+    :param force_update: Flag, indicating if a new copy of the dataset should
+        be downloaded replacing any previously downloaded copy
+        (Default value = False)
     :type force_update: bool
-    :param profile: Configuration profile (account) to use. (Default value = 'default')
+    :param auto_update: Flag, indicating that dataset be updated to the latest
+        version
+    :type auto_update: bool
+    :param profile: Configuration profile (account) to use.
+        (Default value = 'default')
     :type profile: str, optional
     :returns: The object representing the dataset
     :rtype: LocalDataset
@@ -81,7 +87,8 @@ def load_dataset(dataset_key, force_update=False, profile='default'):
     ['changelog', 'datadotworldbballstats', 'datadotworldbballteam']
     """
     return _get_instance(profile).load_dataset(dataset_key,
-                                               force_update=force_update)
+                                               force_update=force_update,
+                                               auto_update=auto_update)
 
 
 def query(dataset_key, query, query_type='sql', profile='default',
@@ -92,16 +99,18 @@ def query(dataset_key, query, query_type='sql', profile='default',
     :type dataset_key: str
     :param query: SQL or SPARQL query
     :type query: str
-    :param query_type: The type of the query. Must be either 'sql' or 'sparql'. (Default value = 'sql')
+    :param query_type: The type of the query. Must be either 'sql' or 'sparql'.
+        (Default value = 'sql')
     :type query_type: {'sql', 'sparql'}, optional
-    :param parameters: parameters to the query - if SPARQL query, this should be a dict
-        containing named parameters, if SQL query, then this should be a
-        list containing positional parameters.  Boolean values will be
+    :param parameters: parameters to the query - if SPARQL query, this should
+        be a dict containing named parameters, if SQL query, then this should
+        be a list containing positional parameters.  Boolean values will be
         converted to xsd:boolean, Integer values to xsd:integer, and other
         Numeric values to xsd:decimal. anything else is treated as a String
         literal (Default value = None)
     :type parameters: query parameters, optional
-    :param profile: Configuration profile (account) to use. (Default value = 'default')
+    :param profile: Configuration profile (account) to use.
+        (Default value = 'default')
     :type profile: str, optional
     :returns: Object containing the results of the query
     :rtype: Results
@@ -136,11 +145,11 @@ def open_remote_file(dataset_key, file_name, profile='default',
         indicating read/write ('r'/'w') and optionally "binary"
         handling of the file data. (Default value = 'w')
     :type mode: str, optional
-    :param chunk_size: size of chunked bytes to return when reading streamed bytes
-        in 'rb' mode
+    :param chunk_size: size of chunked bytes to return when reading streamed
+        bytes in 'rb' mode
     :type chunk_size: int, optional
-    :param decode_unicode: whether to decode textual responses as unicode when returning
-        streamed lines in 'r' mode
+    :param decode_unicode: whether to decode textual responses as unicode when
+        returning streamed lines in 'r' mode
     :type decode_unicode: bool, optional
     :param profile:  (Default value = 'default')
     :param **kwargs:
@@ -209,7 +218,8 @@ def open_remote_file(dataset_key, file_name, profile='default',
 def api_client(profile='default'):
     """Return API client for access to data.world's REST API
 
-    :param profile: Configuration profile (account) to use. (Default value = 'default')
+    :param profile: Configuration profile (account) to use.
+        (Default value = 'default')
     :type profile: str, optional
     :returns: REST API client object
     :rtype: RestApiClient

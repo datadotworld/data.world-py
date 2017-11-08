@@ -129,5 +129,5 @@ class TestLocalDataset:
 
     def test_repr(self, simpsons_dataset):
         # noinspection PyUnresolvedReferences
-        import datadotworld
+        import datadotworld  # noqa
         assert_that(simpsons_dataset, equal_to(eval(repr(simpsons_dataset))))

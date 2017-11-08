@@ -75,11 +75,13 @@ setup(
         'six>=1.5.0,<2.0a',
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
+        'flake8>=2.6.0,<3.4.1a',
     ],
     setup_requires=[
         'pytest-runner>=2.11,<3.0a',
     ],
     tests_require=[
+        'coverage>=4.4.2',
         'doublex>=1.8.4,<2.0a',
         'pyhamcrest>=1.9.0,<2.0a',
         'responses>=0.5.1,<1.0a',

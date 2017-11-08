@@ -180,7 +180,8 @@ class RemoteFile:
                 data=body,
                 headers={
                     'User-Agent': self._user_agent,
-                    'Authorization': 'Bearer {}'.format(self._config.auth_token)
+                    'Authorization': 'Bearer {}'.format(
+                        self._config.auth_token)
                 })
             self._response_queue.put(response)
 

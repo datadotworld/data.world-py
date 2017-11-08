@@ -19,15 +19,12 @@
 
 from __future__ import absolute_import
 
-import json
 import os
 from os import path
 
 import pytest
 from doublex import Stub, assert_that
 from hamcrest import has_entries, equal_to
-
-from datadotworld.config import FileConfig
 
 
 class Helpers(object):

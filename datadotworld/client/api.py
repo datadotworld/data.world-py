@@ -29,13 +29,13 @@ from os import path
 
 import requests
 
-from datadotworld.client import _swagger
+from datadotworld.client import _swagger, content_negotiating_api_client
 from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient(object):
     """REST API client
-    
+
     :param profile: Name of the configuration profile to use
     :type profile: str optional
     """
@@ -55,6 +55,10 @@ class RestApiClient(object):
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
+        self._user_api = _swagger.UserApi(swagger_client)
+        self._sql_api = _swagger.SqlApi(swagger_client)
+        self._sparql_api = _swagger.SparqlApi(swagger_client)
+        self._download_api = _swagger.DownloadApi(swagger_client)
 
     # Dataset Operations
 
@@ -89,7 +93,8 @@ class RestApiClient(object):
 
         :param owner_id: Username of the owner of the new dataset
         :type owner_id: str
-        :param title: Dataset title (will be used to generate dataset id on creation)
+        :param title: Dataset title (will be used to generate dataset id on
+            creation)
         :type title: str
         :param description: Dataset description
         :type description: str, optional
@@ -97,13 +102,20 @@ class RestApiClient(object):
         :type summary: str, optional
         :param tags: Dataset tags
         :type tags: list, optional
-        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
             Dataset license
-        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File names and source URLs
         :type files: dict, optional
+        :param visibility: Dataset visibility. {'OPEN', 'PRIVATE'}.
+        :type visibility: dict
+        :param files: File name as dict, source URLs, description and labels()
+        as properties
+        :type files: dict, optional
+            *Description and labels are optional*
         :param **kwargs:
         :returns: Newly created dataset key
         :rtype: str
@@ -113,16 +125,20 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
+        >>> url = 'http://www.acme.inc/example.csv'
         >>> api_client.create_dataset(
         ...     'username', title='Test dataset', visibility='PRIVATE',
-        ...     license='Public Domain')  # doctest: +SKIP
+        ...     license='Public Domain',
+        ...     files={'dataset.csv':{'url': url}})  # doctest: +SKIP
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetCreateRequest(),
-            lambda name, url: _swagger.FileCreateRequest(
-                name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+            lambda name, url, description, labels: _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels),
             kwargs)
-
         try:
             (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
                 owner_id, request, _return_http_data_only=False)
@@ -140,14 +156,16 @@ class RestApiClient(object):
         :type summary: str, optional
         :param tags: Dataset tags
         :type tags: list, optional
-        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
             Dataset license
-        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}, optional
         :param files: File names and source URLs to add or update
         :type files: dict, optional
-        :param dataset_key:
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
         :param **kwargs:
         :raises RestApiException: If a server error occurs
 
@@ -161,9 +179,12 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url: _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url)),
+            lambda name, url, description, labels:
+                _swagger.FileCreateOrUpdateRequest(
+                    name=name,
+                    source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+                    description=description,
+                    labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -183,14 +204,16 @@ class RestApiClient(object):
         :type summary: str, optional
         :param tags: Dataset tags
         :type tags: list, optional
-        :param license: 'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
             Dataset license
-        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File names and source URLs to add or update
         :type files: dict, optional
-        :param dataset_key:
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
         :param **kwargs:
         :raises RestApiException: If a server error occurs
 
@@ -205,13 +228,38 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPutRequest(),
-            lambda name, url: _swagger.FileCreateRequest(
-                name=name, source=_swagger.FileSourceCreateRequest(url=url)),
+            lambda name, url, description, labels: _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._datasets_api.replace_dataset(owner_id, dataset_id, request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def delete_dataset(self, dataset_key):
+        """Deletes a dataset and all associated data
+
+        :params dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.delete_dataset(
+        ...     'jonloyens/an-intro-to-dataworld-dataset')
+        >>> del_dataset.message
+        'Dataset has been successfully deleted.'
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._datasets_api.delete_dataset(owner_id, dataset_id)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -222,7 +270,10 @@ class RestApiClient(object):
 
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
-        :param files: File names and source URLs to add or update (Default value = {})
+        :param files: Dict containing the name of files and metadata
+            Uses file name as a dict containing File description, labels and
+            source URLs to add or update (Default value = {})
+            *description and labels are optional.*
         :type files: dict
         :raises RestApiException: If a server error occurs
 
@@ -233,12 +284,18 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.add_files_via_url(
         ...    'username/test-dataset',
-        ...    {'example.csv': url})  # doctest: +SKIP
+        ...    'example.csv': {
+        ...         'url': url,
+        ...         'labels': ['raw data'],
+        ...         'description': 'file description'})  # doctest: +SKIP
         """
         file_requests = [_swagger.FileCreateOrUpdateRequest(
-            name=name,
-            source=_swagger.FileSourceCreateOrUpdateRequest(url=url))
-                         for name, url in files.items()]
+                            name=file_name,
+                            source=_swagger.FileSourceCreateOrUpdateRequest(
+                                url=file_info['url']),
+                            description=file_info.get('description'),
+                            labels=file_info.get('labels'),
+                        ) for file_name, file_info in files.items()]
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -267,13 +324,22 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
-    def upload_files(self, dataset_key, files):
+    def upload_files(self, dataset_key, files, files_metadata={}, **kwargs):
         """Upload dataset files
 
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
-        :param files: The list of names/paths for files stored in the local filesystem
+        :param files: The list of names/paths for files stored in the
+        local filesystem
         :type files: list of str
+        :param expand_archives: Boolean value to indicate files should be
+        expanded upon upload
+        :type expand_archive: bool optional
+        :param files_metadata: Dict containing the name of files and metadata
+            Uses file name as a dict containing File description, labels and
+            source URLs to add or update
+        :type files_metadata: dict optional
+        :param **kwargs:
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -286,7 +352,42 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files)
+            self._uploads_api.upload_files(owner_id, dataset_id, files,
+                                           **kwargs)
+            if files_metadata:
+                self.update_dataset(dataset_key, files=files_metadata)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def upload_file(self, dataset_key, name, file_metadata={}, **kwargs):
+        """Upload one file to a dataset
+
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param name: Name/path for files stored in the local filesystem
+        :type name: str
+        :param expand_archives: Boolean value to indicate files should be
+        expanded upon upload
+        :type expand_archive: bool optional
+        :param files_metadata: Dict containing the name of files and metadata
+        Uses file name as a dict containing File description, labels and
+        source URLs to add or update
+        :type files_metadata: dict optional
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.upload_file(
+        ...     'username/test-dataset',
+        ...     'example.csv')  # doctest: +SKIP
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
+            if file_metadata:
+                self.update_dataset(dataset_key, files=file_metadata)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -322,10 +423,13 @@ class RestApiClient(object):
         :type dataset_key: str
         :param dest_dir: Directory under which datapackage should be saved
         :type dest_dir: str or path
-        :returns: Location of the datapackage descriptor (datapackage.json) in the
-            local filesystem
+        :returns: Location of the datapackage descriptor (datapackage.json) in
+            the local filesystem
         :rtype: path
+        :raises RestApiException: If a server error occurs
 
+        Examples
+        --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
         >>> datapackage_descriptor = api_client.download_datapackage(
@@ -377,12 +481,238 @@ class RestApiClient(object):
 
         return path.join(dest_dir, 'datapackage.json')
 
+    # User Operations
+
+    def get_user_data(self):
+        """Retrieve data for authenticated user
+
+        :returns: User data, with all attributes
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_data = api_client.get_user_data()
+        >>> user_data[display_name]
+        'Name User'
+        """
+        try:
+            return self._user_api.get_user_data().to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_contributing_datasets(self, **kwargs):
+        """Fetch datasets that the authenticated user has access to
+
+        :param limit: Maximum number of items to include in a page of results
+        :type limit: str, optional
+        :param next: Token from previous result page (to be used when
+            requesting a subsequent page)
+        :type next: str, optional
+        :param sort: Property name to sort
+        :type sort: str, optional
+        :returns: Authenticated user dataset
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_dataset = api_client.fetch_contributing_datasets()
+        {'count': 0, 'records': [], 'next_page_token': None}
+        """
+        try:
+            return self._user_api.fetch_contributing_datasets(
+                                                        **kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_liked_datasets(self, **kwargs):
+        """Fetch datasets that authenticated user likes
+
+        :param limit: Maximum number of items to include in a page of results
+        :type limit: str, optional
+        :param next: Token from previous result page (to be used when
+            requesting a subsequent page)
+        :type next: str, optional
+        :param sort: Property name to sort
+        :type sort: str, optional
+        :returns: Dataset definition, with all attributes
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_liked_dataset = api_client.\
+        >>> fetch_liked_datasets() # doctest: +SKIP
+        """
+        try:
+            return self._user_api.fetch_liked_datasets(**kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_datasets(self, **kwargs):
+        """Fetch authenticated user owned datasets
+
+        :param limit: Maximum number of items to include in a page of results
+        :type limit: str, optional
+        :param next: Token from previous result page (to be used when
+            requesting a subsequent page)
+        :type next: str, optional
+        :param sort: Property name to sort
+        :type sort: str, optional
+        :returns: Dataset definition, with all attributes
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_owned_dataset = api_client.fetch_datasets() # doctest: +SKIP
+        """
+        try:
+            return self._user_api.fetch_datasets(**kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Sql Operations
+
+    def sql(self, dataset_key, query, desired_mimetype='application/json',
+            **kwargs):
+        """Executes SQL queries against a dataset via POST
+
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param query: SQL query
+        :type query: str
+        :param include_table_schema: Flags indicating to include table schema
+            in the response
+        :type include_table_schema: bool
+        :returns: file object that can be used in file parsers and
+            data handling modules.
+        :rtype: file object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sql('username/test-dataset', 'query') # doctest: +SKIP
+        """
+        sql_api_client = content_negotiating_api_client. \
+            ContentNegotiatingApiClient(
+                host=self._host,
+                header_name='Authorization',
+                header_value='Bearer {}'.format(self._config.auth_token),
+                default_mimetype=desired_mimetype)
+        sql_api_client.user_agent = _user_agent()
+        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(sql_api_client))
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return sql_api.sql_post(owner_id, dataset_id, query, **kwargs)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Sparql Operations
+
+    def sparql(self, dataset_key, query, desired_mimetype='application/json',
+               **kwargs):
+        """Executes SPARQL queries against a dataset via POST
+
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param query: SPARQL query
+        :type query: str
+        :returns: file object that can be used in file parsers and
+            data handling modules.
+        :rtype: file object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.sparql_post('username/test-dataset',\
+        >>> query) # doctest: +SKIP
+        """
+        sparql_api_client = content_negotiating_api_client. \
+            ContentNegotiatingApiClient(
+                host=self._host,
+                header_name='Authorization',
+                header_value='Bearer {}'.format(self._config.auth_token),
+                default_mimetype=desired_mimetype)
+        sparql_api_client.user_agent = _user_agent()
+        sparql_api = kwargs.get('sparql_api_mock',
+                                _swagger.SparqlApi(sparql_api_client))
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return sparql_api.sparql_post(owner_id, dataset_id, query,
+                                          **kwargs)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Download Operations
+
+    def download_dataset(self, dataset_key):
+        """Return a .zip containing all files within the dataset as uploaded.
+
+        :param dataset_key : Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :returns: .zip file contain files within dataset
+        :rtype: file object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.download_dataset('username/test-dataset')
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._download_api.download_dataset(owner_id, dataset_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def download_file(self, dataset_key, file):
+        """Return a file within the dataset as uploaded.
+
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param file: File path to be returned
+        :type file: str
+        :returns: file in which the data was uploaded
+        :rtype: file object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.download_file('username/test-dataset',\
+        >>> '/my/local/example.csv')
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._download_api.download_file(owner_id, dataset_id, file)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(name, url)
-                  for name, url in args['files'].items()]
-                 if 'files' in args else None)
-
+        files = ([file_constructor(
+                name,
+                url=file_info.get('url'),
+                description=file_info.get('description'),
+                labels=file_info.get('labels'))
+                    for name, file_info in args['files'].items()]
+                    if 'files' in args else None)
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']

@@ -103,9 +103,26 @@ Try to write a test that reproduces the problem you're trying to fix or describe
 
 We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
 
+Once tests are written, we always make sure that the test coverage is up to 90%, otherwise builds will fail.
+
+To check test coverage, run the fellowing command;
+```sh
+$ coverage run setup.py test && coverage report
+```
+
+NB: Coverage reports below 90% will fail on build.
+
 ### Write Code
 
-Implement your feature or bug fix. Make sure that all tests pass without errors
+Implement your feature or bug fix. Make sure that all tests pass without errors.
+
+Also, to make sure that your code follows our coding style guide and best practises, run the command;
+```sh
+$ flake8
+```
+Make sure to fix any errors that appear if any.
+
+NB: Builds will fail if warnings flagged by flake8 are not addressed
 
 ### Write Documentation
 

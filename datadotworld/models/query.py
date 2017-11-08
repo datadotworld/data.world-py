@@ -115,8 +115,8 @@ class QueryResults(object):
                     # non-null value to `None` in a string field, and if
                     # so it restores the non-null value before continuing
                     table_row = map(lambda field, original, mapped:
-                                    original if (not mapped) and original
-                                       and field.type == 'string'
+                                    original if (not mapped) and original and
+                                    field.type == 'string'
                                     else mapped,
                                     schema_obj.fields, values, table_row)
 

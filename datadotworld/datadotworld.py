@@ -22,7 +22,7 @@ from __future__ import absolute_import
 import shutil
 from datetime import datetime
 from os import path
-from warnings import warn
+from warnings import warn, filterwarnings
 import numbers
 
 import requests
@@ -62,18 +62,20 @@ class DataDotWorld(object):
     def query(self, dataset_key, query, query_type="sql", parameters=None):
         """Query an existing dataset
 
-        :param dataset_key: Dataset identifier, in the form of owner/id or of a url
+        :param dataset_key: Dataset identifier, in the form of owner/id or of
+            a url
         :type dataset_key: str
         :param query: SQL or SPARQL query
         :type query: str
-        :param query_type: The type of the query. Must be either 'sql' or 'sparql'. (Default value = "sql")
+        :param query_type: The type of the query. Must be either 'sql' or
+            'sparql'. (Default value = "sql")
         :type query_type: {'sql', 'sparql'}, optional
-        :param parameters: parameters to the query - if SPARQL query, this should be a dict
-            containing named parameters, if SQL query, then this should be a
-            list containing positional parameters.  Boolean values will be
-            converted to xsd:boolean, Integer values to xsd:integer, and other
-            Numeric values to xsd:decimal. anything else is treated as a String
-            literal (Default value = None)
+        :param parameters: parameters to the query - if SPARQL query, this
+            should be a dict containing named parameters, if SQL query,then
+            this should be a list containing positional parameters.
+            Boolean values will be converted to xsd:boolean, Integer values to
+            xsd:integer, and other Numeric values to xsd:decimal. Anything
+            else is treated as a String literal (Default value = None)
         :type parameters: query parameters, optional
         :returns: Object containing the results of the query
         :rtype: Results
@@ -98,7 +100,7 @@ class DataDotWorld(object):
                           for i, x in enumerate(parameters)}
             params["parameters"] = ",".join(["{}={}".format(
                 k, convert_to_sparql_literal(parameters[k]))
-                                             for k in parameters.keys()])
+                for k in parameters.keys()])
         url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
                                              query_type, owner_id, dataset_id)
         headers = {
@@ -112,7 +114,7 @@ class DataDotWorld(object):
         raise RuntimeError(
             'Error executing query: {}'.format(response.content))
 
-    def load_dataset(self, dataset_key, force_update=False):
+    def load_dataset(self, dataset_key, force_update=False, auto_update=False):
         """Load a dataset from the local filesystem, downloading it from
         data.world first, if necessary.
 
@@ -121,11 +123,16 @@ class DataDotWorld(object):
         data via three properties `raw_data`, `tables` and `dataframes`, all
         of which are mappings (dict-like structures).
 
-        :param dataset_key: Dataset identifier, in the form of owner/id or of a url
+        :param dataset_key: Dataset identifier, in the form of owner/id or of
+            a url
         :type dataset_key: str
-        :param force_update: Flag, indicating if a new copy of the dataset should be downloaded
-            replacing any previously downloaded copy (Default value = False)
+        :param force_update: Flag, indicating if a new copy of the dataset
+            should be downloaded replacing any previously downloaded copy
+            (Default value = False)
         :type force_update: bool
+        :param auto_update: Flag, indicating that dataset be updated to the
+            latest version
+        :type auto_update: bool
         :returns: The object representing the dataset
         :rtype: LocalDataset
         :raises RestApiError: If a server error occurs
@@ -133,14 +140,11 @@ class DataDotWorld(object):
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         cache_dir = path.join(self._config.cache_dir, owner_id, dataset_id,
                               'latest')
-
         backup_dir = None
         if path.isdir(cache_dir) and force_update:
             backup_dir = path.join(self._config.cache_dir, owner_id,
                                    dataset_id, 'backup')
-            if path.isdir(backup_dir):
-                shutil.rmtree(backup_dir)
-            shutil.move(cache_dir, backup_dir)
+            move_cache_dir_to_backup_dir(backup_dir, cache_dir)
 
         descriptor_file = path.join(cache_dir, 'datapackage.json')
         if not path.isfile(descriptor_file):
@@ -157,17 +161,38 @@ class DataDotWorld(object):
         else:
             try:
                 dataset_info = self.api_client.get_dataset(dataset_key)
-                last_modified = datetime.strptime(dataset_info['updated'],
-                                                  '%Y-%m-%dT%H:%M:%S.%fZ')
-                if (last_modified > datetime.utcfromtimestamp(
-                        path.getmtime(str(descriptor_file)))):
+            except RestApiError as e:
+                return LocalDataset(descriptor_file)
+
+            last_modified = datetime.strptime(dataset_info['updated'],
+                                              '%Y-%m-%dT%H:%M:%S.%fZ')
+            if (last_modified > datetime.utcfromtimestamp(
+                    path.getmtime(str(descriptor_file)))):
+                if auto_update:
+                    try:
+                        backup_dir = path.join(self._config.cache_dir,
+                                               owner_id, dataset_id,
+                                               'backup')
+                        move_cache_dir_to_backup_dir(backup_dir,
+                                                     cache_dir)
+                        descriptor_file = self.api_client. \
+                            download_datapackage(dataset_key, cache_dir)
+                    except RestApiError as e:
+                        if backup_dir is not None:
+                            shutil.move(backup_dir, cache_dir)
+                            warn('Unable to auto update datapackage ({}). '
+                                 'Loading previously saved version.'
+                                 .format(e.reason))
+                        else:
+                            raise
+                else:
+                    filterwarnings('always',
+                                   message='You are using an outdated copy')
                     warn('You are using an outdated copy of {}. '
                          'If you wish to use the latest version, call this '
                          'function with the argument '
+                         'auto_update=True or '
                          'force_update=True'.format(dataset_key))
-            except RestApiError:
-                # Not a critical step
-                pass
 
         if backup_dir is not None:
             shutil.rmtree(backup_dir, ignore_errors=True)
@@ -187,11 +212,11 @@ class DataDotWorld(object):
             indicating read/write ('r'/'w') and optionally "binary"
             handling of the file data. (Default value = 'w')
         :type mode: str, optional
-        :param chunk_size: size of chunked bytes to return when reading streamed bytes
-            in 'rb' mode
+        :param chunk_size: size of chunked bytes to return when reading
+            streamed bytes in 'rb' mode
         :type chunk_size: int, optional
-        :param decode_unicode: whether to decode textual responses as unicode when returning
-            streamed lines in 'r' mode
+        :param decode_unicode: whether to decode textual responses as unicode
+            when returning streamed lines in 'r' mode
         :type decode_unicode: bool, optional
         :param **kwargs:
 
@@ -294,6 +319,13 @@ def convert_to_sparql_literal(value):
         return "<{}>".format(repr(value))
     else:
         return "\"{}\"".format(value)
+
+
+# move cache directory into backup directory
+def move_cache_dir_to_backup_dir(backup_dir, cache_dir):
+    if path.isdir(backup_dir):
+        shutil.rmtree(backup_dir)
+    shutil.move(cache_dir, backup_dir)
 
 
 if __name__ == "__main__":
