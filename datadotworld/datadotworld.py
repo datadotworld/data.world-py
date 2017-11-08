@@ -182,9 +182,17 @@ class DataDotWorld(object):
                 if (last_modified > datetime.utcfromtimestamp(
                         path.getmtime(str(descriptor_file)))):
                     if auto_update:
-                        backup_dir = path.join(self._config.cache_dir, owner_id,dataset_id, 'backup')
-                        move_cache_dir_to_backup_dir(backup_dir, cache_dir)
-                        descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
+                        try:
+                            backup_dir = path.join(self._config.cache_dir,
+                                                    owner_id,dataset_id,
+                                                    'backup')
+                            move_cache_dir_to_backup_dir(backup_dir,
+                                                         cache_dir)
+                            descriptor_file = self.api_client.download_datapackage(dataset_key, cache_dir)
+                        except RestApiError as e:
+                            shutil.move(backup_dir, cache_dir)
+                            warn('Unable to auto update datapackage ({}). '
+                                 'Loading previously saved version.'.format(e.reason))
                     else:
                         filterwarnings('always',
                             message='You are using an outdated copy')
@@ -193,9 +201,8 @@ class DataDotWorld(object):
                             'function with the argument '
                             'auto_update=True or '
                             'force_update=True'.format(dataset_key))
-            except RestApiError:
-                # Not a critical step
-                pass
+            except RestApiError as e:
+                raise
 
         if backup_dir is not None:
             shutil.rmtree(backup_dir, ignore_errors=True)
