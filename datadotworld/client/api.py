@@ -59,6 +59,7 @@ class RestApiClient(object):
         self._sql_api = _swagger.SqlApi(swagger_client)
         self._sparql_api = _swagger.SparqlApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
+        self._streams_api = _swagger.StreamsApi(swagger_client)
 
     # Dataset Operations
 
@@ -133,9 +134,12 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetCreateRequest(),
-            lambda name, url, description, labels: _swagger.FileCreateRequest(
+            lambda name, url, expand_archive, description, labels:
+            _swagger.FileCreateRequest(
                 name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
+                source=_swagger.FileSourceCreateRequest(
+                    url=url,
+                    expand_archive=expand_archive),
                 description=description,
                 labels=labels),
             kwargs)
@@ -179,14 +183,15 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, description, labels:
+            lambda name, url, expand_archive, description, labels:
                 _swagger.FileCreateOrUpdateRequest(
                     name=name,
-                    source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+                    source=_swagger.FileSourceCreateOrUpdateRequest(
+                            url=url,
+                            expand_archive=expand_archive),
                     description=description,
                     labels=labels),
             kwargs)
-
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._datasets_api.patch_dataset(owner_id, dataset_id, request)
@@ -228,9 +233,12 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPutRequest(),
-            lambda name, url, description, labels: _swagger.FileCreateRequest(
+            lambda name, url, expand_archive, description, labels:
+            _swagger.FileCreateRequest(
                 name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
+                source=_swagger.FileSourceCreateRequest(
+                    url=url,
+                    expand_archive=expand_archive),
                 description=description,
                 labels=labels),
             kwargs)
@@ -292,11 +300,12 @@ class RestApiClient(object):
         file_requests = [_swagger.FileCreateOrUpdateRequest(
                             name=file_name,
                             source=_swagger.FileSourceCreateOrUpdateRequest(
-                                url=file_info['url']),
+                                url=file_info['url'],
+                                expand_archive=file_info.get('expand_archive',
+                                                             False)),
                             description=file_info.get('description'),
                             labels=file_info.get('labels'),
                         ) for file_name, file_info in files.items()]
-
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             self._datasets_api.add_files_by_source(
@@ -704,11 +713,39 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    # Streams Operation
+
+    def append_records(self, dataset_key, stream_id, body):
+        """Append records to a stream.
+
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type dataset_key: str
+        :param stream_id: Stream unique identifier.
+        :type stream_id: str
+        :param body: Object body
+        :type body: obj
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.append_records('username/test-dataset','streamId', \
+        >>> {'content':'content'})
+        """
+        owner_id, dataset_id = parse_dataset_key(dataset_key)
+        try:
+            return self._streams_api.append_records(owner_id, dataset_id,
+                                                    stream_id, body)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
                 name,
                 url=file_info.get('url'),
+                expand_archive=file_info.get('expand_archive', False),
                 description=file_info.get('description'),
                 labels=file_info.get('labels'))
                     for name, file_info in args['files'].items()]
