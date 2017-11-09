@@ -43,7 +43,7 @@ class SparqlApi(object):
     def sparql_get(self, owner, id, query, **kwargs):
         """
         SPARQL query (via GET)
-        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  * `text/csv` * `text/tab-separated-values` * `application/sparql-results+xml` * `application/sparql-results+json`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
+        This endpoint executes SPARQL queries against a dataset or data project.  SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  - `application/sparql-results+xml` - `application/sparql-results+json` - `application/rdf+json` - `application/rdf+xml` - `text/csv` - `text/tab-separated-values`  New to SPARQL? Check out data.world’s[SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -55,7 +55,7 @@ class SparqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :return: None
                  If the method is called asynchronously,
@@ -71,7 +71,7 @@ class SparqlApi(object):
     def sparql_get_with_http_info(self, owner, id, query, **kwargs):
         """
         SPARQL query (via GET)
-        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  * `text/csv` * `text/tab-separated-values` * `application/sparql-results+xml` * `application/sparql-results+json`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
+        This endpoint executes SPARQL queries against a dataset or data project.  SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  - `application/sparql-results+xml` - `application/sparql-results+json` - `application/rdf+json` - `application/rdf+xml` - `text/csv` - `text/tab-separated-values`  New to SPARQL? Check out data.world’s[SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -83,7 +83,7 @@ class SparqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :return: None
                  If the method is called asynchronously,
@@ -136,7 +136,7 @@ class SparqlApi(object):
         body_params = None
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.\
-            select_header_accept(['text/csv', 'application/sparql-results+xml', 'application/sparql-results+json', 'text/tab-separated-values'])
+            select_header_accept(['application/sparql-results+json', 'application/sparql-results+xml', 'application/rdf+json', 'application/rdf+xml', 'text/tab-separated-values', 'text/csv'])
 
         # Authentication setting
         auth_settings = ['token']
@@ -159,7 +159,7 @@ class SparqlApi(object):
     def sparql_post(self, owner, id, query, **kwargs):
         """
         SPARQL query
-        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  * `text/csv` * `text/tab-separated-values` * `application/sparql-results+xml` * `application/sparql-results+json`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
+        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  - `application/sparql-results+xml` - `application/sparql-results+json` - `application/rdf+json` - `application/rdf+xml` - `text/csv` - `text/tab-separated-values`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -171,7 +171,7 @@ class SparqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :return: None
                  If the method is called asynchronously,
@@ -187,7 +187,7 @@ class SparqlApi(object):
     def sparql_post_with_http_info(self, owner, id, query, **kwargs):
         """
         SPARQL query
-        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  * `text/csv` * `text/tab-separated-values` * `application/sparql-results+xml` * `application/sparql-results+json`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
+        This endpoint executes SPARQL queries against a dataset or data project.    SPARQL results are available in a variety of formats. By default, `application/sparql-results+json` will be returned. Set the `Accept` header to one of the following values in accordance with your preference:  - `application/sparql-results+xml` - `application/sparql-results+json` - `application/rdf+json` - `application/rdf+xml` - `text/csv` - `text/tab-separated-values`  New to SPARQL? Check out data.world's [SPARQL tutorial](https://docs.data.world/tutorials/sparql/).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -199,7 +199,7 @@ class SparqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :return: None
                  If the method is called asynchronously,
@@ -252,7 +252,7 @@ class SparqlApi(object):
         body_params = None
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.\
-            select_header_accept(['text/csv', 'application/sparql-results+xml', 'application/sparql-results+json', 'text/tab-separated-values'])
+            select_header_accept(['application/sparql-results+json', 'application/sparql-results+xml', 'application/rdf+json', 'application/rdf+xml', 'text/tab-separated-values', 'text/csv'])
 
         # HTTP header `Content-Type`
         header_params['Content-Type'] = self.api_client.\

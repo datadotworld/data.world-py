@@ -55,7 +55,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param FileBatchUpdateRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -83,7 +83,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param FileBatchUpdateRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -288,7 +288,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.
@@ -315,7 +315,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.
@@ -397,7 +397,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str name: Name and unique idenfiier of file within the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -425,7 +425,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str name: Name and unique idenfiier of file within the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -517,7 +517,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param list[str] name: Names of files to be deleted. Multiple can be provided in a single request by repeating the query string parameter name as many times as necessary. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -545,7 +545,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param list[str] name: Names of files to be deleted. Multiple can be provided in a single request by repeating the query string parameter name as many times as necessary. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -634,7 +634,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: DatasetSummaryResponse
                  If the method is called asynchronously,
                  returns the request thread.
@@ -661,7 +661,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: DatasetSummaryResponse
                  If the method is called asynchronously,
                  returns the request thread.
@@ -743,7 +743,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param DatasetPatchRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -771,7 +771,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param DatasetPatchRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -863,7 +863,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param DatasetPutRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -891,7 +891,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param DatasetPutRequest body: (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
@@ -983,7 +983,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1010,7 +1010,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1092,7 +1092,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1119,7 +1119,7 @@ class DatasetsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :return: SuccessMessage
                  If the method is called asynchronously,
                  returns the request thread.

@@ -31,21 +31,26 @@ class FileSourceCreateOrUpdateRequest(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'url': 'str'
+        'url': 'str',
+        'expand_archive': 'bool'
     }
 
     attribute_map = {
-        'url': 'url'
+        'url': 'url',
+        'expand_archive': 'expandArchive'
     }
 
-    def __init__(self, url=None):
+    def __init__(self, url=None, expand_archive=False):
         """
         FileSourceCreateOrUpdateRequest - a model defined in Swagger
         """
 
         self._url = None
+        self._expand_archive = None
 
         self.url = url
+        if expand_archive is not None:
+          self.expand_archive = expand_archive
 
     @property
     def url(self):
@@ -77,6 +82,29 @@ class FileSourceCreateOrUpdateRequest(object):
             raise ValueError("Invalid value for `url`, must be a follow pattern or equal to `/^https?.*/`")
 
         self._url = url
+
+    @property
+    def expand_archive(self):
+        """
+        Gets the expand_archive of this FileSourceCreateOrUpdateRequest.
+        Indicates whether compressed files should be expanded upon upload.
+
+        :return: The expand_archive of this FileSourceCreateOrUpdateRequest.
+        :rtype: bool
+        """
+        return self._expand_archive
+
+    @expand_archive.setter
+    def expand_archive(self, expand_archive):
+        """
+        Sets the expand_archive of this FileSourceCreateOrUpdateRequest.
+        Indicates whether compressed files should be expanded upon upload.
+
+        :param expand_archive: The expand_archive of this FileSourceCreateOrUpdateRequest.
+        :type: bool
+        """
+
+        self._expand_archive = expand_archive
 
     def to_dict(self):
         """

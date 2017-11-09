@@ -36,6 +36,7 @@ from .apis.datasets_api import DatasetsApi
 from .apis.download_api import DownloadApi
 from .apis.sparql_api import SparqlApi
 from .apis.sql_api import SqlApi
+from .apis.streams_api import StreamsApi
 from .apis.uploads_api import UploadsApi
 from .apis.user_api import UserApi
 
