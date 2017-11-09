@@ -28,8 +28,15 @@ from doublex import assert_that, Spy, called
 from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
                       empty, raises, calling, has_key)
 
-from datadotworld.client._swagger import (DatasetsApi, DownloadApi, SparqlApi,
-                                          SqlApi, UploadsApi, UserApi)
+from datadotworld.client._swagger import (
+    DatasetsApi,
+    DownloadApi,
+    SparqlApi,
+    SqlApi,
+    UploadsApi,
+    UserApi,
+    StreamsApi,
+)
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
     DatasetSummaryResponse,
@@ -86,8 +93,14 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
+    def streams_api(self):
+        with Spy(StreamsApi) as api:
+            api.append_records
+            return api
+
+    @pytest.fixture()
     def api_client(self, config, datasets_api, uploads_api, download_api,
-                   sql_api, sparql_api, user_api):
+                   sql_api, sparql_api, user_api, streams_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._uploads_api = uploads_api
@@ -95,6 +108,7 @@ class TestApiClient:
         client._sql_api = sql_api
         client._sparql_api = sparql_api
         client._user_api = user_api
+        client._streams_api = streams_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -289,3 +303,10 @@ class TestApiClient:
         user_datasets = api_client.fetch_datasets()
         assert_that(user_api.fetch_datasets(),
                     has_properties(user_datasets))
+
+    def test_append_records(self, api_client, dataset_key, streams_api):
+        body = {'content': 'content'}
+        api_client.append_records(dataset_key, 'streamid', body)
+        assert_that(streams_api.append_records,
+                    called().times(1).with_args('agentid', 'datasetid',
+                                                'streamid', body))
