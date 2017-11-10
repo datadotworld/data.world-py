@@ -306,7 +306,9 @@ class TestApiClient:
 
     def test_append_records(self, api_client, dataset_key, streams_api):
         body = {'content': 'content'}
-        api_client.append_records(dataset_key, 'streamid', body)
+        api_client.append_records(dataset_key, 'streamid', body,
+                                  streams_api_mock=streams_api)
         assert_that(streams_api.append_records,
                     called().times(1).with_args('agentid', 'datasetid',
-                                                'streamid', body))
+                                                'streamid', body,
+                                                streams_api_mock=streams_api))

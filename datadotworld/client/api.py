@@ -29,7 +29,10 @@ from os import path
 
 import requests
 
-from datadotworld.client import _swagger, content_negotiating_api_client
+from datadotworld.client import _swagger
+from datadotworld.client.content_negotiating_api_client import (
+    ContentNegotiatingApiClient
+)
 from datadotworld.util import parse_dataset_key, _user_agent
 
 
@@ -53,11 +56,15 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token))
         swagger_client.user_agent = _user_agent()
 
+        self._content_negotiating_client = ContentNegotiatingApiClient(
+            host=self._host,
+            header_name='Authorization',
+            header_value='Bearer {}'.format(self._config.auth_token))
+        self._content_negotiating_client.user_agent = _user_agent()
+
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
-        self._sql_api = _swagger.SqlApi(swagger_client)
-        self._sparql_api = _swagger.SparqlApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
 
@@ -614,13 +621,8 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.sql('username/test-dataset', 'query') # doctest: +SKIP
         """
-        sql_api_client = content_negotiating_api_client. \
-            ContentNegotiatingApiClient(
-                host=self._host,
-                header_name='Authorization',
-                header_value='Bearer {}'.format(self._config.auth_token),
-                default_mimetype=desired_mimetype)
-        sql_api_client.user_agent = _user_agent()
+        sql_api_client = self._content_negotiating_client
+        sql_api_client.default_mimetype = desired_mimetype
         sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(sql_api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -650,13 +652,8 @@ class RestApiClient(object):
         >>> api_client.sparql_post('username/test-dataset',\
         >>> query) # doctest: +SKIP
         """
-        sparql_api_client = content_negotiating_api_client. \
-            ContentNegotiatingApiClient(
-                host=self._host,
-                header_name='Authorization',
-                header_value='Bearer {}'.format(self._config.auth_token),
-                default_mimetype=desired_mimetype)
-        sparql_api_client.user_agent = _user_agent()
+        sparql_api_client = self._content_negotiating_client
+        sparql_api_client.default_mimetype = desired_mimetype
         sparql_api = kwargs.get('sparql_api_mock',
                                 _swagger.SparqlApi(sparql_api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -715,7 +712,8 @@ class RestApiClient(object):
 
     # Streams Operation
 
-    def append_records(self, dataset_key, stream_id, body):
+    def append_records(self, dataset_key, stream_id, body,
+                       desired_mimetype='application/json', **kwargs):
         """Append records to a stream.
 
         :param dataset_key: Dataset identifier, in the form of owner/id
@@ -733,10 +731,14 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId', \
         >>> {'content':'content'})
         """
+        streams_api_client = self._content_negotiating_client
+        streams_api_client.default_mimetype = desired_mimetype
+        streams_api = kwargs.get('streams_api_mock',
+                                 _swagger.StreamsApi(streams_api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._streams_api.append_records(owner_id, dataset_id,
-                                                    stream_id, body)
+            return streams_api.append_records(owner_id, dataset_id,
+                                              stream_id, body, **kwargs)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
