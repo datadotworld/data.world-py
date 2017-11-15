@@ -27,7 +27,7 @@ from __future__ import absolute_import
 
 import weakref
 
-from datadotworld.config import FileConfig, ChainedConfig
+from datadotworld.config import FileConfig, ChainedConfig, InlineConfig
 from datadotworld.datadotworld import DataDotWorld, UriParam  # noqa: F401
 
 __version__ = '1.4.3'
@@ -37,7 +37,7 @@ __version__ = '1.4.3'
 __instances = weakref.WeakValueDictionary()
 
 
-def _get_instance(profile):
+def _get_instance(profile, **kwargs):
     """
 
     :param profile:
@@ -45,16 +45,17 @@ def _get_instance(profile):
     """
     instance = __instances.get(profile)
     if instance is None:
-        config_param = (ChainedConfig()
-                        if profile == 'default'
-                        else FileConfig(profile=profile))
+        token = kwargs.get('auth_token')
+        config_param = InlineConfig(token) if(profile == 'default' and token) \
+            else ChainedConfig() if profile == 'default' \
+            else FileConfig(profile=profile)
         instance = DataDotWorld(config=config_param)
         __instances[profile] = instance
     return instance
 
 
 def load_dataset(dataset_key, force_update=False, auto_update=False,
-                 profile='default'):
+                 profile='default', **kwargs):
     """Load a dataset from the local filesystem, downloading it from data.world
     first, if necessary.
 
@@ -86,13 +87,14 @@ def load_dataset(dataset_key, force_update=False, auto_update=False,
     >>> list(dataset.dataframes)
     ['changelog', 'datadotworldbballstats', 'datadotworldbballteam']
     """
-    return _get_instance(profile).load_dataset(dataset_key,
-                                               force_update=force_update,
-                                               auto_update=auto_update)
+    return _get_instance(profile, **kwargs). \
+        load_dataset(dataset_key,
+                     force_update=force_update,
+                     auto_update=auto_update)
 
 
 def query(dataset_key, query, query_type='sql', profile='default',
-          parameters=None):
+          parameters=None, **kwargs):
     """Query an existing dataset
 
     :param dataset_key: Dataset identifier, in the form of owner/id or of a url
@@ -127,9 +129,10 @@ def query(dataset_key, query, query_type='sql', profile='default',
     >>> df.shape
     (8, 6)
     """
-    return _get_instance(profile).query(dataset_key, query,
-                                        query_type=query_type,
-                                        parameters=parameters)
+    return _get_instance(profile, **kwargs).query(dataset_key, query,
+                                                  query_type=query_type,
+                                                  parameters=parameters,
+                                                  **kwargs)
 
 
 def open_remote_file(dataset_key, file_name, profile='default',
@@ -210,12 +213,12 @@ def open_remote_file(dataset_key, file_name, profile='default',
     ...                          'test', mode='rb') as r:
     ...   bytes = r.read()
     """
-    return _get_instance(profile).open_remote_file(
+    return _get_instance(profile, **kwargs).open_remote_file(
         dataset_key, file_name,
         mode=mode, **kwargs)
 
 
-def api_client(profile='default'):
+def api_client(profile='default', **kwargs):
     """Return API client for access to data.world's REST API
 
     :param profile: Configuration profile (account) to use.
@@ -232,7 +235,7 @@ def api_client(profile='default'):
     ...     'jonloyens/an-intro-to-dataworld-dataset').get('title')
     'An Intro to data.world Dataset'
     """
-    return _get_instance(profile).api_client
+    return _get_instance(profile, **kwargs).api_client
 
 
 if __name__ == "__main__":

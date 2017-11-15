@@ -28,7 +28,7 @@ import numbers
 import requests
 
 from datadotworld.client.api import RestApiClient, RestApiError
-from datadotworld.config import ChainedConfig
+from datadotworld.config import InlineConfig, ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
@@ -51,12 +51,13 @@ class DataDotWorld(object):
         REST API client object
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, **kwargs):
         self._protocol = 'https'
         self._query_host = 'query.data.world'
         self._download_host = 'download.data.world'
-
-        self._config = config or ChainedConfig()
+        token = kwargs.get('auth_token')
+        self._config = InlineConfig(token) if token \
+            else config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
     def query(self, dataset_key, query, query_type="sql", parameters=None):
@@ -114,7 +115,8 @@ class DataDotWorld(object):
         raise RuntimeError(
             'Error executing query: {}'.format(response.content))
 
-    def load_dataset(self, dataset_key, force_update=False, auto_update=False):
+    def load_dataset(self, dataset_key, force_update=False, auto_update=False,
+                     **kwargs):
         """Load a dataset from the local filesystem, downloading it from
         data.world first, if necessary.
 
