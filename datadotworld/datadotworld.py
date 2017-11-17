@@ -51,13 +51,11 @@ class DataDotWorld(object):
         REST API client object
     """
 
-    def __init__(self, config=None, **kwargs):
+    def __init__(self, config=None):
         self._protocol = 'https'
         self._query_host = 'query.data.world'
         self._download_host = 'download.data.world'
-        token = kwargs.get('auth_token')
-        self._config = InlineConfig(token) if token \
-            else config or ChainedConfig()
+        self._config = config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
     def query(self, dataset_key, query, query_type="sql", parameters=None):
@@ -115,8 +113,7 @@ class DataDotWorld(object):
         raise RuntimeError(
             'Error executing query: {}'.format(response.content))
 
-    def load_dataset(self, dataset_key, force_update=False, auto_update=False,
-                     **kwargs):
+    def load_dataset(self, dataset_key, force_update=False, auto_update=False):
         """Load a dataset from the local filesystem, downloading it from
         data.world first, if necessary.
 

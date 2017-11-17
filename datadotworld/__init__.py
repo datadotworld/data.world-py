@@ -27,7 +27,12 @@ from __future__ import absolute_import
 
 import weakref
 
-from datadotworld.config import FileConfig, ChainedConfig, InlineConfig
+from datadotworld.config import (
+    FileConfig,
+    ChainedConfig,
+    InlineConfig,
+    EnvConfig
+)
 from datadotworld.datadotworld import DataDotWorld, UriParam  # noqa: F401
 
 __version__ = '1.4.3'
@@ -44,11 +49,14 @@ def _get_instance(profile, **kwargs):
 
     """
     instance = __instances.get(profile)
+
     if instance is None:
-        token = kwargs.get('auth_token')
-        config_param = InlineConfig(token) if(profile == 'default' and token) \
-            else ChainedConfig() if profile == 'default' \
-            else FileConfig(profile=profile)
+        config_param = (ChainedConfig(config_chain=[
+            InlineConfig(kwargs.get('auth_token')),
+            EnvConfig(),
+            FileConfig()])
+                if profile == 'default'
+                else FileConfig(profile=profile))
         instance = DataDotWorld(config=config_param)
         __instances[profile] = instance
     return instance
