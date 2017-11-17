@@ -28,7 +28,7 @@ import numbers
 import requests
 
 from datadotworld.client.api import RestApiClient, RestApiError
-from datadotworld.config import InlineConfig, ChainedConfig
+from datadotworld.config import ChainedConfig
 from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
