@@ -229,3 +229,9 @@ class ChainedConfig(DefaultConfig):
                 return obj
 
         return None
+
+
+class InlineConfig(DefaultConfig):
+    def __init__(self, token):
+        super(InlineConfig, self).__init__()
+        self._auth_token = token

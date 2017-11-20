@@ -30,7 +30,7 @@ from hamcrest import equal_to, is_not, is_, calling, raises, has_length, none
 from six import StringIO
 
 from datadotworld.config import FileConfig, EnvConfig, DefaultConfig, \
-    ChainedConfig
+    ChainedConfig, InlineConfig
 
 
 # Shared fixtures
@@ -64,6 +64,22 @@ class TestDefaultConfig:
 
     def test_tmp_dir(self):
         assert_that(DefaultConfig().tmp_dir,
+                    equal_to(path.expanduser(tempfile.gettempdir())))
+
+
+class TestInlineConfig:
+    def test_auth_token(self):
+        config = InlineConfig('inline_token')
+        assert_that(config.auth_token, equal_to('inline_token'))
+
+    def test_cache_dir(self):
+        config = InlineConfig('inline_token')
+        assert_that(config.cache_dir,
+                    equal_to(path.expanduser('~/.dw/cache')))
+
+    def test_tmp_dir(self):
+        config = InlineConfig('inline_token')
+        assert_that(config.tmp_dir,
                     equal_to(path.expanduser(tempfile.gettempdir())))
 
 
