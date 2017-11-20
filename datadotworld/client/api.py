@@ -26,6 +26,7 @@ import shutil
 import uuid
 import zipfile
 from os import path
+import copy
 
 import requests
 
@@ -56,11 +57,16 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token))
         swagger_client.user_agent = _user_agent()
 
-        self._content_negotiating_client = ContentNegotiatingApiClient(
+        content_negotiating_client = ContentNegotiatingApiClient(
             host=self._host,
             header_name='Authorization',
             header_value='Bearer {}'.format(self._config.auth_token))
-        self._content_negotiating_client.user_agent = _user_agent()
+        content_negotiating_client.user_agent = _user_agent()
+
+        # Create a base version of the content_negotiating_client object
+        self._sql_client = copy.copy(content_negotiating_client)
+        self._sparql_client = copy.copy(content_negotiating_client)
+        self._streams_client = copy.copy(content_negotiating_client)
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
@@ -621,9 +627,8 @@ class RestApiClient(object):
         >>> api_client = dw.api_client()
         >>> api_client.sql('username/test-dataset', 'query') # doctest: +SKIP
         """
-        sql_api_client = self._content_negotiating_client
-        sql_api_client.default_mimetype = desired_mimetype
-        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(sql_api_client))
+        self._sql_client.default_mimetype_header_accept = desired_mimetype
+        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(self._sql_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return sql_api.sql_post(owner_id, dataset_id, query, **kwargs)
@@ -632,8 +637,8 @@ class RestApiClient(object):
 
     # Sparql Operations
 
-    def sparql(self, dataset_key, query, desired_mimetype='application/json',
-               **kwargs):
+    def sparql(self, dataset_key, query,
+               desired_mimetype='application/sparql-results+json', **kwargs):
         """Executes SPARQL queries against a dataset via POST
 
         :param dataset_key: Dataset identifier, in the form of owner/id
@@ -652,10 +657,9 @@ class RestApiClient(object):
         >>> api_client.sparql_post('username/test-dataset',\
         >>> query) # doctest: +SKIP
         """
-        sparql_api_client = self._content_negotiating_client
-        sparql_api_client.default_mimetype = desired_mimetype
+        self._sparql_client.default_mimetype_header_accept = desired_mimetype
         sparql_api = kwargs.get('sparql_api_mock',
-                                _swagger.SparqlApi(sparql_api_client))
+                                _swagger.SparqlApi(self._sparql_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return sparql_api.sparql_post(owner_id, dataset_id, query,
@@ -731,10 +735,10 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId', \
         >>> {'content':'content'})
         """
-        streams_api_client = self._content_negotiating_client
-        streams_api_client.default_mimetype = desired_mimetype
+        self._streams_client.default_mimetype_header_content_type = \
+            desired_mimetype
         streams_api = kwargs.get('streams_api_mock',
-                                 _swagger.StreamsApi(streams_api_client))
+                                 _swagger.StreamsApi(self._streams_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return streams_api.append_records(owner_id, dataset_id,
