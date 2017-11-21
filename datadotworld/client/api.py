@@ -62,7 +62,7 @@ class RestApiClient(object):
             host=self._host,
             header_name='Authorization',
             header_value='Bearer {}'.format(self._config.auth_token),
-            user_agent = _user_agent())
+            user_agent=_user_agent())
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
