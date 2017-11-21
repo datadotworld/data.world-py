@@ -43,7 +43,7 @@ class UploadsApi(object):
     def upload_file(self, owner, id, name, **kwargs):
         """
         Upload file
-        Upload one file at a time to a dataset.  This endpoint expects requests of type `application/octet-stream`.  For example, assuming that you want to upload a local file named `file1.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset` and choose its name on data.world to be `better-name.csv`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: <YOUR_API_TOKEN>\" \\   -X PUT -H \"Content-Type: application/octet-stream\" \\   --data-binary @file1.csv \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files/better-name.csv ```  This method of upload is typically not supported by Swagger clients. Other HTTP clients can be used to supply the contents of the file directly in the body of the request.
+        Upload one file at a time to a dataset.  This endpoint expects requests of type `application/octet-stream`.  For example, assuming that you want to upload a local file named `file1.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset` and choose its name on data.world to be `better-name.csv`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: Bearer <YOUR_API_TOKEN>\" \\   -X PUT -H \"Content-Type: application/octet-stream\" \\   --data-binary @file1.csv \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files/better-name.csv ```  This method of upload is typically not supported by Swagger clients. Other HTTP clients can be used to supply the contents of the file directly in the body of the request.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -55,7 +55,7 @@ class UploadsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str name: File name and unique identifier within dataset. (required)
         :param bool expand_archive: Indicates whether a compressed file should be expanded upon upload.
         :return: SuccessMessage
@@ -72,7 +72,7 @@ class UploadsApi(object):
     def upload_file_with_http_info(self, owner, id, name, **kwargs):
         """
         Upload file
-        Upload one file at a time to a dataset.  This endpoint expects requests of type `application/octet-stream`.  For example, assuming that you want to upload a local file named `file1.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset` and choose its name on data.world to be `better-name.csv`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: <YOUR_API_TOKEN>\" \\   -X PUT -H \"Content-Type: application/octet-stream\" \\   --data-binary @file1.csv \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files/better-name.csv ```  This method of upload is typically not supported by Swagger clients. Other HTTP clients can be used to supply the contents of the file directly in the body of the request.
+        Upload one file at a time to a dataset.  This endpoint expects requests of type `application/octet-stream`.  For example, assuming that you want to upload a local file named `file1.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset` and choose its name on data.world to be `better-name.csv`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: Bearer <YOUR_API_TOKEN>\" \\   -X PUT -H \"Content-Type: application/octet-stream\" \\   --data-binary @file1.csv \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files/better-name.csv ```  This method of upload is typically not supported by Swagger clients. Other HTTP clients can be used to supply the contents of the file directly in the body of the request.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -84,7 +84,7 @@ class UploadsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str name: File name and unique identifier within dataset. (required)
         :param bool expand_archive: Indicates whether a compressed file should be expanded upon upload.
         :return: SuccessMessage
@@ -171,7 +171,7 @@ class UploadsApi(object):
     def upload_files(self, owner, id, file, **kwargs):
         """
         Upload files
-        Upload multiple files at once to a dataset via multipart request.  This endpoint expects requests of type `multipart/form-data` and you can include one or more parts named `file`, each containing a different file to be uploaded.  For example, assuming that, you want to upload two local files named `file1.csv` and `file2.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: <YOUR_API_TOKEN>\" \\   -F \"file=@file1.csv\" \\   -F \"file=@file2.csv\" \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files ```  Swagger clients will limit this method of upload to one file at a time. Other HTTP clients capable of making multipart/form-data requests can be used to upload multiple files in a single request.
+        Upload multiple files at once to a dataset via multipart request.  This endpoint expects requests of type `multipart/form-data` and you can include one or more parts named `file`, each containing a different file to be uploaded.  For example, assuming that, you want to upload two local files named `file1.csv` and `file2.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: Bearer <YOUR_API_TOKEN>\" \\   -F \"file=@file1.csv\" \\   -F \"file=@file2.csv\" \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files ```  Swagger clients will limit this method of upload to one file at a time. Other HTTP clients capable of making multipart/form-data requests can be used to upload multiple files in a single request.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -183,7 +183,7 @@ class UploadsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param file file: Multipart-encoded file contents (required)
         :param bool expand_archives: Indicates whether compressed files should be expanded upon upload.
         :return: SuccessMessage
@@ -200,7 +200,7 @@ class UploadsApi(object):
     def upload_files_with_http_info(self, owner, id, file, **kwargs):
         """
         Upload files
-        Upload multiple files at once to a dataset via multipart request.  This endpoint expects requests of type `multipart/form-data` and you can include one or more parts named `file`, each containing a different file to be uploaded.  For example, assuming that, you want to upload two local files named `file1.csv` and `file2.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: <YOUR_API_TOKEN>\" \\   -F \"file=@file1.csv\" \\   -F \"file=@file2.csv\" \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files ```  Swagger clients will limit this method of upload to one file at a time. Other HTTP clients capable of making multipart/form-data requests can be used to upload multiple files in a single request.
+        Upload multiple files at once to a dataset via multipart request.  This endpoint expects requests of type `multipart/form-data` and you can include one or more parts named `file`, each containing a different file to be uploaded.  For example, assuming that, you want to upload two local files named `file1.csv` and `file2.csv` to a hypothetical dataset `https://data.world/awesome-user/awesome-dataset`, this is what the cURL command would look like.  ```bash curl \\   -H \"Authorization: Bearer <YOUR_API_TOKEN>\" \\   -F \"file=@file1.csv\" \\   -F \"file=@file2.csv\" \\   https://api.data.world/v0/uploads/awesome-user/awesome-dataset/files ```  Swagger clients will limit this method of upload to one file at a time. Other HTTP clients capable of making multipart/form-data requests can be used to upload multiple files in a single request.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -212,7 +212,7 @@ class UploadsApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param file file: Multipart-encoded file contents (required)
         :param bool expand_archives: Indicates whether compressed files should be expanded upon upload.
         :return: SuccessMessage

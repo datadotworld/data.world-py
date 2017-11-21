@@ -55,7 +55,7 @@ class SqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :param bool include_table_schema: Flags indicating to include table schema in the response.
         :return: None
@@ -84,7 +84,7 @@ class SqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :param bool include_table_schema: Flags indicating to include table schema in the response.
         :return: None
@@ -140,7 +140,7 @@ class SqlApi(object):
         body_params = None
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.\
-            select_header_accept(['text/csv', 'application/json', 'application/json-l', 'application/x-ndjson'])
+            select_header_accept(['application/json', 'application/json-l', 'application/x-ndjson', 'text/csv'])
 
         # Authentication setting
         auth_settings = ['token']
@@ -175,7 +175,7 @@ class SqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :param bool include_table_schema: Flags indicating to include table schema in the response.
         :return: None
@@ -204,7 +204,7 @@ class SqlApi(object):
         :param callback function: The callback function
             for asynchronous request. (optional)
         :param str owner: User name and unique identifier of the creator of the dataset. For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), jonloyens is the unique identifier of the dataset. (required)
-        :param str id: Dataset unique identifier.   For example, in the URL: [https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
+        :param str id: Dataset unique identifier. For example, in the URL:[https://data.world/jonloyens/an-intro-to-dataworld-dataset](https://data.world/jonloyens/an-intro-to-dataworld-dataset), an-intro-to-dataworld-dataset is the unique identifier of the dataset. (required)
         :param str query: (required)
         :param bool include_table_schema: Flags indicating to include table schema in the response.
         :return: None
@@ -260,7 +260,7 @@ class SqlApi(object):
         body_params = None
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.\
-            select_header_accept(['text/csv', 'application/json', 'application/json-l', 'application/x-ndjson'])
+            select_header_accept(['application/json', 'application/json-l', 'application/x-ndjson', 'text/csv'])
 
         # HTTP header `Content-Type`
         header_params['Content-Type'] = self.api_client.\
