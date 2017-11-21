@@ -55,7 +55,6 @@ class DataDotWorld(object):
         self._protocol = 'https'
         self._query_host = 'query.data.world'
         self._download_host = 'download.data.world'
-
         self._config = config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
