@@ -68,7 +68,6 @@ class RestApiClient(object):
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
-        self._streams_api = _swagger.StreamsApi(swagger_client)
 
     # Dataset Operations
 
