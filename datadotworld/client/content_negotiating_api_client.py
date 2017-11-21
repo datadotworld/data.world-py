@@ -3,11 +3,12 @@ from ._swagger.api_client import ApiClient
 
 class ContentNegotiatingApiClient(ApiClient):
 
-    def __init__(self, host, header_name, header_value,
+    def __init__(self, host, header_name, header_value, user_agent,
                  default_mimetype_header_accept='application/json',
                  default_mimetype_header_content_type='application/json'):
         super(ContentNegotiatingApiClient, self).__init__(host, header_name,
                                                           header_value)
+        self.user_agent = user_agent
         self.default_mimetype_header_accept = default_mimetype_header_accept
         self.default_mimetype_header_content_type = \
             default_mimetype_header_content_type
