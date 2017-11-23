@@ -52,7 +52,7 @@ Load a dataset
 The ``load_dataset()`` function facilitates maintaining copies of datasets on the local filesystem.
 It will download a given dataset's `datapackage <http://specs.frictionlessdata.io/data-package/>`_
 and store it under ``~/.dw/cache``. When used subsequently, ``load_dataset()`` will use the copy stored on disk and will
-work offline, unless it's called with ``force_update=True``.
+work offline, unless it's called with ``force_update=True`` or ``auto_update=True``.
 
 Once loaded, a dataset (data and metadata) can be conveniently accessed via the object returned by ``load_dataset()``.
 
@@ -296,10 +296,22 @@ The client currently implements the following functions:
 * ``update_dataset``
 * ``replace_dataset``
 * ``get_dataset``
+* ``delete_dataset``
 * ``add_files_via_url``
 * ``sync_files``
 * ``upload_files``
+* ``upload_file``
 * ``delete_files``
+* ``download_datapackage``
+* ``get_user_data``
+* ``fetch_contributing_datasets``
+* ``fetch_liked_datasets``
+* ``fetch_datasets``
+* ``sql``
+* ``sparql``
+* ``download_dataset``
+* ``download_file``
+* ``append_records``
 
 You can find more about those functions using ``help(client)``
 
