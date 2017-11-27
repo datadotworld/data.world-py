@@ -313,5 +313,75 @@ The client currently implements the following functions:
 * ``download_file``
 * ``append_records``
 
+Adding file's via URL and Upload
+................................
+
+Dataset file object can be added or updated via a source url link or upload methods.
+
+This can be done by specifying the file as a dictionary and the file name as the dictionary key.
+
+    'file-name': {
+      'url-to-file': 'url'
+
+    }
+
+A file's description and labels can also be added when adding or updating files.
+
+    'file-name': {
+      'url': 'url-to-file',
+      'description': 'file description',
+      'labels': ['raw data']
+
+    }
+
+When adding or updating files, description and labels for files are optional.
+
+For example:
+
+.. code-block:: python
+
+    >>> client = dw.api_client()
+    >>> client.add_files_via_url('username/test-dataset', files={'sample.xls': {'url':'http://www.sample.com/sample.xls', 'description': 'sample doc', 'labels': ['raw data']}})
+
+Executing queries againt a dataset
+..................................
+
+Executing queries against a dataset can be done by calling either ``sql`` or ``sparql`` methods on ``api_client``. Example queries done via sql:
+
+.. code-block:: python
+
+    >>> client = dw.api_client()
+    >>> client.sql('username/test-dataset', 'SELECT * FROM sample-data')
+
+``Accept`` headers can also be specified by passing a desire valid ``Accept`` header type, by default, for sql queries, ``application/json`` is used and for sparql, ``application/sparql-results+json`` is used.
+
+Other valid ``Accept`` headers for sql are:
+
+* ``text/csv``
+* ``application/json-l``
+* ``application/x-ndjson``
+
+and for sparql:
+
+* ``application/sparql-results+xml``
+* ``application/rdf+json``
+* ``application/rdf+xml``
+* ``text/csv``
+* ``text/tab-separated-values``
+
+Appending records to stream
+...........................
+
+Calling ``append_records`` on ``api_client()`` allows you to append JSON data to a data stream associated with a dataset. For example:
+
+.. code-block:: python
+
+    >>> client = dw.api_client()
+    >>> client.append_records('username/test-dataset','streamId', {'data': 'data'})
+
+Contents of a stream will appear as part of the respective dataset as a .jsonl file.
+
+You can also specify the request content-type as either ``application/json`` or ``application/json-l``. By default, it uses ``application.json`` if it's not specified.
+
 You can find more about those functions using ``help(client)``
 
