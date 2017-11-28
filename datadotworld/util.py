@@ -94,7 +94,10 @@ class LazyLoadedDict(Mapping):
             lambda k=k: loader_func(k), type_hint=type_hint) for k in keys})
 
     def __getitem__(self, item):
-        return self._dict[item]()
+        try:
+            return self._dict[item]()
+        except:
+            return self._dict[item]
 
     def __iter__(self):
         return iter(self._dict.keys())

@@ -99,6 +99,7 @@ class LocalDataset(object):
             self.__tabular_resources.keys(),
             self._load_table,
             type_hint='list of rows')
+
         self.dataframes = LazyLoadedDict.from_keys(
             self.__tabular_resources.keys(),
             self._load_dataframe,
@@ -136,7 +137,6 @@ class LocalDataset(object):
             default_base_path=self.__base_path)
         return upcast_resource.data
 
-    # @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
         """Build table structure from resource data
 
