@@ -52,7 +52,7 @@ Load a dataset
 The ``load_dataset()`` function facilitates maintaining copies of datasets on the local filesystem.
 It will download a given dataset's `datapackage <http://specs.frictionlessdata.io/data-package/>`_
 and store it under ``~/.dw/cache``. When used subsequently, ``load_dataset()`` will use the copy stored on disk and will
-work offline, unless it's called with ``force_update=True`` or ``auto_update=True``.
+work offline, unless it's called with ``force_update=True`` or ``auto_update=True``. ``force_update=True`` will overwrite your local copy unconditionally. ``auto_update=True`` will only overwrite your local copy if a newer version of the dataset is available on data.world.
 
 Once loaded, a dataset (data and metadata) can be conveniently accessed via the object returned by ``load_dataset()``.
 
@@ -277,8 +277,8 @@ the file as a byte array, and the file object acts as an iterator of bytes:
         ...   bytes = r.read()
 
 
-API Wrappers
-------------
+Additional API Features
+-----------------------
 
 For a complete list of available API operations, see
 `official documentation <https://docs.data.world/documentation/api/>`_.
@@ -298,43 +298,25 @@ The client currently implements the following functions:
 * ``get_dataset``
 * ``delete_dataset``
 * ``add_files_via_url``
-* ``sync_files``
+* ``append_records``
 * ``upload_files``
 * ``upload_file``
 * ``delete_files``
-* ``download_datapackage``
+* ``sync_files``
+* ``download_dataset``
+* ``download_file``
 * ``get_user_data``
 * ``fetch_contributing_datasets``
 * ``fetch_liked_datasets``
 * ``fetch_datasets``
-* ``sql``
-* ``sparql``
-* ``download_dataset``
-* ``download_file``
-* ``append_records``
 
-Adding file's via URL and Upload
-................................
+For a few examples of what the ``ApiClient`` can be used for, see below.
 
-Dataset file object can be added or updated via a source url link or upload methods.
+Add files from URL
+..................
 
-This can be done by specifying the file as a dictionary and the file name as the dictionary key.
-
-    'file-name': {
-      'url-to-file': 'url'
-
-    }
-
-A file's description and labels can also be added when adding or updating files.
-
-    'file-name': {
-      'url': 'url-to-file',
-      'description': 'file description',
-      'labels': ['raw data']
-
-    }
-
-When adding or updating files, description and labels for files are optional.
+The ``add_files_via_url()`` function can be used to add files to a dataset from a URL. 
+This can be done by specifying ``files`` as a dictionary where the keys are the desired file name and each item is an object containing ``url``, ``description`` and ``labels``. 
 
 For example:
 
@@ -343,36 +325,12 @@ For example:
     >>> client = dw.api_client()
     >>> client.add_files_via_url('username/test-dataset', files={'sample.xls': {'url':'http://www.sample.com/sample.xls', 'description': 'sample doc', 'labels': ['raw data']}})
 
-Executing queries againt a dataset
-..................................
+Append records to stream
+........................
 
-Executing queries against a dataset can be done by calling either ``sql`` or ``sparql`` methods on ``api_client``. Example queries done via sql:
+The ``append_record()`` function allows you to append JSON data to a data stream associated with a dataset. Streams do not need to be created in advance. Streams are automatically created the first time a ``streamId`` is used in an append operation. 
 
-.. code-block:: python
-
-    >>> client = dw.api_client()
-    >>> client.sql('username/test-dataset', 'SELECT * FROM sample-data')
-
-``Accept`` headers can also be specified by passing a desire valid ``Accept`` header type, by default, for sql queries, ``application/json`` is used and for sparql, ``application/sparql-results+json`` is used.
-
-Other valid ``Accept`` headers for sql are:
-
-* ``text/csv``
-* ``application/json-l``
-* ``application/x-ndjson``
-
-and for sparql:
-
-* ``application/sparql-results+xml``
-* ``application/rdf+json``
-* ``application/rdf+xml``
-* ``text/csv``
-* ``text/tab-separated-values``
-
-Appending records to stream
-...........................
-
-Calling ``append_records`` on ``api_client()`` allows you to append JSON data to a data stream associated with a dataset. For example:
+For example:
 
 .. code-block:: python
 
