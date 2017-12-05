@@ -68,6 +68,7 @@ class RestApiClient(object):
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
+        self._streams_api = _swagger.StreamsApi(swagger_client)
 
     # Dataset Operations
 
@@ -713,8 +714,7 @@ class RestApiClient(object):
 
     # Streams Operation
 
-    def append_records(self, dataset_key, stream_id, body,
-                       provided_mimetype='application/json', **kwargs):
+    def append_records(self, dataset_key, stream_id, body):
         """Append records to a stream.
 
         :param dataset_key: Dataset identifier, in the form of owner/id
@@ -732,14 +732,14 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId', \
         >>> {'content':'content'})
         """
-        api_client = self._build_api_client(
-                        default_mimetype_header_content_type=provided_mimetype)
-        streams_api = kwargs.get('streams_api_mock',
-                                 _swagger.StreamsApi(api_client))
+        # api_client = self._build_api_client(
+        #                 default_mimetype_header_content_type=provided_mimetype)
+        # streams_api = kwargs.get('streams_api_mock',
+        #                          _swagger.StreamsApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return streams_api.append_records(owner_id, dataset_id,
-                                              stream_id, body, **kwargs)
+            return self._streams_api.append_records(owner_id, dataset_id,
+                                                    stream_id, body)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 

@@ -339,7 +339,5 @@ For example:
 
 Contents of a stream will appear as part of the respective dataset as a .jsonl file.
 
-You can also specify the request content-type as either ``application/json`` or ``application/json-l``. By default, it uses ``application.json`` if it's not specified.
-
 You can find more about those functions using ``help(client)``
 
