@@ -24,7 +24,6 @@ import io
 from collections import OrderedDict
 
 import datapackage
-import six
 from datapackage.resource import TabularResource
 from jsontableschema.exceptions import SchemaValidationError
 from os import path
