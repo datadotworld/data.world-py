@@ -20,6 +20,7 @@
 import copy
 import os
 import warnings
+import io
 from collections import OrderedDict
 
 import datapackage
@@ -78,16 +79,6 @@ class LocalDataset(object):
                                     r.descriptor['path'].startswith('data')}
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
-        self._load_raw_data = memoized(
-            key_mapper=lambda resource_name: resource_name)(
-                self._load_raw_data)
-        self._load_table = memoized(
-            key_mapper=lambda resource_name: resource_name)(
-                self._load_table)
-        self._load_dataframe = memoized(
-            key_mapper=lambda resource_name: resource_name)(
-                self._load_dataframe)
-
         # All formats
         self.raw_data = LazyLoadedDict.from_keys(
             self.__resources.keys(),
@@ -125,6 +116,7 @@ class LocalDataset(object):
         else:
             return self.__resources[resource].descriptor
 
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_raw_data(self, resource_name):
         """Extract raw data from resource
 
@@ -137,6 +129,7 @@ class LocalDataset(object):
             default_base_path=self.__base_path)
         return upcast_resource.data
 
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
         """Build table structure from resource data
 
@@ -163,12 +156,13 @@ class LocalDataset(object):
                 'Error: {}'.format(resource_name, e))
             self.__invalid_schemas.append(resource_name)
             file_format = tabular_resource.descriptor['format']
-            with Stream(six.BytesIO(self.raw_data[resource_name]),
+            with Stream(io.BytesIO(self.raw_data[resource_name]),
                         format=file_format, headers=1,
                         scheme='stream', encoding='utf-8') as stream:
                 return [OrderedDict(zip(stream.headers, row))
                         for row in stream.iter()]
 
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_dataframe(self, resource_name):
         """Build pandas.DataFrame from resource data
 

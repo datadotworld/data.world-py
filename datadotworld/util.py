@@ -94,10 +94,7 @@ class LazyLoadedDict(Mapping):
             lambda k=k: loader_func(k), type_hint=type_hint) for k in keys})
 
     def __getitem__(self, item):
-        try:
-            return self._dict[item]()
-        except:
-            return self._dict[item]
+        return self._dict[item]()
 
     def __iter__(self):
         return iter(self._dict.keys())
@@ -135,28 +132,39 @@ class memoized(object):
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
     """
-
     def __init__(self, key_mapper=None):
         self.key_mapper = key_mapper
         self.cache = {}
 
     def __call__(self, func):
-        def wrapper(*args):
+        def wrapper(*args, **kwargs):
             """
 
             :param *args:
             """
             key = self.key_mapper(*args) or args
+            # get the instance of self so that when a class
+            # is re-constructed, we can clear the cache object.
+            obj = args[0]
+            obj_id = id(obj)
+
             if not isinstance(key, collections.Hashable):
                 # uncacheable. a list, for instance.
                 # better to not cache than blow up.
                 return func(*args)
-            if key in self.cache:
-                return self.cache[key]
-            else:
-                value = func(*args)
-                self.cache[key] = value
-                return value
+
+            # clear cache if object id does not exist in cache
+            if obj_id not in self.cache:
+                self.cache.clear()
+
+            if key not in self.cache.get(obj_id, {}):
+                val = func(*args, **kwargs)
+                self.cache[obj_id] = self.cache.get(obj_id, {})
+                self.cache[obj_id][key] = val
+                return val
+
+            val = self.cache[obj_id][key]
+            return val
         return wrapper
 
     def __repr__(self):
