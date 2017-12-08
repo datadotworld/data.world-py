@@ -1,5 +1,7 @@
 test:
-	python setup.py test
+	coverage run setup.py test
+test-report:
+	coverage report -m
 update_swagger_codegen:
 	pushd datadotworld/client; \
 	curl https://api.data.world/v0/swagger.json -o swagger-dwapi-def.json; \
