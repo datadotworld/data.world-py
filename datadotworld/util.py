@@ -153,10 +153,6 @@ class memoized(object):
                 # better to not cache than blow up.
                 return func(*args)
 
-            # clear cache if object id does not exist in cache
-            if obj_id not in self.cache:
-                self.cache.clear()
-
             if key not in self.cache.get(obj_id, {}):
                 val = func(*args, **kwargs)
                 self.cache[obj_id] = self.cache.get(obj_id, {})
