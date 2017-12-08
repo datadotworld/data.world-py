@@ -732,10 +732,6 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId', \
         >>> {'content':'content'})
         """
-        # api_client = self._build_api_client(
-        #                 default_mimetype_header_content_type=provided_mimetype)
-        # streams_api = kwargs.get('streams_api_mock',
-        #                          _swagger.StreamsApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return self._streams_api.append_records(owner_id, dataset_id,
