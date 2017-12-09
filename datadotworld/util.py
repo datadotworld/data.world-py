@@ -144,19 +144,19 @@ class memoized(object):
             key = self.key_mapper(*args) or args
             obj = args[0]
 
-            if not hasattr(obj, 'cache'):
+            if not hasattr(obj, '__memoized__'):
                 try:
-                    obj.cache = {}
-                    instance_cache = obj.cache
+                    obj.__memoized__ = {}
+                    instance_cache = obj.__memoized__
                 except AttributeError:
-                    if not hasattr(wrapper, 'cache'):
-                        wrapper.cache = {}
-                    instance_cache = wrapper.cache
+                    if not hasattr(wrapper, '__memoized__'):
+                        wrapper.__memoized__ = {}
+                    instance_cache = wrapper.__memoized__
             else:
                 try:
-                    instance_cache = obj.cache
+                    instance_cache = obj.__memoized__
                 except AttributeError:
-                    instance_cache = wrapper.cache
+                    instance_cache = wrapper.__memoized__
 
             instance_cache[id(func)] = instance_cache.get(id(func), {})
 
