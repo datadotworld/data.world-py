@@ -134,7 +134,6 @@ class memoized(object):
     """
     def __init__(self, key_mapper=None):
         self.key_mapper = key_mapper
-        self.cache = {}
 
     def __call__(self, func):
         def wrapper(*args, **kwargs):
@@ -143,24 +142,35 @@ class memoized(object):
             :param *args:
             """
             key = self.key_mapper(*args) or args
-            # get the instance of self so that when a class
-            # is re-constructed, we can clear the cache object.
             obj = args[0]
-            obj_id = id(obj)
+
+            if not hasattr(obj, 'cache'):
+                try:
+                    obj.cache = {}
+                    instance_cache = obj.cache
+                except AttributeError:
+                    if not hasattr(wrapper, 'cache'):
+                        wrapper.cache = {}
+                    instance_cache = wrapper.cache
+            else:
+                try:
+                    instance_cache = obj.cache
+                except AttributeError:
+                    instance_cache = wrapper.cache
+
+            instance_cache[id(func)] = instance_cache.get(id(func), {})
 
             if not isinstance(key, collections.Hashable):
                 # uncacheable. a list, for instance.
                 # better to not cache than blow up.
                 return func(*args)
 
-            if key not in self.cache.get(obj_id, {}):
-                val = func(*args, **kwargs)
-                self.cache[obj_id] = self.cache.get(obj_id, {})
-                self.cache[obj_id][key] = val
-                return val
-
-            val = self.cache[obj_id][key]
+            val = (instance_cache[id(func)][key]
+                   if key in instance_cache[id(func)]
+                   else func(*args))
+            instance_cache[id(func)][key] = val
             return val
+
         return wrapper
 
     def __repr__(self):
