@@ -52,7 +52,7 @@ Load a dataset
 The ``load_dataset()`` function facilitates maintaining copies of datasets on the local filesystem.
 It will download a given dataset's `datapackage <http://specs.frictionlessdata.io/data-package/>`_
 and store it under ``~/.dw/cache``. When used subsequently, ``load_dataset()`` will use the copy stored on disk and will
-work offline, unless it's called with ``force_update=True``.
+work offline, unless it's called with ``force_update=True`` or ``auto_update=True``. ``force_update=True`` will overwrite your local copy unconditionally. ``auto_update=True`` will only overwrite your local copy if a newer version of the dataset is available on data.world.
 
 Once loaded, a dataset (data and metadata) can be conveniently accessed via the object returned by ``load_dataset()``.
 
@@ -277,8 +277,8 @@ the file as a byte array, and the file object acts as an iterator of bytes:
         ...   bytes = r.read()
 
 
-API Wrappers
-------------
+Additional API Features
+-----------------------
 
 For a complete list of available API operations, see
 `official documentation <https://docs.data.world/documentation/api/>`_.
@@ -296,10 +296,48 @@ The client currently implements the following functions:
 * ``update_dataset``
 * ``replace_dataset``
 * ``get_dataset``
+* ``delete_dataset``
 * ``add_files_via_url``
-* ``sync_files``
+* ``append_records``
 * ``upload_files``
+* ``upload_file``
 * ``delete_files``
+* ``sync_files``
+* ``download_dataset``
+* ``download_file``
+* ``get_user_data``
+* ``fetch_contributing_datasets``
+* ``fetch_liked_datasets``
+* ``fetch_datasets``
+
+For a few examples of what the ``ApiClient`` can be used for, see below.
+
+Add files from URL
+..................
+
+The ``add_files_via_url()`` function can be used to add files to a dataset from a URL. 
+This can be done by specifying ``files`` as a dictionary where the keys are the desired file name and each item is an object containing ``url``, ``description`` and ``labels``. 
+
+For example:
+
+.. code-block:: python
+
+    >>> client = dw.api_client()
+    >>> client.add_files_via_url('username/test-dataset', files={'sample.xls': {'url':'http://www.sample.com/sample.xls', 'description': 'sample doc', 'labels': ['raw data']}})
+
+Append records to stream
+........................
+
+The ``append_record()`` function allows you to append JSON data to a data stream associated with a dataset. Streams do not need to be created in advance. Streams are automatically created the first time a ``streamId`` is used in an append operation. 
+
+For example:
+
+.. code-block:: python
+
+    >>> client = dw.api_client()
+    >>> client.append_records('username/test-dataset','streamId', {'data': 'data'})
+
+Contents of a stream will appear as part of the respective dataset as a .jsonl file.
 
 You can find more about those functions using ``help(client)``
 

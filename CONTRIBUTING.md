@@ -30,7 +30,7 @@ $ python setup.py install
 Run tests:
 
 ```sh
-$ python setup.py test
+$ make test
 ```
 
 ### Updating Swagger Definition
@@ -107,7 +107,8 @@ Once tests are written, we always make sure that the test coverage is up to 90%,
 
 To check test coverage, run the fellowing command;
 ```sh
-$ coverage run setup.py test && coverage report
+$ make test
+$ make test-report
 ```
 
 NB: Coverage reports below 90% will fail on build.
