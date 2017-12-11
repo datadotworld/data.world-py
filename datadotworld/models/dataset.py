@@ -20,10 +20,10 @@
 import copy
 import os
 import warnings
+import io
 from collections import OrderedDict
 
 import datapackage
-import six
 from datapackage.resource import TabularResource
 from jsontableschema.exceptions import SchemaValidationError
 from os import path
@@ -89,6 +89,7 @@ class LocalDataset(object):
             self.__tabular_resources.keys(),
             self._load_table,
             type_hint='list of rows')
+
         self.dataframes = LazyLoadedDict.from_keys(
             self.__tabular_resources.keys(),
             self._load_dataframe,
@@ -154,7 +155,7 @@ class LocalDataset(object):
                 'Error: {}'.format(resource_name, e))
             self.__invalid_schemas.append(resource_name)
             file_format = tabular_resource.descriptor['format']
-            with Stream(six.BytesIO(self.raw_data[resource_name]),
+            with Stream(io.BytesIO(self.raw_data[resource_name]),
                         format=file_format, headers=1,
                         scheme='stream', encoding='utf-8') as stream:
                 return [OrderedDict(zip(stream.headers, row))

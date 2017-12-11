@@ -132,28 +132,45 @@ class memoized(object):
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
     """
-
     def __init__(self, key_mapper=None):
         self.key_mapper = key_mapper
-        self.cache = {}
 
     def __call__(self, func):
-        def wrapper(*args):
+        def wrapper(*args, **kwargs):
             """
 
             :param *args:
             """
             key = self.key_mapper(*args) or args
+            obj = args[0]
+
+            if not hasattr(obj, '__memoized__'):
+                try:
+                    obj.__memoized__ = {}
+                    instance_cache = obj.__memoized__
+                except AttributeError:
+                    if not hasattr(wrapper, '__memoized__'):
+                        wrapper.__memoized__ = {}
+                    instance_cache = wrapper.__memoized__
+            else:
+                try:
+                    instance_cache = obj.__memoized__
+                except AttributeError:
+                    instance_cache = wrapper.__memoized__
+
+            instance_cache[id(func)] = instance_cache.get(id(func), {})
+
             if not isinstance(key, collections.Hashable):
                 # uncacheable. a list, for instance.
                 # better to not cache than blow up.
                 return func(*args)
-            if key in self.cache:
-                return self.cache[key]
-            else:
-                value = func(*args)
-                self.cache[key] = value
-                return value
+
+            val = (instance_cache[id(func)][key]
+                   if key in instance_cache[id(func)]
+                   else func(*args))
+            instance_cache[id(func)][key] = val
+            return val
+
         return wrapper
 
     def __repr__(self):
