@@ -198,7 +198,8 @@ class RestApiClient(object):
                     name=name,
                     source=_swagger.FileSourceCreateOrUpdateRequest(
                             url=url,
-                            expand_archive=expand_archive) if url is not None else None,
+                            expand_archive=expand_archive)
+                    if url is not None else None,
                     description=description,
                     labels=labels),
             kwargs)
