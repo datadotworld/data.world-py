@@ -97,7 +97,7 @@ class FileSourceSummaryResponse(object):
             raise ValueError("Invalid value for `url`, length must be less than or equal to `4096`")
         if url is not None and len(url) < 1:
             raise ValueError("Invalid value for `url`, length must be greater than or equal to `1`")
-        if url is not None and not re.search('^https?.*', url):
+        if url is not None and not re.search('^(https?|stream).*', url):
             raise ValueError("Invalid value for `url`, must be a follow pattern or equal to `/^https?.*/`")
 
         self._url = url

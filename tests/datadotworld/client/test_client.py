@@ -24,7 +24,7 @@ from os import path
 
 import pytest
 import responses
-from doublex import assert_that, Spy, called
+from doublex import assert_that, Spy, called, Mock
 from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
                       empty, raises, calling, has_key)
 
@@ -61,7 +61,6 @@ class TestApiClient:
     @pytest.fixture()
     def uploads_api(self):
         with Spy(UploadsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
             return api
 
     @pytest.fixture()
@@ -72,15 +71,23 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
-    def sql_api(self):
+    def query_resp(self):
+        with Mock() as response:
+            response.data = 'result'.encode()
+            return response
+
+    @pytest.fixture()
+    def sql_api(self, query_resp):
         with Spy(SqlApi) as api:
-            api.sql_post
+            api.sql_post = \
+                lambda o, d, q, sql_api_mock, _preload_content: query_resp
             return api
 
     @pytest.fixture()
-    def sparql_api(self):
+    def sparql_api(self, query_resp):
         with Spy(SparqlApi) as api:
-            api.sparql_post
+            api.sparql_post = \
+                lambda o, d, q, sparql_api_mock, _preload_content: query_resp
             return api
 
     @pytest.fixture()
@@ -272,17 +279,13 @@ class TestApiClient:
                                                 'file'))
 
     def test_sql(self, api_client, dataset_key, sql_api):
-        api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
-        assert_that(sql_api.sql_post,
-                    called().times(1).with_args('agentid', 'datasetid',
-                                                'query', sql_api_mock=sql_api))
+        result = api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
+        assert_that(result.read().decode('utf-8'), equal_to('result'))
 
     def test_sparql(self, api_client, dataset_key, sparql_api):
-        api_client.sparql(dataset_key, 'query', sparql_api_mock=sparql_api)
-        assert_that(sparql_api.sparql_post,
-                    called().times(1).with_args('agentid', 'datasetid',
-                                                'query',
-                                                sparql_api_mock=sparql_api))
+        result = api_client.sparql(dataset_key, 'query',
+                                   sparql_api_mock=sparql_api)
+        assert_that(result.read().decode('utf-8'), equal_to('result'))
 
     def test_get_user_data(self, api_client):
         user_data_response = api_client.get_user_data()

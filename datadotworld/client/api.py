@@ -29,6 +29,7 @@ from os import path
 import functools
 
 import requests
+import six
 
 from datadotworld.client import _swagger
 from datadotworld.client.content_negotiating_api_client import (
@@ -197,7 +198,8 @@ class RestApiClient(object):
                     name=name,
                     source=_swagger.FileSourceCreateOrUpdateRequest(
                             url=url,
-                            expand_archive=expand_archive),
+                            expand_archive=expand_archive)
+                    if url is not None else None,
                     description=description,
                     labels=labels),
             kwargs)
@@ -614,7 +616,7 @@ class RestApiClient(object):
         :type include_table_schema: bool
         :returns: file object that can be used in file parsers and
             data handling modules.
-        :rtype: file object
+        :rtype: file-like object
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -628,7 +630,9 @@ class RestApiClient(object):
         sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return sql_api.sql_post(owner_id, dataset_id, query, **kwargs)
+            response = sql_api.sql_post(
+                owner_id, dataset_id, query, _preload_content=False, **kwargs)
+            return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -660,8 +664,9 @@ class RestApiClient(object):
                                 _swagger.SparqlApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return sparql_api.sparql_post(owner_id, dataset_id, query,
-                                          **kwargs)
+            response = sparql_api.sparql_post(
+                owner_id, dataset_id, query, _preload_content=False, **kwargs)
+            return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
