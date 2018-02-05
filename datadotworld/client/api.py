@@ -70,6 +70,8 @@ class RestApiClient(object):
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
+        self._projects_api = _swagger.ProjectsApi(swagger_client)
+        self._insights_api = _swagger.InsightsApi(swagger_client)
 
     # Dataset Operations
 
@@ -119,10 +121,6 @@ class RestApiClient(object):
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File names and source URLs
-        :type files: dict, optional
-        :param visibility: Dataset visibility. {'OPEN', 'PRIVATE'}.
-        :type visibility: dict
         :param files: File name as dict, source URLs, description and labels()
         as properties
         :type files: dict, optional
@@ -601,6 +599,64 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    def fetch_contributing_projects(self, **kwargs):
+        """Fetch projects that the currently authenticated user has access to
+
+        :returns: Authenticated user projects
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_projects = api_client.fetch_contributing_projects()
+        {'count': 0, 'records': [], 'next_page_token': None}
+        """
+        try:
+            return self._user_api.fetch_contributing_projects(
+                                                        **kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_liked_projects(self, **kwargs):
+        """Fetch projects that the currently authenticated user likes
+
+        :returns: Authenticated user projects
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_liked_projects = api_client.\
+        >>> fetch_liked_projects() # doctest: +SKIP
+        """
+        try:
+            return self._user_api.fetch_liked_projects(**kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def fetch_projects(self, **kwargs):
+        """Fetch projects that the currently authenticated user owns
+
+        :returns: Authenticated user projects
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> user_liked_projects = api_client.\
+        >>> fetch_liked_projects() # doctest: +SKIP
+        """
+        try:
+            return self._user_api.fetch_projects(**kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     # Sql Operations
 
     def sql(self, dataset_key, query, desired_mimetype='application/json',
@@ -744,6 +800,520 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    # Projects Operations
+
+    def get_project(self, project_key):
+        """Retrieve an existing project
+
+        This method retrieves metadata about an existing
+
+        :param project_key: Project identifier, in the form of owner/id
+        :type project_key: str
+        :returns: Project definition, with all attributes
+        :rtype: dict
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> intro_project = api_client.get_project(
+        ...     'jonloyens/an-intro-to-dataworld-project')
+        >>> intro_project['title']
+        'An Intro to data.world Project'
+        """
+        try:
+            owner_id, project_id = parse_dataset_key(project_key)
+            return self._projects_api.get_project(owner_id,
+                                                  project_id).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def create_project(self, owner_id, **kwargs):
+        """Create a new project
+
+        :param owner_id: Username of the creator of a
+            project.
+        :type owner_id: str
+        :param title: Project title (will be used to generate project id on
+            creation)
+        :type title: str
+        :param objective: Short project objective.
+        :type objective: str, optional
+        :param summary: Long-form project summary.
+        :type summary: str, optional
+        :param tags: Project tags. Letters numbers and spaces
+        :type tags: list, optional
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
+            Project license
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
+        :param visibility: Project visibility
+        :type visibility: {'OPEN', 'PRIVATE'}
+        :param files: File name as dict, source URLs, description and labels()
+        as properties
+        :type files: dict, optional
+            *Description and labels are optional*
+        :param linkedDatasets: Initial set of linked datasets.
+        :type linkedDatasets: list of object, optional
+        :param **kwargs:
+        :returns: Newly created project key
+        :rtype: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.create_project(
+        ...     'username', body={'title':'project testing', \
+        ...     'visibility':'PRIVATE'})  # doctest: +SKIP
+        """
+        request = self.__build_project_obj(
+            lambda: _swagger.ProjectCreateRequest(),
+            lambda name, url, description, labels:
+            _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels), kwargs)
+        try:
+            (_, _, headers) = self._projects_api.create_project_with_http_info(
+                owner_id, body=request, _return_http_data_only=False)
+            if 'Location' in headers:
+                return headers['Location']
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def update_project(self, project_key, **kwargs):
+        """Update an existing project
+
+        :param project_key: Username and unique identifier of the creator of a
+            project in the form of owner/id.
+        :type project_key: str
+        :param title: Project title
+        :type title: str
+        :param objective: Short project objective.
+        :type objective: str, optional
+        :param summary: Long-form project summary.
+        :type summary: str, optional
+        :param tags: Project tags. Letters numbers and spaces
+        :type tags: list, optional
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
+            Project license
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
+        :param visibility: Project visibility
+        :type visibility: {'OPEN', 'PRIVATE'}
+        :param files: File name as dict, source URLs, description and labels()
+        as properties
+        :type files: dict, optional
+            *Description and labels are optional*
+        :param linkedDatasets: Initial set of linked datasets.
+        :type linkedDatasets: list of object, optional
+        :param **kwargs:
+        :returns: message object
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.update_project(
+        ...    'username/test-project',
+        ...    body={'tags':['demo', 'datadotworld']})  # doctest: +SKIP
+        """
+        request = self.__build_project_obj(
+            lambda: _swagger.ProjectPatchRequest(),
+            lambda name, url, description, labels:
+                _swagger.FileCreateOrUpdateRequest(
+                    name=name,
+                    source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
+                    description=description,
+                    labels=labels),
+            kwargs)
+        owner_id, project_id = parse_dataset_key(project_key)
+        try:
+            self._projects_api.patch_project(owner_id,
+                                             project_id,
+                                             body=request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def replace_project(self, project_key, **kwargs):
+        """Replace an existing Project
+
+        *Create a project with a given id or completely rewrite the project,
+        including any previously added files or linked datasets, if one already
+        exists with the given id.*
+
+        :param project_key: Username and unique identifier of the creator of a
+            project in the form of owner/id.
+        :type project_key: str
+        :param title: Project title
+        :type title: str
+        :param objective: Short project objective.
+        :type objective: str, optional
+        :param summary: Long-form project summary.
+        :type summary: str, optional
+        :param tags: Project tags. Letters numbers and spaces
+        :type tags: list, optional
+        :param license: {'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA',
+                            'Other'}
+            Project license
+        :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY'}
+        :param visibility: Project visibility
+        :type visibility: {'OPEN', 'PRIVATE'}
+        :param files: File name as dict, source URLs, description and labels()
+        as properties
+        :type files: dict, optional
+            *Description and labels are optional*
+        :param linkedDatasets: Initial set of linked datasets.
+        :type linkedDatasets: list of object, optional
+        :param **kwargs:
+        :returns: project object
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.replace_project(
+        ...    'username/test-project',
+        ...    body={'visibility':'PRIVATE',
+        ...    'objective':'A better objective',
+        ...    'title':'Replace project'})  # doctest: +SKIP
+        """
+        request = self.__build_project_obj(
+            lambda: _swagger.ProjectPutRequest(),
+            lambda name, url, description, labels:
+            _swagger.FileCreateRequest(
+                name=name,
+                source=_swagger.FileSourceCreateRequest(url=url),
+                description=description,
+                labels=labels),
+            kwargs)
+        try:
+            project_owner_id, project_id = parse_dataset_key(project_key)
+            return self._projects_api.replace_project(project_owner_id,
+                                                      project_id,
+                                                      body=request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def add_linked_dataset(self, project_key, dataset_key):
+        """Link project to an existing dataset
+
+        This method links a dataset to project
+
+        :param project_key: Project identifier, in the form of owner/id
+        :type project_key: str
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type project_key: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> linked_dataset = api_client.add_linked_dataset(
+        ...    'username/test-project', 'username/test-dataset')
+        >>> linked_dataset.message
+        'Dataset successfully linked to project.'
+        """
+        try:
+            project_owner_id, project_id = parse_dataset_key(project_key)
+            dataset_owner_id, dataset_id = parse_dataset_key(dataset_key)
+            return self._projects_api.add_linked_dataset(project_owner_id,
+                                                         project_id,
+                                                         dataset_owner_id,
+                                                         dataset_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def remove_linked_dataset(self, project_key, dataset_key):
+        """Unlink dataset
+
+        This method unlinks a dataset from a project
+
+        :param project_key: Project identifier, in the form of owner/id
+        :type project_key: str
+        :param dataset_key: Dataset identifier, in the form of owner/id
+        :type project_key: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> unlinked_dataset = api_client.remove_linked_dataset(
+        ...    'username/test-project', 'username/test-dataset')
+        >>> unlinked_dataset.message
+        'Successfully removed linked dataset from project.'
+        """
+        try:
+            project_owner_id, project_id = parse_dataset_key(project_key)
+            dataset_owner_id, dataset_id = parse_dataset_key(dataset_key)
+            return self._projects_api.remove_linked_dataset(project_owner_id,
+                                                            project_id,
+                                                            dataset_owner_id,
+                                                            dataset_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def delete_project(self, project_key):
+        """Deletes a project and all associated data
+
+        :params project_key: Project identifier, in the form of owner/id
+        :type project_key: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> del_project = api_client.delete_project(
+        ...     'jonloyens/an-intro-to-dataworld')
+        >>> del_project.message
+        'Project has been successfully deleted.'
+        """
+        owner_id, project_id = parse_dataset_key(project_key)
+        try:
+            return self._projects_api.delete_project(owner_id, project_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Insight Operations
+
+    def get_insight(self, project_key, insight_id, **kwargs):
+        """Retrieve an insight
+
+        :param project_key: Project identifier, in the form of
+        projectOwner/projectid
+        :type project_key: str
+        :param insight_id: Insight unique identifier.
+        :type insight_id: str
+        :returns: Insight definition, with all attributes
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> intro_project = api_client.get_insight(
+        ...     'jonloyens/an-intro-to-dataworld-insight', 'insightid')
+        >>> intro_project['title']
+        'Insight title'
+        """
+        try:
+            project_owner, project_id = parse_dataset_key(project_key)
+            return self._insights_api.get_insight(project_owner,
+                                                  project_id,
+                                                  insight_id,
+                                                  **kwargs).to_dict()
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def get_insights_for_project(self, project_key, **kwargs):
+        """Get insights for a project.
+
+        :param project_key: Project identifier, in the form of
+        projectOwner/projectid
+        :type project_key: str
+        :returns: Insight results
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> intro_project = api_client.get_insights_for_project(
+        ...     'jonloyens/an-intro-to-dataworld-insight') # doctest: +SKIP
+        """
+        try:
+            project_owner, project_id = parse_dataset_key(project_key)
+            return self._insights_api.get_insights_for_project(project_owner,
+                                                               project_id,
+                                                               **kwargs)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def create_insight(self, project_key, **kwargs):
+        """Create a new insight
+
+        :param project_key: Project identifier, in the form of
+        projectOwner/projectid
+        :type project_key: str
+        :param title: Insight title
+        :type title: str
+        :param description: Insight description.
+        :type description: str, optional
+        :param body: Defines the body of an insight. Must contain one, and only
+        one of: imageUrl, embedUrl or markdownBody
+        :type body: object
+        :param sourceLink: Permalink to source code or platform this insight
+        was generated with. Allows others to replicate the steps originally
+        used to produce the insight.
+        :type sourceLink: str, optional
+        :param dataSourceLink: One or more permalinks to the data sources used
+        to generate this insight. Allows others to access the data originally
+        used to produce the insight.
+        :type dataSourceLink: array
+        :param **kwargs:
+        :returns: Insight with message and uri object
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.create_insight(
+        ...     'projectOwner/projectid', body={'title':'Test insight', \
+        ...     'body':{'imageUrl':'url'})  # doctest: +SKIP
+        """
+        request = self.__build_insight_obj(
+            lambda: _swagger.InsightCreateRequest(), kwargs)
+        project_owner, project_id = parse_dataset_key(project_key)
+        try:
+            (_, _, headers) = self._insights_api.create_insight_with_http_info(
+                                                project_owner,
+                                                project_id,
+                                                body=request,
+                                                _return_http_data_only=False)
+            if 'Location' in headers:
+                return headers['Location']
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def replace_insight(self, project_key, insight_id, **kwargs):
+        """Replace an insight.
+
+        :param project_key: Projrct identifier, in the form of
+        projectOwner/projectid
+        :type project_key: str
+        :param insight_id: Insight unique identifier.
+        :type insight_id: str
+        :param title: Insight title
+        :type title: str
+        :param description: Insight description.
+        :type description: str, optional
+        :param body: Defines the body of an insight. Must contain one, and only
+        one of: imageUrl, embedUrl or markdownBody
+        :type body: object
+        :param sourceLink: Permalink to source code or platform this insight
+        was generated with. Allows others to replicate the steps originally
+        used to produce the insight.
+        :type sourceLink: str, optional
+        :param dataSourceLink: One or more permalinks to the data sources used
+        to generate this insight. Allows others to access the data originally
+        used to produce the insight.
+        :type dataSourceLink: array
+        :param **kwargs:
+        :returns: message object
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.replace_insight(
+        ... 'projectOwner/projectid',
+        ... '1230-9324-3424242442',
+        ...  body={'body':{'markdownBody':'Markdown test'},
+        ...  'title':Test insight'})  # doctest: +SKIP
+        """
+        request = self.__build_insight_obj(
+            lambda: _swagger.InsightPutRequest(), kwargs)
+        project_owner, project_id = parse_dataset_key(project_key)
+        try:
+            return self._insights_api.replace_insight(project_owner,
+                                                      project_id,
+                                                      insight_id,
+                                                      body=request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def update_insight(self, project_key, insight_id, **kwargs):
+        """Update an insight.
+
+        **Note that only elements included in the request will be updated. All
+        omitted elements will remain untouched.
+        :param project_key: Projrct identifier, in the form of
+        projectOwner/projectid
+        :type project_key: str
+        :param insight_id: Insight unique identifier.
+        :type insight_id: str
+        :param title: Insight title
+        :type title: str
+        :param description: Insight description.
+        :type description: str, optional
+        :param body: Defines the body of an insight. Must contain one, and only
+        one of: imageUrl, embedUrl or markdownBody
+        :type body: object
+        :param sourceLink: Permalink to source code or platform this insight
+        was generated with. Allows others to replicate the steps originally
+        used to produce the insight.
+        :type sourceLink: str, optional
+        :param dataSourceLink: One or more permalinks to the data sources used
+        to generate this insight. Allows others to access the data originally
+        used to produce the insight.
+        :type dataSourceLink: array
+        :param **kwargs:
+        :returns: message object
+        :rtype: object
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> api_client.update_insight(
+        ...    'username/test-project', 'insightid'
+        ...    body={'title':'demo atadotworld'})  # doctest: +SKIP
+        """
+        request = self.__build_insight_obj(
+            lambda: _swagger.InsightPatchRequest(), kwargs)
+        project_owner, project_id = parse_dataset_key(project_key)
+        try:
+            return self._insights_api.update_insight(project_owner,
+                                                     project_id,
+                                                     insight_id, body=request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    def delete_insight(self, project_key, insight_id):
+        """Delete an existing insight.
+
+        :params project_key: Project identifier, in the form of
+        projectOwner/projectId
+        :type project_key: str
+        :params insight_id: Insight unique id
+        :type insight_id: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> del_insight = api_client.delete_insight(
+        ...     'jonloyens/an-intro-to-dataworld')
+        >>> del_insight.message
+        'Project has been successfully deleted.'
+        """
+        projectOwner, projectId = parse_dataset_key(project_key)
+        try:
+            return self._insights_api.delete_insight(projectOwner,
+                                                     projectId,
+                                                     insight_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
@@ -771,6 +1341,50 @@ class RestApiClient(object):
         dataset.files = files
 
         return dataset
+
+    @staticmethod
+    def __build_project_obj(project_constructor, file_constructor, args):
+
+        files = ([file_constructor(
+                name,
+                url=file_info.get('url'),
+                description=file_info.get('description'),
+                labels=file_info.get('labels'))
+                    for name, file_info in args['body']['files'].items()]
+                    if 'files' in args['body'] else None)
+        project = project_constructor()
+        if 'title' in args['body']:
+            project.title = args['body']['title']
+        if 'summary' in args['body']:
+            project.summary = args['body']['summary']
+        if 'tags' in args['body']:
+            project.tags = args['body']['tags']
+        if 'license' in args['body']:
+            project.license = args['body']['license']
+        if 'visibility' in args['body']:
+            project.visibility = args['body']['visibility']
+        if 'objective' in args['body']:
+            project.objective = args['body']['objective']
+        if 'linkedDatasets' in args['body']:
+            project.linkedDatasets = args['body']['linkedDatasets']
+
+        project.files = files
+        return project
+
+    @staticmethod
+    def __build_insight_obj(insight_constructor, args):
+        insight = insight_constructor()
+        if 'title' in args['body']:
+            insight.title = args['body']['title']
+        if 'body' in args['body']:
+            insight.body = args['body']['body']
+        if 'description' in args['body']:
+            insight.description = args['body']['description']
+        if 'sourceLink' in args['body']:
+            insight.sourceLink = args['body']['sourceLink']
+        if 'dataSourceLinks' in args['body']:
+            insight.dataSourceLinks = args['body']['dataSourceLinks']
+        return insight
 
 
 class RestApiError(Exception):
