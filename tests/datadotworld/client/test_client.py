@@ -36,6 +36,8 @@ from datadotworld.client._swagger import (
     UploadsApi,
     UserApi,
     StreamsApi,
+    ProjectsApi,
+    InsightsApi
 )
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
@@ -45,6 +47,9 @@ from datadotworld.client._swagger.models import (
     FileSourceCreateOrUpdateRequest,
     PaginatedDatasetResults,
     UserDataResponse,
+    ProjectSummaryResponse,
+    InsightSummaryResponse,
+    PaginatedProjectResults
 )
 from datadotworld.client.api import RestApiClient, RestApiError
 
@@ -53,7 +58,16 @@ class TestApiClient:
     @pytest.fixture()
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
-            api.get_dataset = lambda o, d: DatasetSummaryResponse(o, d)
+            api.get_dataset = lambda o, d: DatasetSummaryResponse(
+                                owner=o,
+                                id=d,
+                                title='Dataset',
+                                visibility='PRIVATE',
+                                status='LOADED',
+                                created='2018-02-01T01:03:26.879Z',
+                                updated='2018-02-01T01:03:28.211Z',
+                                access_level='ADMIN',
+                                is_project=False)
             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
             return api
@@ -93,10 +107,26 @@ class TestApiClient:
     @pytest.fixture()
     def user_api(self):
         with Spy(UserApi) as api:
-            api.get_user_data = lambda: UserDataResponse()
-            api.fetch_liked_datasets = lambda: PaginatedDatasetResults()
-            api.fetch_datasets = lambda: PaginatedDatasetResults()
-            api.fetch_contributing_datasets = lambda: PaginatedDatasetResults()
+            api.get_user_data = lambda: UserDataResponse(
+                                    id='test',
+                                    created='2018-02-01T01:03:26.879Z',
+                                    updated='2018-02-01T01:03:28.211Z')
+            api.fetch_liked_datasets = lambda: PaginatedDatasetResults(
+                                            count=1,
+                                            records=[])
+            api.fetch_datasets = lambda: PaginatedDatasetResults(count=1,
+                                                                 records=[])
+            api.fetch_contributing_datasets = lambda: PaginatedDatasetResults(
+                                                count=1,
+                                                records=[])
+            api.fetch_contributing_projects = lambda: PaginatedProjectResults(
+                                                count=1,
+                                                records=[])
+            api.fetch_liked_projects = lambda: PaginatedProjectResults(
+                                            count=1,
+                                            records=[])
+            api.fetch_projects = lambda: PaginatedProjectResults(count=1,
+                                                                 records=[])
             return api
 
     @pytest.fixture()
@@ -106,8 +136,39 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
+    def projects_api(self):
+        with Spy(ProjectsApi) as api:
+            api.get_project = lambda o, d: ProjectSummaryResponse(
+                                owner=o,
+                                id=d,
+                                title='Project',
+                                visibility='PRIVATE',
+                                status='LOADED',
+                                created='2018-02-01T01:03:26.879Z',
+                                updated='2018-02-01T01:03:28.211Z',
+                                access_level='ADMIN')
+            api.create_project_with_http_info = lambda o, **kwargs: (
+                {}, 200, {'Location': 'https://data.world/agentid/projectid'})
+            return api
+
+    @pytest.fixture()
+    def insights_api(self):
+        with Spy(InsightsApi) as api:
+            api.get_insight = lambda o, d, i: InsightSummaryResponse(
+                                id=i,
+                                title='Insights',
+                                body={},
+                                author=o,
+                                created='2018-02-01T01:03:26.879Z',
+                                updated='2018-02-01T01:03:28.211Z')
+            api.create_insight_with_http_info = lambda o, d, **kwargs: (
+                {}, 200, {'Location': 'https://data.world/agentid/projectid'})
+            return api
+
+    @pytest.fixture()
     def api_client(self, config, datasets_api, uploads_api, download_api,
-                   sql_api, sparql_api, user_api, streams_api):
+                   sql_api, sparql_api, user_api, streams_api, projects_api,
+                   insights_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._uploads_api = uploads_api
@@ -116,6 +177,8 @@ class TestApiClient:
         client._sparql_api = sparql_api
         client._user_api = user_api
         client._streams_api = streams_api
+        client._projects_api = projects_api
+        client._insights_api = insights_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -307,9 +370,116 @@ class TestApiClient:
         assert_that(user_api.fetch_datasets(),
                     has_properties(user_datasets))
 
+    def test_fetch_contributing_projects(self, api_client, user_api):
+        contributing_projects = api_client.fetch_contributing_projects()
+        assert_that(user_api.fetch_contributing_projects(),
+                    has_properties(contributing_projects))
+
+    def test_fetch_liked_projects(self, api_client, user_api):
+        liked_projects = api_client.fetch_liked_projects()
+        assert_that(user_api.fetch_liked_projects(),
+                    has_properties(liked_projects))
+
+    def test_fetch_projects(self, api_client, user_api):
+        projects = api_client.fetch_projects()
+        assert_that(user_api.fetch_projects(), has_properties(projects))
+
     def test_append_records(self, api_client, dataset_key, streams_api):
         body = {'content': 'content'}
         api_client.append_records(dataset_key, 'streamid', body)
         assert_that(streams_api.append_records,
                     called().times(1).with_args('agentid', 'datasetid',
                                                 'streamid', body))
+
+    def test_get_project(self, api_client, project_key):
+        project = api_client.get_project(project_key)
+        assert_that(project, has_entries(
+            {'owner': equal_to('agentid'), 'id': equal_to('projectid')}))
+
+    def test_create_project(self, api_client):
+        create_request = {'title': 'Project', 'visibility': 'OPEN'}
+        project_key = api_client.create_project('agentid', body=create_request)
+        assert_that(project_key,
+                    equal_to('https://data.world/agentid/projectid'))
+
+    def test_update_project(self, api_client, projects_api, project_key):
+        update_request = {'tags': ['tag1', 'tag2']}
+        api_client.update_project(project_key, body=update_request)
+        assert_that(projects_api.patch_project,
+                    called().times(1))
+
+    def test_replace_project(self, api_client, projects_api, project_key):
+        replace_request = {'title': 'New Project'}
+        api_client.replace_project(project_key, body=replace_request)
+        assert_that(projects_api.replace_project,
+                    called().times(1))
+
+    def test_add_linked_dataset(self, api_client, projects_api, project_key,
+                                dataset_key):
+        api_client.add_linked_dataset(project_key, dataset_key)
+        assert_that(projects_api.add_linked_dataset,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('projectid'),
+                                                equal_to('agentid'),
+                                                equal_to('datasetid')))
+
+    def test_remove_linked_dataset(self, api_client, projects_api, project_key,
+                                   dataset_key):
+        api_client.remove_linked_dataset(project_key, dataset_key)
+        assert_that(projects_api.remove_linked_dataset,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('projectid'),
+                                                equal_to('agentid'),
+                                                equal_to('datasetid')))
+
+    def test_delete_project(self, api_client, projects_api, project_key):
+        api_client.delete_project(project_key)
+        assert_that(projects_api.delete_project,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('projectid')))
+
+    def test_get_insight(self, api_client, project_key,
+                         insight_id='insightid'):
+        insight = api_client.get_insight(project_key, insight_id)
+        assert_that(insight, has_entries(
+            {'author': equal_to('agentid'), 'id': equal_to(insight_id)}))
+
+    def test_get_insight_for_project(self, api_client, insights_api,
+                                     project_key):
+        api_client.get_insights_for_project(project_key)
+        assert_that(insights_api.get_insights_for_project,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('projectid')))
+
+    def test_create_insight(self, api_client, project_key):
+        imageUrl = {'imageUrl': 'https://image.url'}
+        create_request = {'title': 'Insight', 'body': imageUrl}
+        new_insight = api_client.create_insight(project_key,
+                                                body=create_request)
+        assert_that(new_insight,
+                    equal_to('https://data.world/agentid/projectid'))
+
+    def test_replace_insight(self, api_client, insights_api, project_key,
+                             insight_id='insightid'):
+        imageUrl = 'https://image.com/'
+        replace_request = {'title': 'Replace Insight',
+                           'body': {'imageUrl': imageUrl}}
+        api_client.replace_insight(project_key, insight_id,
+                                   body=replace_request)
+        assert_that(insights_api.replace_insight,
+                    called().times(1))
+
+    def test_update_insight(self, api_client, insights_api, project_key,
+                            insight_id='insightid'):
+        patch_request = {'title': 'patch insight'}
+        api_client.update_insight(project_key, insight_id, body=patch_request)
+        assert_that(insights_api.update_insight,
+                    called().times(1))
+
+    def test_delete_insight(self, api_client, insights_api, project_key,
+                            insight_id='insightid'):
+        api_client.delete_insight(project_key, insight_id)
+        assert_that(insights_api.delete_insight,
+                    called().times(1).with_args(equal_to('agentid'),
+                                                equal_to('projectid'),
+                                                equal_to(insight_id)))

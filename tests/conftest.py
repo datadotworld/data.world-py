@@ -60,6 +60,13 @@ def dataset_key(request):
     return request.param
 
 
+@pytest.fixture(
+    params=['agentid/projectid', 'https://data.world/agentid/projectid'],
+    ids=['simple_key', 'url'])
+def project_key(request):
+    return request.param
+
+
 @pytest.fixture()
 def config(tmpdir):
     with Stub() as cfg:
