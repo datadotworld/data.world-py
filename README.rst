@@ -309,6 +309,22 @@ The client currently implements the following functions:
 * ``fetch_contributing_datasets``
 * ``fetch_liked_datasets``
 * ``fetch_datasets``
+* ``fetch_contributing_projects``
+* ``fetch_liked_projects``
+* ``fetch_projects``
+* ``get_project``
+* ``create_project``
+* ``update_project``
+* ``replace_project``
+* ``add_linked_dataset``
+* ``remove_linked_dataset``
+* ``delete_project``
+* ``get_insight``
+* ``get_insights_for_project``
+* ``create_insight``
+* ``replace_insight``
+* ``update_insight``
+* ``delete_insight``
 
 For a few examples of what the ``ApiClient`` can be used for, see below.
 
