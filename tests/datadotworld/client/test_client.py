@@ -202,7 +202,7 @@ class TestApiClient:
                                                 has_properties(patch_request)))
 
     def test_replace_dataset(self, api_client, datasets_api, dataset_key):
-        replace_request = {'visibility': 'OPEN'}
+        replace_request = {'title': 'Dataset', 'visibility': 'OPEN'}
         api_client.replace_dataset(dataset_key, **replace_request)
         assert_that(datasets_api.replace_dataset,
                     called().times(1).with_args(equal_to('agentid'),
@@ -398,19 +398,19 @@ class TestApiClient:
 
     def test_create_project(self, api_client):
         create_request = {'title': 'Project', 'visibility': 'OPEN'}
-        project_key = api_client.create_project('agentid', body=create_request)
+        project_key = api_client.create_project('agentid', **create_request)
         assert_that(project_key,
                     equal_to('https://data.world/agentid/projectid'))
 
     def test_update_project(self, api_client, projects_api, project_key):
         update_request = {'tags': ['tag1', 'tag2']}
-        api_client.update_project(project_key, body=update_request)
+        api_client.update_project(project_key, **update_request)
         assert_that(projects_api.patch_project,
                     called().times(1))
 
     def test_replace_project(self, api_client, projects_api, project_key):
-        replace_request = {'title': 'New Project'}
-        api_client.replace_project(project_key, body=replace_request)
+        replace_request = {'title': 'New Project', 'visibility': 'OPEN'}
+        api_client.replace_project(project_key, **replace_request)
         assert_that(projects_api.replace_project,
                     called().times(1))
 
@@ -452,27 +452,25 @@ class TestApiClient:
                                                 equal_to('projectid')))
 
     def test_create_insight(self, api_client, project_key):
-        imageUrl = {'imageUrl': 'https://image.url'}
-        create_request = {'title': 'Insight', 'body': imageUrl}
+        create_request = {'title': 'Insight', 'image_url': 'https://image.url'}
         new_insight = api_client.create_insight(project_key,
-                                                body=create_request)
+                                                **create_request)
         assert_that(new_insight,
                     equal_to('https://data.world/agentid/projectid'))
 
     def test_replace_insight(self, api_client, insights_api, project_key,
                              insight_id='insightid'):
-        imageUrl = 'https://image.com/'
         replace_request = {'title': 'Replace Insight',
-                           'body': {'imageUrl': imageUrl}}
+                           'image_url': 'https://image.com/'}
         api_client.replace_insight(project_key, insight_id,
-                                   body=replace_request)
+                                   **replace_request)
         assert_that(insights_api.replace_insight,
                     called().times(1))
 
     def test_update_insight(self, api_client, insights_api, project_key,
                             insight_id='insightid'):
         patch_request = {'title': 'patch insight'}
-        api_client.update_insight(project_key, insight_id, body=patch_request)
+        api_client.update_insight(project_key, insight_id, **patch_request)
         assert_that(insights_api.update_insight,
                     called().times(1))
 
