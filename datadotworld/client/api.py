@@ -124,7 +124,7 @@ class RestApiClient(object):
         as properties
         :type files: dict, optional
             *Description and labels are optional*
-'        :returns: Newly created dataset key
+        :returns: Newly created dataset key
         :rtype: str
         :raises RestApiException: If a server error occurs
 
@@ -177,7 +177,7 @@ class RestApiClient(object):
         :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
-'        :raises RestApiException: If a server error occurs
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -225,7 +225,7 @@ class RestApiClient(object):
         :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
-'        :raises RestApiException: If a server error occurs
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -354,7 +354,7 @@ class RestApiClient(object):
             Uses file name as a dict containing File description, labels and
             source URLs to add or update
         :type files_metadata: dict optional
-'        :raises RestApiException: If a server error occurs
+        :raises RestApiException: If a server error occurs
 
         Examples
         --------
@@ -648,8 +648,8 @@ class RestApiClient(object):
         --------
         >>> import datadotworld as dw
         >>> api_client = dw.api_client()
-        >>> user_liked_projects =
-        ...     api_client.fetch_liked_projects() # doctest: +SKIP
+        >>> user_projects =
+        ...     api_client.fetch_projects() # doctest: +SKIP
         """
         try:
             return self._user_api.fetch_projects(**kwargs).to_dict()
@@ -857,7 +857,7 @@ class RestApiClient(object):
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
-'        :returns: Newly created project key
+        :returns: Newly created project key
         :rtype: str
         :raises RestApiException: If a server error occurs
 
@@ -915,7 +915,7 @@ class RestApiClient(object):
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
-'        :returns: message object
+        :returns: message object
         :rtype: object
         :raises RestApiException: If a server error occurs
 
@@ -973,7 +973,7 @@ class RestApiClient(object):
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
-'        :returns: project object
+        :returns: project object
         :rtype: object
         :raises RestApiException: If a server error occurs
 
@@ -1168,7 +1168,7 @@ class RestApiClient(object):
         used to generate this insight. Allows others to access the data
         originally used to produce the insight.
         :type data_source_links: array
-'        :returns: Insight with message and uri object
+        :returns: Insight with message and uri object
         :rtype: object
         :raises RestApiException: If a server error occurs
 
@@ -1225,7 +1225,7 @@ class RestApiClient(object):
         used to generate this insight. Allows others to access the data
         originally used to produce the insight.
         :type data_source_links: array
-'        :returns: message object
+        :returns: message object
         :rtype: object
         :raises RestApiException: If a server error occurs
 
@@ -1283,7 +1283,7 @@ class RestApiClient(object):
         used to generate this insight. Allows others to access the data
         originally used to produce the insight.
         :type data_source_links: array
-'        :returns: message object
+        :returns: message object
         :rtype: object
         :raises RestApiException: If a server error occurs
 
