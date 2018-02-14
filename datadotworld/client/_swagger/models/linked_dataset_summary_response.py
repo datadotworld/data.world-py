@@ -113,8 +113,6 @@ class LinkedDatasetSummaryResponse(object):
         """
         if owner is None:
             raise ValueError("Invalid value for `owner`, must not be `None`")
-        if owner is not None and not re.search('[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]', owner):
-            raise ValueError("Invalid value for `owner`, must be a follow pattern or equal to `/[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]/`")
 
         self._owner = owner
 
@@ -140,8 +138,6 @@ class LinkedDatasetSummaryResponse(object):
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")
-        if id is not None and not re.search('[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]', id):
-            raise ValueError("Invalid value for `id`, must be a follow pattern or equal to `/[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]/`")
 
         self._id = id
 

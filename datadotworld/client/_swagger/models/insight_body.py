@@ -78,8 +78,6 @@ class InsightBody(object):
         :param image_url: The image_url of this InsightBody.
         :type: str
         """
-        if image_url is not None and len(image_url) < 1:
-            raise ValueError("Invalid value for `image_url`, length must be greater than or equal to `1`")
 
         self._image_url = image_url
 
@@ -103,8 +101,6 @@ class InsightBody(object):
         :param embed_url: The embed_url of this InsightBody.
         :type: str
         """
-        if embed_url is not None and len(embed_url) < 1:
-            raise ValueError("Invalid value for `embed_url`, length must be greater than or equal to `1`")
 
         self._embed_url = embed_url
 
@@ -128,10 +124,6 @@ class InsightBody(object):
         :param markdown_body: The markdown_body of this InsightBody.
         :type: str
         """
-        if markdown_body is not None and len(markdown_body) > 25000:
-            raise ValueError("Invalid value for `markdown_body`, length must be less than or equal to `25000`")
-        if markdown_body is not None and len(markdown_body) < 1:
-            raise ValueError("Invalid value for `markdown_body`, length must be greater than or equal to `1`")
 
         self._markdown_body = markdown_body
 

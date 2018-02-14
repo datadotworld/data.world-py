@@ -3227,13 +3227,11 @@
       "properties": {
         "owner": {
           "type": "string",
-          "description": "User name and unique identifier of the creator of the dataset.",
-          "pattern": "[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]"
+          "description": "User name and unique identifier of the creator of the dataset."
         },
         "id": {
           "type": "string",
-          "description": "Unique identifier of dataset.",
-          "pattern": "[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]"
+          "description": "Unique identifier of dataset."
         },
         "title": {
           "type": "string",
@@ -3788,13 +3786,11 @@
       "properties": {
         "owner": {
           "type": "string",
-          "description": "User name and unique identifier of the creator of the dataset.",
-          "pattern": "[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]"
+          "description": "User name and unique identifier of the creator of the dataset."
         },
         "id": {
           "type": "string",
-          "description": "Unique identifier of dataset.",
-          "pattern": "[a-z0-9](?:-(?!-)|[a-z0-9])+[a-z0-9]"
+          "description": "Unique identifier of dataset."
         },
         "title": {
           "type": "string",
@@ -4259,20 +4255,16 @@
         "imageUrl": {
           "type": "string",
           "description": "Image URL",
-          "minLength": 1,
           "format": "uri"
         },
         "embedUrl": {
           "type": "string",
           "description": "oEmbed URL.",
-          "minLength": 1,
           "format": "uri"
         },
         "markdownBody": {
           "type": "string",
-          "description": "Markdown (deprecated)",
-          "minLength": 1,
-          "maxLength": 25000
+          "description": "Markdown (deprecated)"
         }
       }
     },
