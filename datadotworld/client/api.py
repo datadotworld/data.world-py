@@ -985,25 +985,10 @@ class RestApiClient(object):
         ...    objective='A better objective',
         ...    title='Replace project')  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
-            lambda: _swagger.ProjectCreateRequest(
-                title=kwargs.get('title'),
-                visibility=kwargs.get('visibility')
-            ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
-            kwargs)
-        try:
-            project_owner_id, project_id = parse_dataset_key(project_key)
-            self._projects_api.replace_project(project_owner_id,
-                                               project_id,
-                                               body=request)
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
+        project_owner_id, project_id = parse_dataset_key(project_key)
+        self._projects_api.replace_project(project_owner_id,
+                                           project_id,
+                                           **kwargs)
 
     def add_linked_dataset(self, project_key, dataset_key):
         """Link project to an existing dataset

@@ -17,8 +17,11 @@ import json
 import mimetypes
 import tempfile
 import threading
+import backoff
 
 from datetime import date, datetime
+from requests.adapters import BaseAdapter
+
 
 # python 2 and python 3 compatibility library
 from six import PY3, integer_types, iteritems, text_type
@@ -250,3 +253,26 @@ class ApiClient(object):
                 return resp.json()
             except RequestException as e:
                 raise convert_requests_exception(e)
+
+class BackoffAdapter(BaseAdapter):
+    def __init__(self, delegate):
+        """Requests adapter for retrying throttled requests (HTTP 429)
+        :param delegate: Adapter to delegate final request processing to
+        :type delegate: requests.adapters.BaseAdapter
+        """
+        self._delegate = delegate
+        super(BackoffAdapter, self).__init__()
+
+    @backoff.on_predicate(backoff.expo,
+                          predicate=lambda r: r.status_code == 429,
+                          max_tries=lambda: MAX_TRIES)
+    def send(self, request, **kwargs):
+        resp = self._delegate.send(request, **kwargs)
+        if (resp.status_code == 429 and
+                resp.headers.get('Retry-After')):
+            sleep(int(resp.headers.get('Retry-After')))
+
+        return resp
+
+    def close(self):
+        self._delegate.close()
