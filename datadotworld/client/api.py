@@ -32,6 +32,8 @@ import requests
 import six
 
 from datadotworld.client import _swagger
+from datadotworld.client import modules
+
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
@@ -58,6 +60,12 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token))
         swagger_client.user_agent = _user_agent()
 
+
+
+        request_client = modules.ApiClient(api_token=self._config.auth_token)
+
+
+
         self._build_api_client = functools.partial(
             ContentNegotiatingApiClient,
             host=self._host,
@@ -70,7 +78,8 @@ class RestApiClient(object):
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
-        self._projects_api = _swagger.ProjectsApi(swagger_client)
+        # self._projects_api = _swagger.ProjectsApi(swagger_client)
+        self._projects_api = modules.ProjectsApi(request_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
 
     # Dataset Operations
@@ -826,8 +835,9 @@ class RestApiClient(object):
         """
         try:
             owner_id, project_id = parse_dataset_key(project_key)
-            return self._projects_api.get_project(owner_id,
-                                                  project_id).to_dict()
+            return self._projects_api.get_project(owner_id, project_id)
+            # return self._projects_api.get_project(owner_id,
+            #                                       project_id).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -871,26 +881,28 @@ class RestApiClient(object):
         ...     linked_datasets=[{'owner': 'someuser',
         ...                       'id': 'somedataset'}])  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
-            lambda: _swagger.ProjectCreateRequest(
-                title=kwargs.get('title'),
-                visibility=kwargs.get('visibility')
-            ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels), kwargs)
-        try:
-            (_, _, headers) = self._projects_api.create_project_with_http_info(
-                owner_id, body=request, _return_http_data_only=False)
-            if 'Location' in headers:
-                return headers['Location']
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
+        # request = self.__build_project_obj(
+        #     lambda: _swagger.ProjectCreateRequest(
+        #         title=kwargs.get('title'),
+        #         visibility=kwargs.get('visibility')
+        #     ),
+        #     lambda name, url, description, labels:
+        #     _swagger.FileCreateRequest(
+        #         name=name,
+        #         source=_swagger.FileSourceCreateRequest(url=url),
+        #         description=description,
+        #         labels=labels), kwargs)
+        # try:
+        #     (_, _, headers) = self._projects_api.create_project_with_http_info(
+        #         owner_id, body=request, _return_http_data_only=False)
+        #     if 'Location' in headers:
+        #         return headers['Location']
+        # except _swagger.rest.ApiException as e:
+        #     raise RestApiError(cause=e)
 
-    def update_project(self, project_key, **kwargs):
+        self._projects_api.create_project(owner_id, **kwargs)
+
+    def update_project(self, owner_id, project_id, **kwargs):
         """Update an existing project
 
         :param project_key: Username and unique identifier of the creator of a
@@ -927,22 +939,8 @@ class RestApiClient(object):
         ...    'username/test-project',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
-            lambda: _swagger.ProjectPatchRequest(),
-            lambda name, url, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
-            kwargs)
-        owner_id, project_id = parse_dataset_key(project_key)
-        try:
-            return self._projects_api.patch_project(owner_id,
-                                                    project_id,
-                                                    body=request)
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
+        self._projects_api.update_project(owner_id, project_id, **kwargs)
+
 
     def replace_project(self, project_key, **kwargs):
         """Replace an existing Project
