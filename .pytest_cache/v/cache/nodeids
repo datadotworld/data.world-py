@@ -162,7 +162,6 @@
   "tests/datadotworld/models/test_dataset.py::TestLocalDataset::()::test_dataframe_types",
   "tests/datadotworld/models/test_dataset.py::TestLocalDataset::()::test_dataframe_broken_schema",
   "tests/datadotworld/models/test_dataset.py::TestLocalDataset::()::test_repr",
-  "tests/datadotworld/models/test_project.py::TestProjects::test_create_project",
   "tests/datadotworld/models/test_query.py::TestQueryResults::()::test_describe[sql_select]",
   "tests/datadotworld/models/test_query.py::TestQueryResults::()::test_raw_data[sql_select]",
   "tests/datadotworld/models/test_query.py::TestQueryResults::()::test_table[sql_select]",

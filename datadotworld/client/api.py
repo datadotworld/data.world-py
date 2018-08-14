@@ -32,6 +32,7 @@ import requests
 import six
 
 from datadotworld.client import _swagger
+from datadotworld.client import modules
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
@@ -65,13 +66,16 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token),
             user_agent=_user_agent())
 
+        request_client = modules.ApiClient(api_token=self._config.auth_token)
+
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
         self._projects_api = _swagger.ProjectsApi(swagger_client)
-        self._insights_api = _swagger.InsightsApi(swagger_client)
+        # self._insights_api = _swagger.InsightsApi(swagger_client)
+        self._insights_api = modules.InsightsApi(request_client)
 
     # Dataset Operations
 
@@ -1180,24 +1184,9 @@ class RestApiClient(object):
         ...     'projectOwner/projectid', title='Test insight',
         ...     image_url='url')  # doctest: +SKIP
         """
-        request = self.__build_insight_obj(
-            lambda: _swagger.InsightCreateRequest(
-                title=kwargs.get('title'),
-                body=_swagger.InsightBody(
-                    image_url=kwargs.get('image_url'),
-                    embed_url=kwargs.get('embed_url'),
-                    markdown_body=kwargs.get('markdown_body')
-                )
-            ), kwargs)
-        project_owner, project_id = parse_dataset_key(project_key)
         try:
-            (_, _, headers) = self._insights_api.create_insight_with_http_info(
-                project_owner,
-                project_id,
-                body=request,
-                _return_http_data_only=False)
-            if 'Location' in headers:
-                return headers['Location']
+            project_owner, project_id = parse_dataset_key(project_key)
+            self._insights_api.create_insight(project_owner, project_id)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
