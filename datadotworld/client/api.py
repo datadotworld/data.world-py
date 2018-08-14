@@ -32,6 +32,7 @@ import requests
 import six
 
 from datadotworld.client import _swagger
+from datadotworld.client import modules
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
@@ -65,7 +66,9 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token),
             user_agent=_user_agent())
 
-        self._datasets_api = _swagger.DatasetsApi(swagger_client)
+        request_client = modules.ApiClient(api_token=self._config.auth_token)
+
+        self._datasets_api = modules.DatasetsApi(request_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
         self._download_api = _swagger.DownloadApi(swagger_client)
@@ -97,7 +100,7 @@ class RestApiClient(object):
         """
         try:
             return self._datasets_api.get_dataset(
-                *(parse_dataset_key(dataset_key))).to_dict()
+                *(parse_dataset_key(dataset_key)))
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -138,26 +141,8 @@ class RestApiClient(object):
         ...     license='Public Domain',
         ...     files={'dataset.csv':{'url': url}})  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
-            lambda: _swagger.DatasetCreateRequest(
-                title=kwargs.get('title'),
-                visibility=kwargs.get('visibility')),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
-            kwargs)
-        try:
-            (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
-                owner_id, request, _return_http_data_only=False)
-            if 'Location' in headers:
-                return headers['Location']
-        except _swagger.rest.ApiException as e:
-            raise RestApiError(cause=e)
+        return self._datasets_api.create_dataset(owner_id, **kwargs)
+            
 
     def update_dataset(self, dataset_key, **kwargs):
         """Update an existing dataset
