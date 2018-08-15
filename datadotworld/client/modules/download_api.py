@@ -15,6 +15,13 @@ class DownloadApi(object):
 			self.api_client = config.api_client
 
 	def download_dataset(self, owner_id, dataset_id):
+		'''
+		Download a .zip file containing all files within a dataset as originally uploaded.
+		:param owner_id: Username and unique identifier of creator of dataset or project
+		:typeof owner_id: string
+		:param dataset_id: Dataset unique identifier 
+		:typeof dataset_id: string
+		'''
 		url = '{}/download/{}/{}'.format(self.api_client._api_url, owner_id, dataset_id)
 		custom_headers = {
             'Authorization': 'Bearer {}'.format(self.api_client._api_token),
@@ -26,6 +33,15 @@ class DownloadApi(object):
 		z.extractall()
 
 	def download_file(self, owner_id, dataset_id, file):
+		'''
+		Download a file within the dataset as originally uploaded.
+		:param owner_id: Username and unique identifier of creator of dataset or project
+		:typeof owner_id: string
+		:param dataset_id: Dataset unique identifier 
+		:typeof dataset_id: string
+		:param file: File name
+		:typeof file: string
+		'''
 		url = '{}/file_download/{}/{}/{}'.format(self.api_client._api_url, owner_id, dataset_id, file)
 		custom_headers = {
             'Authorization': 'Bearer {}'.format(self.api_client._api_token),
