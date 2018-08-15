@@ -36,9 +36,11 @@ from datadotworld.client._swagger import (
     UploadsApi,
     UserApi,
     StreamsApi,
-    ProjectsApi,
     InsightsApi
 )
+
+from datadotworld.client.modules import ProjectsApi
+
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
     DatasetSummaryResponse,
@@ -147,7 +149,7 @@ class TestApiClient:
                                 created='2018-02-01T01:03:26.879Z',
                                 updated='2018-02-01T01:03:28.211Z',
                                 access_level='ADMIN')
-            api.create_project_with_http_info = lambda o, **kwargs: (
+            api.create_project = lambda o, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/projectid'})
             return api
 
@@ -393,6 +395,7 @@ class TestApiClient:
 
     def test_get_project(self, api_client, project_key):
         project = api_client.get_project(project_key)
+        print("LOL HERE", project)
         assert_that(project, has_entries(
             {'owner': equal_to('agentid'), 'id': equal_to('projectid')}))
 

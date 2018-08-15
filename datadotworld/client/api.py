@@ -836,8 +836,6 @@ class RestApiClient(object):
         try:
             owner_id, project_id = parse_dataset_key(project_key)
             return self._projects_api.get_project(owner_id, project_id)
-            # return self._projects_api.get_project(owner_id,
-            #                                       project_id).to_dict()
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -902,7 +900,7 @@ class RestApiClient(object):
 
         self._projects_api.create_project(owner_id, **kwargs)
 
-    def update_project(self, owner_id, project_id, **kwargs):
+    def update_project(self, project_key, **kwargs):
         """Update an existing project
 
         :param project_key: Username and unique identifier of the creator of a
@@ -939,7 +937,8 @@ class RestApiClient(object):
         ...    'username/test-project',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        self._projects_api.update_project(owner_id, project_id, **kwargs)
+        owner_id, project_id = parse_dataset_key(project_key)
+        self._projects_api.patch_project(owner_id, project_id, **kwargs)
 
 
     def replace_project(self, project_key, **kwargs):

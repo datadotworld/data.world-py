@@ -35,7 +35,7 @@ class ProjectsApi(object):
 		except RequestException as e:
 			raise e
 
-	def update_project(self, owner_id, project_id, **kwargs):
+	def patch_project(self, owner_id, project_id, **kwargs):
 		'''Update an existing project. Only elements included in the request will be updated. All omitted elements will remain untouched.
 		:param owner_id: User or organization ID of the owner of the dataset
         :type owner_id: str
@@ -75,6 +75,35 @@ class ProjectsApi(object):
 			r = requests.delete(url, headers=self.api_client.default_headers)
 		except RequestException as e:
 			raise e
+
+	def add_linked_dataset(self, owner_id, project_id, linked_dataset_owner, linked_dataset_id, **kwargs):
+		"""
+		Link dataset
+        :param callback function: The callback function
+            for asynchronous request. (optional)
+        :param str owner: User name and unique identifier of the creator of a project. For example, in the URL: [https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs](https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs), government is the unique identifier of the owner. (required)
+        :param str id: Project unique identifier. For example, in the URL:[https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs](https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs), how-to-add-depth-to-your-data-with-the-us-census-acs is the unique identifier of the project. (required)
+        :param str linked_dataset_owner: (required)
+        :param str linked_dataset_id: (required)
+        :return: SuccessMessage
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+		try:
+			url = '{}/projects/{}/{}/linkedDatasets/{}/{}'.format(self.api_client._api_url, owner_id, project_id, linked_dataset_owner, linked_dataset_id)
+			r = requests.put(url, headers=self.api_client.default_headers)
+			return r.text
+		except RequestException as e:
+			raise e
+
+	def remove_linked_dataset(self, owner_id, project_id, linked_dataset_owner, linked_dataset_id, **kwargs):
+		try:
+			url = '{}/projects/{}/{}/linkedDatasets/{}/{}'.format(self.api_client._api_url, owner_id, project_id, linked_dataset_owner, linked_dataset_id)
+			r = requests.delete(url, headers=self.api_client.default_headers)
+			return r.text
+		except RequestException as e:
+			raise e
+
 
 
 
