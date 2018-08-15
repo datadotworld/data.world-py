@@ -39,10 +39,10 @@ class ApiClient(object):
         self._conn_timeout = kwargs.get('connect_timeout', 3.05)
         self._read_timeout = kwargs.get('read_timeout', 600)
         self._max_threads = kwargs.get('max_threads', 10)
-
+        self._api_token = api_token
         self.default_headers = {
             'Accept': 'application/json',
-            'Authorization': 'Bearer {}'.format(api_token),
+            'Authorization': 'Bearer {}'.format(self._api_token),
             'Content-Type': 'application/json',
             'User-Agent': 'data.world-py'
         }

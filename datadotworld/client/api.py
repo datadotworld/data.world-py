@@ -32,6 +32,7 @@ import requests
 import six
 
 from datadotworld.client import _swagger
+from datadotworld.client import modules
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
@@ -65,10 +66,13 @@ class RestApiClient(object):
             header_value='Bearer {}'.format(self._config.auth_token),
             user_agent=_user_agent())
 
+        request_client = modules.ApiClient(api_token=self._config.auth_token)
+
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
         self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
-        self._download_api = _swagger.DownloadApi(swagger_client)
+        # self._download_api = _swagger.DownloadApi(swagger_client)
+        self._download_api = modules.DownloadApi(request_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
         self._projects_api = _swagger.ProjectsApi(swagger_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
