@@ -18,14 +18,17 @@ import mimetypes
 import tempfile
 import threading
 import backoff
-
+import requests 
 from datetime import date, datetime
-from requests.adapters import BaseAdapter
-
+from requests.adapters import HTTPAdapter, BaseAdapter
+from .projects_api import ProjectsApi
 
 # python 2 and python 3 compatibility library
 from six import PY3, integer_types, iteritems, text_type
 from six.moves.urllib.parse import quote
+from uplink import Consumer, get, headers, Path, Query
+
+MAX_TRIES = 10
 
 class ApiClient(object):
     def __init__(self, api_token, **kwargs):
@@ -35,17 +38,20 @@ class ApiClient(object):
         """
 
         # The following properties can be overwritten for testing/tuning
-        self._api_url = kwargs.get('api_url', 'https://api.data.world/v0')
-        self._conn_timeout = kwargs.get('connect_timeout', 3.05)
-        self._read_timeout = kwargs.get('read_timeout', 600)
-        self._max_threads = kwargs.get('max_threads', 10)
+        self._api_url = kwargs.get('api_url', 'https://api.data.world/v0/')
 
-        self.default_headers = {
+        default_headers = {
             'Accept': 'application/json',
             'Authorization': 'Bearer {}'.format(api_token),
             'Content-Type': 'application/json',
-            'User-Agent': 'data.world-py'
+            'User-Agent': 'data.world-py/2.0'
         }
+        self._session = requests.Session()
+        self._session.headers.update(default_headers)
+
+        self._session.mount(self._api_url, BackoffAdapter(HTTPAdapter()))
+
+        self.projects = ProjectsApi(self._api_url + 'projects/', self._session)
 
     def connection_check(self):
         """Verify network connectivity

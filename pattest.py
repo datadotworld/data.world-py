@@ -2,13 +2,16 @@ import datadotworld as dw
 
 api_client = dw.api_client()
 
-api_client.create_project('patrickzhang', title="project", visibility="OPEN")
+api_client.projects.create_project('patrickzhang', title="myproject", visibility="OPEN")
 
-intro_project = api_client.get_project('patrickzhang/project')
+resp = api_client.projects.get_project('patrickzhang', 'myproject')
 
-api_client.update_project('patrickzhang/project', title="changed it")
-api_client.replace_project('patrickzhang/project', title="replaced", visibility="OPEN")
+resp = api_client.projects.patch_project('patrickzhang', 'myproject', title="chjjjjjit")
 
-api_client.delete_project('patrickzhang/' 'project')
+api_client.projects.replace_project('patrickzhang', 'myproject', title="replaced", visibility="OPEN")
 
-api_client.remove_linked_dataset('patrickzhang/python', 'patrickzhang/asd')
+api_client.projects.delete_project('patrickzhang', 'myproject')
+
+api_client.projects.add_linked_dataset('patrickzhang', 'python', 'patrickzhang', 'testing2')
+
+api_client.projects.remove_linked_dataset('patrickzhang', 'python', 'patrickzhang', 'testing2')

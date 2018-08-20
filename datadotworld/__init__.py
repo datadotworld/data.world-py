@@ -243,7 +243,7 @@ def api_client(profile='default', **kwargs):
     ...     'jonloyens/an-intro-to-dataworld-dataset').get('title')
     'An Intro to data.world Dataset'
     """
-    return _get_instance(profile, **kwargs).api_client
+    return _get_instance(profile, **kwargs).api_client.ApiClient
 
 
 if __name__ == "__main__":
