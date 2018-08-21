@@ -1,6 +1,0 @@
-{
-  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_create_project": true,
-  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_get_project[simple_key]": true,
-  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_get_project[url]": true,
-  "tests/datadotworld/models/test_project.py::TestProjects::test_create_project": true
-}
