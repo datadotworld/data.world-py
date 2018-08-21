@@ -2,7 +2,15 @@
 """
     data.world API
 
-    data.world is designed for data and the people who work with data.  From professional projects to open data, data.world helps you host and share your data, collaborate with your team, and capture context and conclusions as you work.   Using this API users are able to easily access data and manage their data projects regardless of language or tool of preference.  Check out our [documentation](https://dwapi.apidocs.io) for tips on how to get started, tutorials and to interact with the API right within your browser.
+    data.world is designed for data and the people who work with data.
+    From professional projects to open data, data.world helps you host 
+    and share your data, collaborate with your team, and capture context
+    and conclusions as you work. Using this API users are able to easily 
+    access data and manage their data projects regardless of language or
+    tool of preference. Check out our
+    [documentation] (https://dwapi.apidocs.io)
+    for tips on how to get started, tutorials and to interact with the API
+    right within your browser.
 
     OpenAPI spec version: 0.14.1
     Contact: help@data.world
@@ -40,7 +48,7 @@ class ApiClient(object):
 
         self._session.mount(self._api_url, BackoffAdapter(HTTPAdapter()))
 
-        self.projects = ProjectsApi(self._api_url + 'projects/', self._session)
+        self.projects = ProjectsApi(self._api_url+'projects/', self._session)
 
 
 class BackoffAdapter(BaseAdapter):

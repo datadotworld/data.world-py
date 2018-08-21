@@ -1,4 +1,4 @@
-from ._swagger.api_client import ApiClient
+from .api_client import ApiClient
 
 
 class ContentNegotiatingApiClient(ApiClient):
