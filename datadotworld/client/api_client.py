@@ -11,12 +11,6 @@
 
 from __future__ import absolute_import
 
-import os
-import re
-import json
-import mimetypes
-import tempfile
-import threading
 import backoff
 import requests 
 from datetime import date, datetime
@@ -52,19 +46,6 @@ class ApiClient(object):
         self._session.mount(self._api_url, BackoffAdapter(HTTPAdapter()))
 
         self.projects = ProjectsApi(self._api_url + 'projects/', self._session)
-
-    def connection_check(self):
-        """Verify network connectivity
-        Ensures that the client can communicate with data.world's API
-        """
-        with metrics.http_request_timer('user'):
-            try:
-                self._session.get(
-                    '{}/user'.format(self._api_url),
-                    timeout=(self._conn_timeout, self._read_timeout)
-                ).raise_for_status()
-            except RequestException as e:
-                raise convert_requests_exception(e)
 
     def append_stream(self, owner, dataset, stream, records):
         """Append records to a stream in a data.world dataset

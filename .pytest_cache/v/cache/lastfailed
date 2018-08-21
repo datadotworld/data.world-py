@@ -1,0 +1,9 @@
+{
+  "tests/datadotworld/client/test_client.py": true,
+  "tests/datadotworld/models/test_dataset.py": true,
+  "tests/datadotworld/models/test_query.py": true,
+  "tests/datadotworld/test_cli.py": true,
+  "tests/datadotworld/test_datadotworld.py": true,
+  "tests/datadotworld/test_files.py": true,
+  "tests/datadotworld/test_util.py": true
+}
