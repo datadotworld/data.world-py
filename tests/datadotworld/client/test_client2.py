@@ -49,48 +49,62 @@ class TestApiClient:
         client.projects = projects_api
         return client
 
-    def test_get_project(self, api_client, owner_id='agentid', project_id='projectid'):
+    def test_get_project(self, api_client, owner_id='agentid',
+                         project_id='projectid'):
         project = api_client.projects.get_project(owner_id, project_id)
         assert_that(project, has_entries(
             {'owner': equal_to('agentid'), 'id': equal_to('projectid')}))
 
     def test_create_project(self, api_client):
         create_request = {'title': 'Project', 'visibility': 'OPEN'}
-        project_key = api_client.projects.create_project('agentid', **create_request)
+        project_key = api_client.projects.create_project('agentid',
+                                                         **create_request)
         print("returned: ", project_key)
         assert_that(project_key, equal_to('https://data.world/agentid/projectid'))
 
-    def test_update_project(self, api_client, projects_api, owner_id='agentid', project_id='projectid'):
+    def test_update_project(self, api_client, projects_api,
+                            owner_id='agentid', project_id='projectid'):
         update_request = {'tags': ['tag1', 'tag2']}
-        api_client.projects.patch_project(owner_id, project_id, **update_request)
+        api_client.projects.patch_project(owner_id, project_id,
+                                          **update_request)
         assert_that(projects_api.patch_project,
                     called().times(1))
 
-    def test_replace_project(self, api_client, projects_api, owner_id='agentid', project_id='projectid'):
+    def test_replace_project(self, api_client, projects_api,
+                             owner_id='agentid', project_id='projectid'):
         replace_request = {'title': 'New Project', 'visibility': 'OPEN'}
-        api_client.projects.replace_project(owner_id, project_id, **replace_request)
+        api_client.projects.replace_project(owner_id, project_id,
+                                            **replace_request)
         assert_that(projects_api.replace_project,
                     called().times(1))
 
-    def test_add_linked_dataset(self, api_client, projects_api, owner_id='agentid', project_id='projectid',
-                                   linked_dataset_owner='agentid', linked_dataset_id='projectid'):
-        api_client.projects.add_linked_dataset(owner_id, project_id, linked_dataset_owner, linked_dataset_id)
+    def test_add_linked_dataset(self, api_client, projects_api,
+                                owner_id='agentid', project_id='projectid',
+                                linked_dataset_owner='agentid', linked_dataset_id='projectid'):
+        api_client.projects.add_linked_dataset(owner_id, project_id,
+                                               linked_dataset_owner,
+                                               linked_dataset_id)
         assert_that(projects_api.add_linked_dataset,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('projectid'),
                                                 equal_to('agentid'),
                                                 equal_to('datasetid')))
 
-    def test_remove_linked_dataset(self, api_client, projects_api, owner_id='agentid', project_id='projectid',
-                                   linked_dataset_owner='agentid', linked_dataset_id='projectid'):
-        api_client.projects.remove_linked_dataset(owner_id, project_id, linked_dataset_owner, linked_dataset_id)
+    def test_remove_linked_dataset(self, api_client, projects_api,
+                                   owner_id='agentid', project_id='projectid',
+                                   linked_dataset_owner='agentid',
+                                   linked_dataset_id='projectid'):
+        api_client.projects.remove_linked_dataset(owner_id, project_id,
+                                                  linked_dataset_owner,
+                                                  linked_dataset_id)
         assert_that(projects_api.remove_linked_dataset,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('projectid'),
                                                 equal_to('agentid'),
                                                 equal_to('datasetid')))
 
-    def test_delete_project(self, api_client, projects_api, owner_id='agentid', project_id='projectid'):
+    def test_delete_project(self, api_client, projects_api,
+                            owner_id='agentid', project_id='projectid'):
         api_client.projects.delete_project(owner_id, project_id)
         assert_that(projects_api.delete_project,
                     called().times(1).with_args(equal_to('agentid'),

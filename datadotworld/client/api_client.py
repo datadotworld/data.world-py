@@ -3,9 +3,9 @@
     data.world API
 
     data.world is designed for data and the people who work with data.
-    From professional projects to open data, data.world helps you host 
+    From professional projects to open data, data.world helps you host
     and share your data, collaborate with your team, and capture context
-    and conclusions as you work. Using this API users are able to easily 
+    and conclusions as you work. Using this API users are able to easily
     access data and manage their data projects regardless of language or
     tool of preference. Check out our
     [documentation] (https://dwapi.apidocs.io)

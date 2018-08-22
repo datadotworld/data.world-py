@@ -1,4 +1,4 @@
-from uplink import Consumer, get, post, patch, put, delete, Header, Path, Body, json, error_handler
+from uplink import Consumer, get, post, patch, put, delete, Body, json
 
 
 class ProjectsApi(Consumer):
@@ -19,7 +19,7 @@ class ProjectsApi(Consumer):
         '''Create a new project.
         :param owner_id: User or organization ID of the owner of the dataset
         :type owner_id: str
-        :kwargs is Body of 
+        :kwargs is Body of
         [https://apidocs.data.world/api/projects/createproject]
         '''
 
@@ -27,7 +27,7 @@ class ProjectsApi(Consumer):
     @patch("projects/{owner_id}/{project_id}")
     def patch_project(self, owner_id, project_id, **kwargs: Body):
         '''Update an existing project.
-        Only elements included in the request will be updated. 
+        Only elements included in the request will be updated.
         All omitted elements will remain untouched.
         :param owner_id: User or organization ID of the owner of the dataset
         :type owner_id: str
@@ -40,8 +40,8 @@ class ProjectsApi(Consumer):
     @json
     @put("projects/{owner_id}/{project_id}")
     def replace_project(self, owner_id, project_id, **kwargs: Body):
-        '''Create or replace a project with a given id. 
-        If a project exists with the same id, this call will reset 
+        '''Create or replace a project with a given id.
+        If a project exists with the same id, this call will reset
         such project redefining all its attributes.
         :param owner_id: User or organization ID of the owner of the dataset
         :type owner_id: str
@@ -54,7 +54,7 @@ class ProjectsApi(Consumer):
     @delete("projects/{owner_id}/{project_id}")
     def delete_project(self, owner_id, project_id):
         '''Delete a project and associated data.
-        This operation cannot be undone,but you may recreate the project
+        This operation cannot be undone, but you may recreate the project
         using the same id.
         :User must have admin auth token
         :param owner_id: User or organization ID of the owner of the dataset
@@ -64,14 +64,17 @@ class ProjectsApi(Consumer):
         '''
 
     @json
-    @put("projects/{owner_id}/{project_id}/linkedDatasets/{linked_dataset_owner}/{linked_dataset_id}")
-    def add_linked_dataset(self, owner_id, project_id, linked_dataset_owner, linked_dataset_id, **kwargs: Body):
+    @put("projects/{owner_id}/{project_id}/linkedDatasets/"
+         + "{linked_dataset_owner}/{linked_dataset_id}")
+    def add_linked_dataset(self, owner_id, project_id, linked_dataset_owner,
+                           linked_dataset_id, **kwargs: Body):
         """
-        Add Link dataset -> https://apidocs.data.world/api/projects/addlinkeddataset
+        https://apidocs.data.world/api/projects/addlinkeddataset
+        Add Link dataset
         :param callback function: The callback function
             for asynchronous request. (optional)
-        :param str owner: User name and unique identifier of the creator of a project. For example, in the URL: [https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs](https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs), government is the unique identifier of the owner. (required)
-        :param str id: Project unique identifier. For example, in the URL:[https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs](https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs), how-to-add-depth-to-your-data-with-the-us-census-acs is the unique identifier of the project. (required)
+        :param str owner: User name and unique identifier of the creator.
+        :param str id: Project unique identifier.
         :param str linked_dataset_owner: (required)
         :param str linked_dataset_id: (required)
         :return: SuccessMessage
@@ -79,23 +82,18 @@ class ProjectsApi(Consumer):
                  returns the request thread.
         """
     @json
-    @delete("projects/{owner_id}/{project_id}/linkedDatasets/{linked_dataset_owner}"
-            + "/{linked_dataset_id}")
+    @delete("projects/{owner_id}/{project_id}/linkedDatasets/"
+            + "{linked_dataset_owner}/{linked_dataset_id}")
     def remove_linked_dataset(self, owner_id, project_id,
                               linked_dataset_owner, linked_dataset_id,
                               **kwargs: Body):
         """
-        Remove Link dataset -> https://apidocs.data.world/api/projects/removelinkeddataset
+        https://apidocs.data.world/api/projects/removelinkeddataset
+        Remove Link dataset
         :param callback function: The callback function
             for asynchronous request. (optional)
-        :param str owner: User name and unique identifier of the creator of a project.
-        For example, in the URL:
-        [https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs],
-        government is the unique identifier of the owner. (required)
-        :param str id: Project unique identifier. For example, in the URL:
-        https://data.world/government/how-to-add-depth-to-your-data-with-the-us-census-acs
-        how-to-add-depth-to-your-data-with-the-us-census-acs is the unique identifier of the project. (required)
-
+        :param str owner: User name and unique identifier of the creator.
+        :param str id: Project unique identifier.
         :param str linked_dataset_owner: (required)
         :param str linked_dataset_id: (required)
         :return: SuccessMessage

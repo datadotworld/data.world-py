@@ -1,9 +1,0 @@
-{
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_add_linked_dataset": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_create_project": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_delete_project": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_get_project": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_remove_linked_dataset": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_replace_project": true,
-  "tests/datadotworld/client/test_client2.py::TestApiClient::()::test_update_project": true
-}

@@ -36,8 +36,8 @@ class RestApiClient(object):
         self._config = config
         self._protocol = 'https'
         self._download_host = 'download.data.world'
-        
         self.ApiClient = ApiClient(self._config.auth_token)
+
 
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by
@@ -74,6 +74,7 @@ class RestApiError(Exception):
 
     def __str__(self):
         return str(self.json() or self.cause)
+
 
 if __name__ == "__main__":
     import doctest

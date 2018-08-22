@@ -37,7 +37,10 @@ class ProjectSummaryResponse(object):
         'access_level': 'accessLevel'
     }
 
-    def __init__(self, title=None, objective=None, summary=None, license=None, tags=None, files=None, linked_datasets=None, visibility=None, status=None, owner=None, id=None, created=None, updated=None, access_level=None):
+    def __init__(self, title=None, objective=None, summary=None,
+                 license=None, tags=None, files=None, linked_datasets=None,
+                 visibility=None, status=None, owner=None, id=None,
+                 created=None, updated=None, access_level=None):
         self._title = None
         self._objective = None
         self._summary = None
@@ -202,8 +205,8 @@ class ProjectSummaryResponse(object):
     @linked_datasets.setter
     def linked_datasets(self, linked_datasets):
         """
-        Sets the linked_datasets of this ProjectSummaryResponse.
-        :param linked_datasets: The linked_datasets of this ProjectSummaryResponse.
+        Sets the linked_datasets of ProjectSummaryResponse
+        :param linked_datasets: The linked_datasets of ProjectSummaryResponse
         :type: list[LinkedDatasetSummaryResponse]
         """
 
@@ -226,7 +229,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if visibility is None:
-            raise ValueError("Invalid value for `visibility`, must not be `None`")
+            raise ValueError("Invalid value for `visibility`, "
+                             + "must not be `None`")
 
         self._visibility = visibility
 
@@ -234,7 +238,12 @@ class ProjectSummaryResponse(object):
     def status(self):
         """
         Gets the status of this ProjectSummaryResponse.
-        Processing status of project. This status can be checked periodically after changes are made to the project to determine the status of asynchronous processing.  * `NEW`: Just created. Not yet processed. * `INPROGRESS`: Currently being processed. * `LOADED`: Successfully processed. * `SYSTEMERROR`: Error state due to processing failure.
+        Processing status of project. This status can be checked periodically
+        after changes are made to the project to determine the status of
+        asynchronous processing.  * `NEW`: Just created. Not yet processed.
+        * `INPROGRESS`: Currently being processed.
+        * `LOADED`: Successfully processed.
+        * `SYSTEMERROR`: Error state due to processing failure.
         :return: The status of this ProjectSummaryResponse.
         :rtype: str
         """
@@ -244,12 +253,19 @@ class ProjectSummaryResponse(object):
     def status(self, status):
         """
         Sets the status of this ProjectSummaryResponse.
-        Processing status of project. This status can be checked periodically after changes are made to the project to determine the status of asynchronous processing.  * `NEW`: Just created. Not yet processed. * `INPROGRESS`: Currently being processed. * `LOADED`: Successfully processed. * `SYSTEMERROR`: Error state due to processing failure.
+        Processing status of project.
+        This status can be checked periodically after changes are made to the
+        project to determine the status of asynchronous processing.
+        * `NEW`: Just created. Not yet processed.
+        * `INPROGRESS`: Currently being processed.
+        * `LOADED`: Successfully processed.
+        * `SYSTEMERROR`: Error state due to processing failure.
         :param status: The status of this ProjectSummaryResponse.
         :type: str
         """
         if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")
+            raise ValueError("Invalid value for `status`, "
+                             + "must not be `None`")
 
         self._status = status
 
@@ -312,7 +328,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if created is None:
-            raise ValueError("Invalid value for `created`, must not be `None`")
+            raise ValueError("Invalid value for `created`, "
+                             + "must not be `None`")
 
         self._created = created
 
@@ -333,7 +350,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if updated is None:
-            raise ValueError("Invalid value for `updated`, must not be `None`")
+            raise ValueError("Invalid value for `updated`, "
+                             + "must not be `None`")
 
         self._updated = updated
 
@@ -354,7 +372,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if access_level is None:
-            raise ValueError("Invalid value for `access_level`, must not be `None`")
+            raise ValueError("Invalid value for `access_level`,"
+                             + "must not be `None`")
 
         self._access_level = access_level
 
