@@ -12,6 +12,7 @@ class ProjectsApi(Consumer):
         :type owner_id: str
         :param project_id: Unique identifier of dataset
         """
+        pass
 
     @args(Path, Body)
     @json
@@ -23,6 +24,7 @@ class ProjectsApi(Consumer):
         :kwargs is Body of
         [https://apidocs.data.world/api/projects/createproject]
         """
+        pass
 
     @args(Path, Path, Body)
     @json
@@ -38,6 +40,7 @@ class ProjectsApi(Consumer):
         :kwargs is Body of
         [https://apidocs.data.world/api/projects/patchproject]
         """
+        pass
 
     @args(Path, Path, Body)
     @json
@@ -53,6 +56,7 @@ class ProjectsApi(Consumer):
         :kwargs is Body of
         [https://apidocs.data.world/api/projects/replaceproject]
         """
+        pass
 
     @args(Path, Path)
     @delete("projects/{owner_id}/{project_id}")
@@ -66,6 +70,7 @@ class ProjectsApi(Consumer):
         :param project_id: Unique identifier of dataset
         :type dataset: str
         """
+        pass
 
     @args(Path, Path, Path, Path, Body)
     @json
@@ -86,6 +91,7 @@ class ProjectsApi(Consumer):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        pass
 
     @args(Path, Path, Path, Path, Body)
     @json
@@ -107,6 +113,7 @@ class ProjectsApi(Consumer):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        pass
 
     #
     # def execute_sql(self, owner_id, dataset_id, **kwargs):
