@@ -13,15 +13,15 @@ class ProjectsApi(Consumer):
         :type dataset: str
         '''
 
-    @json
-    @post("projects/{owner_id}")
-    def create_project(self, owner_id, **kwargs: Body):
-        '''Create a new project.
-        :param owner_id: User or organization ID of the owner of the dataset
-        :type owner_id: str
-        :kwargs is Body of
-        [https://apidocs.data.world/api/projects/createproject]
-        '''
+    # @json
+    # @post("projects/{owner_id}")
+    # def create_project(self, owner_id, **kwargs: Body):
+    #     '''Create a new project.
+    #     :param owner_id: User or organization ID of the owner of the dataset
+    #     :type owner_id: str
+    #     :kwargs is Body of
+    #     [https://apidocs.data.world/api/projects/createproject]
+    #     '''
 
     @json
     @patch("projects/{owner_id}/{project_id}")
