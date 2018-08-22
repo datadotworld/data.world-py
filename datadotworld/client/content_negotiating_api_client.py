@@ -10,7 +10,7 @@ class ContentNegotiatingApiClient(ApiClient):
         self.user_agent = user_agent
         self.default_mimetype_header_accept = default_mimetype_header_accept
 
-    def select_header_accept(self,  accepts):
+    def select_header_accept(self, accepts):
         if not accepts:
             return
         accepts = [x.lower() for x in accepts]

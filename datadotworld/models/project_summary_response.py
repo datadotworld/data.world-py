@@ -230,9 +230,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if visibility is None:
-            raise ValueError("Invalid value for `visibility`, "
-                             + "must not be `None`")
-
+            raise ValueError("Invalid value for `visibility`, " +
+                             "must not be `None`")
         self._visibility = visibility
 
     @property
@@ -265,9 +264,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if status is None:
-            raise ValueError("Invalid value for `status`, "
-                             + "must not be `None`")
-
+            raise ValueError("Invalid value for `status`, " +
+                             "must not be `None`")
         self._status = status
 
     @property
@@ -329,9 +327,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if created is None:
-            raise ValueError("Invalid value for `created`, "
-                             + "must not be `None`")
-
+            raise ValueError("Invalid value for `created`, " +
+                             "must not be `None`")
         self._created = created
 
     @property
@@ -351,9 +348,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if updated is None:
-            raise ValueError("Invalid value for `updated`, "
-                             + "must not be `None`")
-
+            raise ValueError("Invalid value for `updated`, " +
+                             "must not be `None`")
         self._updated = updated
 
     @property
@@ -373,9 +369,8 @@ class ProjectSummaryResponse(object):
         :type: str
         """
         if access_level is None:
-            raise ValueError("Invalid value for `access_level`,"
-                             + "must not be `None`")
-
+            raise ValueError("Invalid value for `access_level`," +
+                             "must not be `None`")
         self._access_level = access_level
 
     def to_dict(self):

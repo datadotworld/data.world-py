@@ -55,8 +55,8 @@ def _get_instance(profile, **kwargs):
             InlineConfig(kwargs.get('auth_token')),
             EnvConfig(),
             FileConfig()])
-                if profile == 'default'
-                else FileConfig(profile=profile))
+            if profile == 'default'
+            else FileConfig(profile=profile))
         instance = DataDotWorld(config=config_param)
         __instances[profile] = instance
     return instance
