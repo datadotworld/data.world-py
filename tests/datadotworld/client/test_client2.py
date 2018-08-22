@@ -25,7 +25,8 @@ from hamcrest import (equal_to, has_entries)
 
 from datadotworld.client.api_client import ApiClient
 from datadotworld.client.projects_api import ProjectsApi
-from datadotworld.models.project_summary_response import ProjectSummaryResponse
+from datadotworld.models.project_summary_response import \
+    ProjectSummaryResponse
 
 
 class TestApiClient:
@@ -59,7 +60,6 @@ class TestApiClient:
         create_request = {'title': 'Project', 'visibility': 'OPEN'}
         project_key = api_client.projects.create_project('agentid',
                                                          **create_request)
-        print("returned: ", project_key)
         assert_that(project_key, equal_to('https://data.world/agentid/projectid'))
 
     def test_update_project(self, api_client, projects_api,
@@ -80,7 +80,8 @@ class TestApiClient:
 
     def test_add_linked_dataset(self, api_client, projects_api,
                                 owner_id='agentid', project_id='projectid',
-                                linked_dataset_owner='agentid', linked_dataset_id='projectid'):
+                                linked_dataset_owner='agentid',
+                                linked_dataset_id='projectid'):
         api_client.projects.add_linked_dataset(owner_id, project_id,
                                                linked_dataset_owner,
                                                linked_dataset_id)

@@ -60,7 +60,8 @@
 #                                 access_level='ADMIN',
 #                                 is_project=False)
 #             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
-#                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
+#                 {}, 200,
+#                   {'Location':'https://data.world/agentid/datasetid'})
 #             return api
 #
 #     @pytest.fixture()
@@ -92,7 +93,8 @@
 #     def sparql_api(self, query_resp):
 #         with Spy(SparqlApi) as api:
 #             api.sparql_post = \
-#                 lambda o, d, q, sparql_api_mock, _preload_content: query_resp
+#                 lambda o, d, q, sparql_api_mock,
+# _preload_content: query_resp
 #             return api
 #
 #     @pytest.fixture()
@@ -107,17 +109,19 @@
 #                                             records=[])
 #             api.fetch_datasets = lambda: PaginatedDatasetResults(count=1,
 #                                                                  records=[])
-#             api.fetch_contributing_datasets = lambda: PaginatedDatasetResults(
+#             api.fetch_contributing_datasets = lambda:
+# PaginatedDatasetResults(
 #                                                 count=1,
 #                                                 records=[])
-#             api.fetch_contributing_projects = lambda: PaginatedProjectResults(
+#             api.fetch_contributing_projects = lambda:
+# PaginatedProjectResults(
 #                                                 count=1,
 #                                                 records=[])
 #             api.fetch_liked_projects = lambda: PaginatedProjectResults(
 #                                             count=1,
 #                                             records=[])
-#             api.fetch_projects = lambda: PaginatedProjectResults(count=1,
-#                                                                  records=[])
+#             api.fetch_projects = lambda: \
+#               PaginatedProjectResults(count=1, records=[])
 #             return api
 #
 #     @pytest.fixture()
@@ -139,7 +143,8 @@
 #                                 updated='2018-02-01T01:03:28.211Z',
 #                                 access_level='ADMIN')
 #             api.create_project = lambda o, **kwargs: (
-#                 {}, 200, {'Location': 'https://data.world/agentid/projectid'})
+#                 {}, 200, {'Location': 'https://data.world/agentid/'
+#                               +'projectid'})
 #             return api
 #
 #     @pytest.fixture()
@@ -153,7 +158,8 @@
 #                                 created='2018-02-01T01:03:26.879Z',
 #                                 updated='2018-02-01T01:03:28.211Z')
 #             api.create_insight_with_http_info = lambda o, d, **kwargs: (
-#                 {}, 200, {'Location': 'https://data.world/agentid/projectid'})
+#                 {}, 200, {'Location': 'https://data.world/agentid/'
+#   + 'projectid'})
 #             return api
 #
 #     @pytest.fixture()
@@ -189,8 +195,8 @@
 #         api_client.update_dataset(dataset_key, **patch_request)
 #         assert_that(datasets_api.patch_dataset,
 #                     called().times(1).with_args(equal_to('agentid'),
-#                                                 equal_to('datasetid'),
-#                                                 has_properties(patch_request)))
+#                                             equal_to('datasetid'),
+#                                             has_properties(patch_request)))
 #
 #     def test_replace_dataset(self, api_client, datasets_api, dataset_key):
 #         replace_request = {'title': 'Dataset', 'visibility': 'OPEN'}
@@ -283,14 +289,14 @@
 #             assert_that(datapackage, equal_to(
 #                 path.join(config.cache_dir, 'datapackage.json')))
 #             assert_that(path.isfile(datapackage),
-#                         described_as('%0 is a file', is_(True), datapackage))
+#                        described_as('%0 is a file', is_(True), datapackage))
 #
 #             data_subdirectory = path.join(config.cache_dir, 'data')
 #             assert_that(path.isdir(data_subdirectory),
 #                         described_as('%0 is a directory', is_(True),
 #                                      data_subdirectory))
 #             assert_that(os.listdir(config.tmp_dir),
-#                         described_as('%0 is empty', empty(), config.tmp_dir))
+#                        described_as('%0 is empty', empty(), config.tmp_dir))
 #
 #     def test_download_datapackage_error(self, helpers, config,
 #                                         test_datapackages_path, api_client,
@@ -414,8 +420,8 @@
 #                                                 equal_to('agentid'),
 #                                                 equal_to('datasetid')))
 #
-#     def test_remove_linked_dataset(self, api_client, projects_api, project_key,
-#                                    dataset_key):
+#     def test_remove_linked_dataset(self, api_client, projects_api,
+#                                    project_key, dataset_key):
 #         api_client.remove_linked_dataset(project_key, dataset_key)
 #         assert_that(projects_api.remove_linked_dataset,
 #                     called().times(1).with_args(equal_to('agentid'),
@@ -443,7 +449,8 @@
 #                                                 equal_to('projectid')))
 #
 #     def test_create_insight(self, api_client, project_key):
-#         create_request = {'title': 'Insight', 'image_url': 'https://image.url'}
+#         create_request = {'title': 'Insight', 'image_url':
+# 'https://image.url'}
 #         new_insight = api_client.create_insight(project_key,
 #                                                 **create_request)
 #         assert_that(new_insight,

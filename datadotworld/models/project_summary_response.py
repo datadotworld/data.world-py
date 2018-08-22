@@ -58,17 +58,17 @@ class ProjectSummaryResponse(object):
 
         self.title = title
         if objective is not None:
-          self.objective = objective
+            self.objective = objective
         if summary is not None:
-          self.summary = summary
+            self.summary = summary
         if license is not None:
-          self.license = license
+            self.license = license
         if tags is not None:
-          self.tags = tags
+            self.tags = tags
         if files is not None:
-          self.files = files
+            self.files = files
         if linked_datasets is not None:
-          self.linked_datasets = linked_datasets
+            self.linked_datasets = linked_datasets
         self.visibility = visibility
         self.status = status
         self.owner = owner

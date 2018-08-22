@@ -20,7 +20,7 @@
 from __future__ import absolute_import
 from time import sleep
 import backoff
-import requests 
+import requests
 from requests.adapters import HTTPAdapter, BaseAdapter
 from .projects_api import ProjectsApi
 
