@@ -2,7 +2,8 @@ import datadotworld as dw
 
 api_client = dw.api_client()
 
-api_client.projects.create_project('patrickzhang', title="myproject", visibility="OPEN")
+test = api_client.projects.create_project('patrickzhang', title="myproject", visibility="OPEN")
+print(test.headers)
 
 resp = api_client.projects.get_project('patrickzhang', 'myproject')
 

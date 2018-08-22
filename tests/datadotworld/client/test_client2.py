@@ -19,19 +19,13 @@
 
 from __future__ import absolute_import
 
-import os
-from os import path
-
 import pytest
-import responses
-from doublex import assert_that, Spy, called, Mock
-from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
-                      empty, raises, calling, has_key)
+from doublex import assert_that, Spy, called
+from hamcrest import (equal_to, has_entries)
 
-from datadotworld import client
 from datadotworld.client.api_client import ApiClient
-from datadotworld.client.api import RestApiClient, RestApiError
 from datadotworld.client.projects_api import ProjectsApi
+from datadotworld.models.project_summary_response import ProjectSummaryResponse
 
 
 class TestApiClient:
@@ -47,13 +41,12 @@ class TestApiClient:
                                 created='2018-02-01T01:03:26.879Z',
                                 updated='2018-02-01T01:03:28.211Z',
                                 access_level='ADMIN')
-            api.create_project = lambda o, **kwargs: (
-                {}, 200, {'Location': 'https://data.world/agentid/projectid'})
             return api
 
     @pytest.fixture()
-    def api_client(self, api_token='just_a_test_token'):
+    def api_client(self, projects_api, api_token='just_a_test_token'):
         client = ApiClient(api_token)
+        client.projects = projects_api
         return client
 
     def test_get_project(self, api_client, owner_id='agentid', project_id='projectid'):
@@ -64,8 +57,8 @@ class TestApiClient:
     def test_create_project(self, api_client):
         create_request = {'title': 'Project', 'visibility': 'OPEN'}
         project_key = api_client.projects.create_project('agentid', **create_request)
-        assert_that(project_key,
-                    equal_to('https://data.world/agentid/projectid'))
+        print("returned: ", project_key)
+        assert_that(project_key, equal_to('https://data.world/agentid/projectid'))
 
     def test_update_project(self, api_client, projects_api, owner_id='agentid', project_id='projectid'):
         update_request = {'tags': ['tag1', 'tag2']}

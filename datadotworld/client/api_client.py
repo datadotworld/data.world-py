@@ -18,7 +18,7 @@
 """
 
 from __future__ import absolute_import
-
+from time import sleep
 import backoff
 import requests 
 from requests.adapters import HTTPAdapter, BaseAdapter
@@ -48,7 +48,7 @@ class ApiClient(object):
 
         self._session.mount(self._api_url, BackoffAdapter(HTTPAdapter()))
 
-        self.projects = ProjectsApi(self._api_url+'projects/', self._session)
+        self.projects = ProjectsApi(self._api_url, self._session)
 
 
 class BackoffAdapter(BaseAdapter):
