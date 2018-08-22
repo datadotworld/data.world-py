@@ -65,6 +65,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
+        'backoff>=1.3.0,<2.0a',
         'certifi>=2017.04.17',
         'click>=6.0,<7.0a',
         'configparser>=3.5.0,<4.0a',
@@ -75,7 +76,8 @@ setup(
         'six>=1.5.0,<2.0a',
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
-        'flake8>=2.6.0,<3.4.1a',
+        'flake8>=2.6.0',
+        'uplink>=0.5.5'
     ],
     setup_requires=[
         'pytest-runner>=2.11,<3.0a',
