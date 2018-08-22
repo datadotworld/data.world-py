@@ -1,4 +1,4 @@
-from uplink import Consumer, get, post, patch, put, delete, Body, json
+from uplink import Consumer, get, post, patch, put, delete, Body, json, args, Path
 
 
 class ProjectsApi(Consumer):
@@ -12,9 +12,10 @@ class ProjectsApi(Consumer):
         :param project_id: Unique identifier of dataset
         """
 
+    @args(Path, Body)
     @json
     @post("projects/{owner_id}")
-    def create_project(self, owner_id, **kwargs: Body):
+    def create_project(self, owner_id, **kwargs):
         """Create a new project.
         :param owner_id: User or organization ID of the owner of the dataset
         :type owner_id: str
@@ -22,9 +23,10 @@ class ProjectsApi(Consumer):
         [https://apidocs.data.world/api/projects/createproject]
         """
 
+    @args(Path, Path, Body)
     @json
     @patch("projects/{owner_id}/{project_id}")
-    def patch_project(self, owner_id, project_id, **kwargs: Body):
+    def patch_project(self, owner_id, project_id, **kwargs):
         """Update an existing project.
         Only elements included in the request will be updated.
         All omitted elements will remain untouched.
@@ -36,9 +38,10 @@ class ProjectsApi(Consumer):
         [https://apidocs.data.world/api/projects/patchproject]
         """
 
+    @args(Path, Path, Body)
     @json
     @put("projects/{owner_id}/{project_id}")
-    def replace_project(self, owner_id, project_id, **kwargs: Body):
+    def replace_project(self, owner_id, project_id, **kwargs):
         """Create or replace a project with a given id.
         If a project exists with the same id, this call will reset
         such project redefining all its attributes.
@@ -50,6 +53,7 @@ class ProjectsApi(Consumer):
         [https://apidocs.data.world/api/projects/replaceproject]
         """
 
+    @args(Path, Path)
     @delete("projects/{owner_id}/{project_id}")
     def delete_project(self, owner_id, project_id):
         """Delete a project and associated data.
@@ -62,11 +66,12 @@ class ProjectsApi(Consumer):
         :type dataset: str
         """
 
+    @args(Path, Path, Path, Path, Body)
     @json
     @put("projects/{owner_id}/{project_id}/linkedDatasets/" +
          "{linked_dataset_owner}/{linked_dataset_id}")
     def add_linked_dataset(self, owner_id, project_id, linked_dataset_owner,
-                           linked_dataset_id, **kwargs: Body):
+                           linked_dataset_id, **kwargs):
         """
         https://apidocs.data.world/api/projects/addlinkeddataset
         Add Link dataset
@@ -80,12 +85,14 @@ class ProjectsApi(Consumer):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+
+    @args(Path, Path, Path, Path, Body)
     @json
     @delete("projects/{owner_id}/{project_id}/linkedDatasets/" +
             "{linked_dataset_owner}/{linked_dataset_id}")
     def remove_linked_dataset(self, owner_id, project_id,
                               linked_dataset_owner, linked_dataset_id,
-                              **kwargs: Body):
+                              **kwargs):
         """
         https://apidocs.data.world/api/projects/removelinkeddataset
         Remove Link dataset
