@@ -60,7 +60,8 @@ class TestApiClient:
         create_request = {'title': 'Project', 'visibility': 'OPEN'}
         project_key = api_client.projects.create_project('agentid',
                                                          **create_request)
-        assert_that(project_key, equal_to('https://data.world/agentid/projectid'))
+        assert_that(project_key, equal_to('https://data.world/'
+                                          + 'agentid/projectid'))
 
     def test_update_project(self, api_client, projects_api,
                             owner_id='agentid', project_id='projectid'):
@@ -110,4 +111,3 @@ class TestApiClient:
         assert_that(projects_api.delete_project,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('projectid')))
-

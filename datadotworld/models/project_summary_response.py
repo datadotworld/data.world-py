@@ -1,6 +1,7 @@
 from pprint import pformat
 from six import iteritems
 
+
 class ProjectSummaryResponse(object):
 
     swagger_types = {

@@ -104,9 +104,11 @@
 #             def query_endpoint(_):
 #                 return 200, {}, json.dumps(query_response_json)
 #
-#             rsps.add_callback(rsps.GET, '{}?query={}'.format(endpoint, query),
+#             rsps.add_callback(rsps.GET,
+#                               '{}?query={}'.format(endpoint, query),
 #                               content_type='text/csv',
-#                               callback=query_endpoint, match_querystring=True)
+#                               callback=query_endpoint,
+#                               match_querystring=True)
 #
 #             result = dw.query(dataset_key, query, query_type=type)
 #             assert_that(result.raw_data, equal_to(query_response_json))

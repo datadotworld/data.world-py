@@ -25,8 +25,8 @@
 # import pytest
 # import responses
 # from doublex import assert_that, Spy, called, Mock
-# from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
-#                       empty, raises, calling, has_key)
+# from hamcrest import (equal_to, has_entries, has_properties, is_,
+#                       described_as, empty, raises, calling, has_key)
 #
 # from datadotworld import client
 #
