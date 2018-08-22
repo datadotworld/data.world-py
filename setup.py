@@ -77,6 +77,7 @@ setup(
         'tabulator<=1.4.1',
         'urllib3>=1.15,<2.0a',
         'flake8>=2.6.0,<3.4.1a',
+        'uplink>=0.5.5'
     ],
     setup_requires=[
         'pytest-runner>=2.11,<3.0a',
