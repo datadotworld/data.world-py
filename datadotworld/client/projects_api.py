@@ -1,4 +1,5 @@
-from uplink import Consumer, get, post, patch, put, delete, Body, json, args, Path
+from uplink import Consumer, get, post, patch, put, delete, Body,\
+    json, args, Path
 
 
 class ProjectsApi(Consumer):
