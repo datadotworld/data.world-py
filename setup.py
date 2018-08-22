@@ -65,6 +65,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
+        'backoff>=1.3.0,<2.0a',
         'certifi>=2017.04.17',
         'click>=6.0,<7.0a',
         'configparser>=3.5.0,<4.0a',
