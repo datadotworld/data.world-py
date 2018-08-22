@@ -8,6 +8,7 @@ build
 dist
 docs/_build
 .DS_Store
+.pytest_cache
 
 # PyCharm files
 *.iml
