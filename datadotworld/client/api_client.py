@@ -23,6 +23,8 @@ import backoff
 import requests
 from requests.adapters import HTTPAdapter, BaseAdapter
 from .projects_api import ProjectsApi
+from .datasets_api import DatasetsApi
+from .insights_api import InsightsApi
 
 MAX_TRIES = 10
 
@@ -49,7 +51,8 @@ class ApiClient(object):
         self._session.mount(self._api_url, BackoffAdapter(HTTPAdapter()))
 
         self.projects = ProjectsApi(self._api_url, self._session)
-
+        self.datasets = DatasetsApi(self._api_url, self._session)
+        self.insights = InsightsApi(self._api_url, self._session)
 
 class BackoffAdapter(BaseAdapter):
     def __init__(self, delegate):

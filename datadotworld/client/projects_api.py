@@ -115,14 +115,3 @@ class ProjectsApi(Consumer):
         """
         pass
 
-    #
-    # def execute_sql(self, owner_id, dataset_id, **kwargs):
-    #     preparedRequest = // set request up
-    #     return QueryRequest(preparedRequest)
-    #
-    # class QueryRequest(object):
-    #     def to_csv(self):
-    #         preparedRequest.headers['Accept'] = 'text/csv'
-    #         return preparedRequest.send()
-    #
-    #     def to_json(self):
