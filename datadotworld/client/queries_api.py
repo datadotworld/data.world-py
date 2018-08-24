@@ -1,5 +1,5 @@
 from uplink import Consumer, get, post, patch, put, delete, Body,\
-    json, args, Path
+    json, args, Path, Header
 
 class QueriesApi(Consumer):
     @args(Path, Path, Body)
@@ -38,3 +38,34 @@ class QueriesApi(Consumer):
         :type str
         """
         pass
+
+    def execute_sql(self, query_id, accept_type, **kwargs):
+
+
+
+class QueryResult(object):
+    def to_csv(self):
+        preparedRequest.headers['Accept'] = 'text/csv'
+        return preparedRequest.send()
+
+    def to_json(self):
+        preparedRequest.headers['Accept'] = 'application/json'
+
+    def to_jsonl(self):
+        preparedRequest.headers['Accept'] = 'application/json-l'
+
+    def to_xndjson(self):
+        preparedRequest.headers['Accept'] = 'application/x-ndjson'
+
+#
+# def execute_sql(self, owner_id, dataset_id, **kwargs):
+#     preparedRequest = // set request up
+#     return QueryRequest(preparedRequest)
+#
+# class QueryRequest(object):
+#     def to_csv(self):
+#         preparedRequest.headers['Accept'] = 'text/csv'
+#         return preparedRequest.send()
+#
+#     def to_json(self):
+
