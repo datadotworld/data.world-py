@@ -52,3 +52,10 @@ api_client.insights.update_insight('patrickzhang', 'python', 'afd504ba-f709-4960
                           title='updated new looool', description='updated')
 
 api_client.insights.delete_insight('patrickzhang', 'python', '732246c0-8bdb-4903-846d-c87b1e231a37')
+
+
+# ------------------------------
+# Users
+
+test = api_client.users.get_user_data()
+print(test.text)

@@ -25,6 +25,7 @@ from requests.adapters import HTTPAdapter, BaseAdapter
 from .projects_api import ProjectsApi
 from .datasets_api import DatasetsApi
 from .insights_api import InsightsApi
+from .users_api import UsersApi
 
 MAX_TRIES = 10
 
@@ -53,6 +54,7 @@ class ApiClient(object):
         self.projects = ProjectsApi(self._api_url, self._session)
         self.datasets = DatasetsApi(self._api_url, self._session)
         self.insights = InsightsApi(self._api_url, self._session)
+        self.users = UsersApi(self._api_url, self._session)
 
 class BackoffAdapter(BaseAdapter):
     def __init__(self, delegate):
