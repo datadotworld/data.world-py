@@ -26,7 +26,7 @@ from threading import Thread
 import requests
 from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.client.api import RestApiError
-
+from datadotworld.hosts import API_HOST, QUERY_HOST
 
 class RemoteFile:
     """ """
@@ -68,8 +68,8 @@ class RemoteFile:
             whether to decode textual responses as unicode when returning
             streamed lines in 'r' mode
         """
-        self._api_host = "https://api.data.world/v0"
-        self._query_host = "https://query.data.world"
+        self._api_host = "{}/v0".format(API_HOST)
+        self._query_host = QUERY_HOST
         self._config = config
         self._dataset_key = dataset_key
         self._file_name = file_name
