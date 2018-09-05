@@ -1,0 +1,14 @@
+{
+  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_create_project": true,
+  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_get_project[simple_key]": true,
+  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_get_project[url]": true,
+  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_update_project[simple_key]": true,
+  "tests/datadotworld/client/test_client.py::TestApiClient::()::test_update_project[url]": true,
+  "tests/datadotworld/models/test_dataset.py::TestLocalDataset::()::test_tables": true,
+  "tests/datadotworld/models/test_project.py::MyTest::test": true,
+  "tests/datadotworld/models/test_project.py::MyTest::test_create_project": true,
+  "tests/datadotworld/models/test_project.py::MyTest::test_get_project": true,
+  "tests/datadotworld/models/test_project.py::MyTest::test_toplevel_get_project": true,
+  "tests/datadotworld/models/test_project.py::MyTest::test_valid_get_project": true,
+  "tests/datadotworld/models/test_project.py::TestProjects::test_create_project": true
+}
