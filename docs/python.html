@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+
+    <title>data.world and Python</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i" rel="stylesheet">
+  </head>
+  <body style="color:#333D49;">
+<!--jumbotron header-->
+    <div class="header" style="background:#333D49; max-height:150px;">
+      
+      <div class="container p-responsive py-6 py-lg-10 text-center" style="color:#fff;">
+        <img src="dw+python_light.png" class="mb-3 mb-sm-5 col-6 col-sm-12" style="max-width:550px;">
+      </div>
+
+    </div>
+<!--first intro-->
+  <div class="container align-items-center text-center form-group align-items-center" style="padding-bottom:1em;padding-top:4em;">
+    <h1 style="font-weight:400"> You've enabled Python, now what?</h1>
+            <p class="h5" style="font-weight:300"> The data.world python package makes it easy to download datasets, run queries, and upload data all using data.world's REST API.  
+            </p>
+            
+  </div>
+<!--first section-->
+  <div class="container" style="padding-bottom:1em;padding-top:2em;">
+  <div class="row">
+  <div class="col">
+    <h2 style="font-weight:400"> Install and configure data.world using pip.</h2>
+            <p class="h5" style="font-weight:300; padding-bottom:1em;"> You'll use Python's package manager, pip, to install the data.world package:</p>
+            <ol style="list-style-position: inside;">
+              <li style="padding-bottom:1em; font-weight:300; padding-top:1em;">Using the command line, install the data.world package from PyPI.
+              </li>
+              <div class="alert alert-light border col-sm-5" style="background-color:#f2f2f2">
+                     <code>$ pip install datadotworld[pandas]</code>
+              </div>
+              <div class="col-sm-10" style="padding-top:1em;">
+                  <img src="python_install-dw.png" class="img-fluid rounded" style="box-shadow:7px 7px 30px grey;">
+              </div>
+              <li style="padding-bottom:1em; font-weight:300; padding-top:3em;">Configure the package via the command line.
+              </li>
+              <div class="alert alert-light border col-sm-5" style="background-color:#f2f2f2">
+                     <code>$ dw configure</code>
+              </div>
+              <div class="alert alert-info col-sm-10" style="font-weight:300; font-size:90%">
+                     <b>Note: </b>You will need to have your data.world API token, which you can get from data.world's <a href="https://data.world/settings/advanced" target="_blank">advanced settings</a>.
+              </div>
+              <div class="col-sm-10" style="padding-top:1em;">
+                  <img src="python_config.png" class="img-fluid rounded" style="box-shadow:7px 7px 30px grey;">
+              </div>
+              
+            </ol>
+            
+            
+</div>            
+ </div>
+ </div>
+<!--second section-->
+  <div class="container" style="padding-bottom:1em;padding-top:2em;">
+    <div class="row">
+        <div class="col">
+            <h2 style="font-weight:400"> Import data.world and begin using python.</h2>
+              <p class="h5" style="font-weight:300"> Using a python shell (like <a href="https://ipython.readthedocs.io/en/stable/interactive/tutorial.html" target="_blank">IPython</a>), you can use the data.world Python package to run queries, import datasets, upload data, and more:</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+        <div class="col">
+            <ol style="list-style-position: inside;">
+              <li style="font-weight:300; padding-top:2em; padding-bottom:1em;">Import the data.world package. <i>You can always set a variable like <code>dw</code> for easier reference</i>
+              </li>
+              <div class="alert alert-light border col-sm-5" style="margin-top:1em; color:#333D49; background-color:#f2f2f2">
+                     Without a variable: <code>import datadotworld</code><br>
+                     Using a variable: <code>import datadotworld as dw</code>
+              </div>
+              <li style="font-weight:300; padding-top:1em; padding-bottom:1em;">Load a dataset using <code>var = datadotworld.load_dataset</code> and the dataset ID. 
+              </li>
+              <div class="alert alert-secondary col-sm-7" style="margin-top:1em; font-weight:300; background-color:#f2f2f2">
+                  <b>Example:</b><i> Note that if you've set a variable like <code>dw</code> in your import, you'll use that instead of <code>datadotworld</code>.</i>
+                      <div class="alert alert-light border" style="margin-top:1em;">
+                        <code style="font-weight:300;">
+                           intro_dw = dw.load_dataset('jonloyens/an-intro-to-dataworld-dataset')
+                        </code>
+                      </div>
+                    </div>
+              <div class="row">
+              <div class="col-sm-10" style="padding-top:1em;">
+                  <img src="python_dataset.png" class="img-fluid rounded" style="box-shadow:7px 7px 30px grey;">
+              </div>
+              </div>  
+              <li style="font-weight:300; padding-top:2em;">Start working with your data.
+              </li>
+            </ol>
+</div>  
+</div> 
+</div>   
+<!--what's next-->
+<hr style="margin-top:2em;">
+<div class="container" style="padding-bottom:1em;">
+<div class="row">
+<div class="col">
+
+    <h2 style="font-weight:400; padding-top:1em;"> What next?</h2>
+            <p class="h5" style="font-weight:300"> Here are some things you can do with Python and data.world:</p>
+            <div class="alert alert-info col-sm-9" style="font-weight:300;">
+                 <i> Note that if you've set a variable like <code>dw</code> in your import, you'll always use that instead of <code>datadotworld</code>.</i>
+              </div>
+            <ul style="list-style-position: inside; padding-top:1em;">
+              <li style="padding-bottom:1em; font-weight:300;">Use the <b>Help</b> function to get inline assistance on available functions.
+              </li>
+              
+             
+                      <div class="alert alert-light border col-sm-9" style="font-weight:300; color:#333D49; background-color:#f2f2f2">
+                        <code>help(dw)</code>
+                      </div>
+            
+              <li style="padding-bottom:1em; padding-top:1em; font-weight:300;">
+              Query a dataset using the <code>var = datadotworld.query('dataset_ID', 'query')</code> function.
+              </li>
+                  <div class="alert alert-light border col-sm-9" style="font-weight:300; color:#333D49; background-color:#f2f2f2">
+                         <code>query = dw.query('jonloyens/an-intro-to-dataworld-dataset', 'SELECT * FROM DataDotWorldBBallStats')</code>
+                  </div>
+              <li style="padding-bottom:1em; padding-top:1em; font-weight:300;">
+              Use the data.world API client to complete a variety of functions, like uploading files to a dataset.
+              </li>
+                  <div class="alert alert-light border col-sm-9" style="font-weight:300; color:#333D49; background-color:#f2f2f2">
+                         <code>
+                         intro_dw.to_csv('dataset_intro.csv',index=False)<br>
+                         client = dw.api_client()<br>
+                         client.upload_files('jonloyens/an-intro-to-dataworld-dataset',files='dataset_intro.csv')</code>
+                  </div>
+             
+            </ul>
+  </div> 
+  </div>
+  </div>     
+<!--footer-->
+<div class="jumbotron-fluid text-center align-items-center border-top" style="margin-top:1em; padding-top:2em; padding-bottom: 3em; background-color:#F2F2F2; color:#36454f">
+    <h4 style="font-weight:300"> Want to see more information on the data.world + Python Integration? <u><a href="https://meta.data.world/turbocharge-your-data-acquisition-using-the-data-world-python-library-5eb61fc8313e" style="color:#36454f; font-weight:600;" target="_blank">check it out here</a></u>.
+    </h4>
+</div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+  </body>
+</html>
