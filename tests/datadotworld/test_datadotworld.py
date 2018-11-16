@@ -203,6 +203,7 @@ class TestDataDotWorld:
                 w.close()
 
     @pytest.mark.usefixtures('existing_dataset')
+    @pytest.mark.filterwarnings('ignore::DeprecationWarning')
     def test_load_dataset_existing(self, api_client, dw, dataset_key):
         with warnings.catch_warnings(record=True) as w:
             dataset = dw.load_dataset(dataset_key)
@@ -211,6 +212,7 @@ class TestDataDotWorld:
         assert_that(dataset.raw_data, has_length(3))
 
     @pytest.mark.usefixtures('existing_dataset')
+    @pytest.mark.filterwarnings('ignore::DeprecationWarning')
     def test_load_dataset_existing_expired(self, monkeypatch, api_client, dw,
                                            dataset_key):
         monkeypatch.setattr(os.path, 'getmtime', lambda _: 1468195199)
