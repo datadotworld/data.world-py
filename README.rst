@@ -33,8 +33,8 @@ Configure
 
 This library requires a data.world API authentication token to work.
 
-Your authentication token can be obtained on data.world under
-`Settings > Advanced <https://data.world/settings/advanced>`_
+Your authentication token can be obtained on data.world once you enable Python under
+`Integrations > Python <https://data.world/integrations/python>`_
 
 To configure the library, run the following command::
 
