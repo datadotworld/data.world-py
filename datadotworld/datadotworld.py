@@ -19,11 +19,11 @@
 
 from __future__ import absolute_import
 
+import numbers
 import shutil
 from datetime import datetime
 from os import path
 from warnings import warn, filterwarnings
-import numbers
 
 import requests
 
@@ -160,7 +160,7 @@ class DataDotWorld(object):
         else:
             try:
                 dataset_info = self.api_client.get_dataset(dataset_key)
-            except RestApiError as e:
+            except RestApiError:
                 return LocalDataset(descriptor_file)
 
             last_modified = datetime.strptime(dataset_info['updated'],

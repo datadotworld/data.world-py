@@ -19,11 +19,10 @@
 
 from __future__ import absolute_import
 
+import collections
 import functools
 import re
 from collections import Mapping
-
-import collections
 
 DATASET_KEY_PATTERN = re.compile(
     '^(?:https?://[^/]+/)?([a-z0-9-]+)/([a-z0-9-]+)$')  # URLs and paths
