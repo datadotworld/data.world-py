@@ -104,7 +104,12 @@ class FileConfig(DefaultConfig):
                          if profile.lower() != configparser.DEFAULTSECT.lower()
                          else configparser.DEFAULTSECT)
 
-        self.configure_config_parser()
+    @property
+    def config_parser(self):
+        if self._config_parser is None:
+            self.configure_config_parser()
+
+        return self._config_parser
 
     def configure_config_parser(self):
         if not path.isdir(path.dirname(self._config_file_path)):
@@ -127,7 +132,7 @@ class FileConfig(DefaultConfig):
     @property
     def auth_token(self):
         self.__validate_config()
-        return self._config_parser.get(self._section, 'auth_token')
+        return self.config_parser.get(self._section, 'auth_token')
 
     @auth_token.setter
     def auth_token(self, auth_token):
@@ -137,22 +142,25 @@ class FileConfig(DefaultConfig):
 
         """
         if (self._section != configparser.DEFAULTSECT and
-                not self._config_parser.has_section(self._section)):
-            self._config_parser.add_section(self._section)
-        self._config_parser.set(self._section, 'auth_token', auth_token)
+                not self.config_parser.has_section(self._section)):
+            self.config_parser.add_section(self._section)
+        self.config_parser.set(self._section, 'auth_token', auth_token)
 
     def save(self):
         """Persist config changes"""
         with open(self._config_file_path, 'w') as file:
-            self._config_parser.write(file)
+            self.config_parser.write(file)
 
     def __validate_config(self):
+        config_parser = self.config_parser
+
         if not path.isfile(self._config_file_path):
             raise RuntimeError(
                 'Configuration file not found at {}.'
                 'To fix this issue, run dw configure'.format(
                     self._config_file_path))
-        if not self._config_parser.has_option(self._section, 'auth_token'):
+
+        if not config_parser.has_option(self._section, 'auth_token'):
             raise RuntimeError(
                 'The {0} profile is not properly configured. '
                 'To fix this issue, run dw -p {0} configure'.format(

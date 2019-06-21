@@ -191,6 +191,13 @@ class TestFileConfig:
         config_reloaded = FileConfig(config_file_path=config_file_path)
         assert_that(config_reloaded.auth_token, equal_to('newtoken'))
 
+    @pytest.mark.usefixtures('config_directory', 'default_config_file')
+    def test_invalid_config_file_path(self, config_file_path):
+        config = FileConfig(config_file_path='/foo/bar/baz/')
+
+        with pytest.raises(PermissionError):
+            config.configure_config_parser()
+
 
 class TestChainedConfig:
     @pytest.fixture()
