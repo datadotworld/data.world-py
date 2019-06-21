@@ -60,7 +60,7 @@ class TestDefaultConfig:
 
     def test_cache_dir(self):
         assert_that(DefaultConfig().cache_dir,
-                    equal_to(path.expanduser('~/.dw/cache')))
+                    equal_to(None))
 
     def test_tmp_dir(self):
         assert_that(DefaultConfig().tmp_dir,
@@ -75,7 +75,7 @@ class TestInlineConfig:
     def test_cache_dir(self):
         config = InlineConfig('inline_token')
         assert_that(config.cache_dir,
-                    equal_to(path.expanduser('~/.dw/cache')))
+                    equal_to(None))
 
     def test_tmp_dir(self):
         config = InlineConfig('inline_token')
@@ -197,6 +197,11 @@ class TestFileConfig:
 
         with pytest.raises(PermissionError):
             config.get_config_parser()
+
+    def test_cache_dir(self):
+        config = FileConfig()
+        assert_that(config.cache_dir,
+                    equal_to(path.expanduser('~/.dw/cache')))
 
 
 class TestChainedConfig:

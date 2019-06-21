@@ -45,7 +45,7 @@ class DefaultConfig(object):
     def __init__(self):
         self._auth_token = None
         self._tmp_dir = path.expanduser(tempfile.gettempdir())
-        self._cache_dir = path.expanduser('~/.dw/cache')
+        self._cache_dir = None
 
     @property
     def auth_token(self):
@@ -103,6 +103,8 @@ class FileConfig(DefaultConfig):
         self._section = (profile
                          if profile.lower() != configparser.DEFAULTSECT.lower()
                          else configparser.DEFAULTSECT)
+
+        self._cache_dir = path.expanduser('~/.dw/cache')
 
     @property
     def config_parser(self):
