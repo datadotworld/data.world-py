@@ -107,11 +107,12 @@ class FileConfig(DefaultConfig):
     @property
     def config_parser(self):
         if self._config_parser is None:
-            self.configure_config_parser()
+            self._config_parser = self.get_config_parser()
 
         return self._config_parser
 
-    def configure_config_parser(self):
+    def get_config_parser(self):
+        # FIXME this should probably be a pure function
         if not path.isdir(path.dirname(self._config_file_path)):
             os.makedirs(path.dirname(self._config_file_path))
 
@@ -120,14 +121,18 @@ class FileConfig(DefaultConfig):
 
         if path.isfile(self._config_file_path):
             self._config_parser.read_file(open(self._config_file_path))
+
             if self.__migrate_invalid_defaults(self._config_parser) > 0:
                 self.save()
+
         elif path.isfile(self.legacy_file_path):
             self._config_parser = self.__migrate_config(self.legacy_file_path)
             self.save()
 
         if not path.isdir(path.dirname(self.cache_dir)):
             os.makedirs(path.dirname(self.cache_dir))
+
+        return self._config_parser
 
     @property
     def auth_token(self):
@@ -237,7 +242,6 @@ class ChainedConfig(DefaultConfig):
         """
         for i in seq:
             obj = supplier_func(i)
-            print('{} => {}'.format(i, obj))
             if obj is not None:
                 return obj
 

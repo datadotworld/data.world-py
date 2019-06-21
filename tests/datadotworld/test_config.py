@@ -196,7 +196,7 @@ class TestFileConfig:
         config = FileConfig(config_file_path='/foo/bar/baz/')
 
         with pytest.raises(PermissionError):
-            config.configure_config_parser()
+            config.get_config_parser()
 
 
 class TestChainedConfig:
