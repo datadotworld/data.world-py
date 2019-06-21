@@ -237,6 +237,7 @@ class ChainedConfig(DefaultConfig):
         """
         for i in seq:
             obj = supplier_func(i)
+            print('{} => {}'.format(i, obj))
             if obj is not None:
                 return obj
 
