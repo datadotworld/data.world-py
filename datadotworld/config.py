@@ -88,6 +88,7 @@ class FileConfig(DefaultConfig):
     :param profile: Name of configuration profile.
     :type profile: str
     """
+    _config_parser = None
 
     def __init__(self, profile='default', **kwargs):
         super(FileConfig, self).__init__()
@@ -95,9 +96,17 @@ class FileConfig(DefaultConfig):
         # Overrides, for testing
         self._config_file_path = path.expanduser(
             kwargs.get('config_file_path', '~/.dw/config'))
-        legacy_file_path = path.expanduser(
+        self.legacy_file_path = path.expanduser(
             kwargs.get('legacy_file_path', '~/.data.world'))
 
+        self._profile = profile
+        self._section = (profile
+                         if profile.lower() != configparser.DEFAULTSECT.lower()
+                         else configparser.DEFAULTSECT)
+
+        self.configure_config_parser()
+
+    def configure_config_parser(self):
         if not path.isdir(path.dirname(self._config_file_path)):
             os.makedirs(path.dirname(self._config_file_path))
 
@@ -108,14 +117,9 @@ class FileConfig(DefaultConfig):
             self._config_parser.read_file(open(self._config_file_path))
             if self.__migrate_invalid_defaults(self._config_parser) > 0:
                 self.save()
-        elif path.isfile(legacy_file_path):
-            self._config_parser = self.__migrate_config(legacy_file_path)
+        elif path.isfile(self.legacy_file_path):
+            self._config_parser = self.__migrate_config(self.legacy_file_path)
             self.save()
-
-        self._profile = profile
-        self._section = (profile
-                         if profile.lower() != configparser.DEFAULTSECT.lower()
-                         else configparser.DEFAULTSECT)
 
         if not path.isdir(path.dirname(self.cache_dir)):
             os.makedirs(path.dirname(self.cache_dir))
