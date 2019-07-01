@@ -80,7 +80,7 @@ class TestLocalDataset:
                 simpsons_descriptor_path))
             once = simpsons_dataset.raw_data[r.descriptor['name']]
             twice = simpsons_dataset.raw_data[r.descriptor['name']]
-            assert_that(once, equal_to(resource.data))
+            assert_that(once, equal_to(resource.read(keyed=True)))
             # Not a generator
             for _ in once:
                 pass  # Consume iterable

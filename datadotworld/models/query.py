@@ -21,7 +21,7 @@ from __future__ import absolute_import
 
 from collections import OrderedDict
 
-from jsontableschema import Schema
+from tableschema import Schema
 
 from datadotworld.models import table_schema
 

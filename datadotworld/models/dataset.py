@@ -24,8 +24,7 @@ import io
 from collections import OrderedDict
 
 import datapackage
-from datapackage.resource import TabularResource
-from jsontableschema.exceptions import SchemaValidationError
+from tableschema.exceptions import SchemaValidationError
 from os import path
 from tabulator import Stream
 
@@ -74,7 +73,7 @@ class LocalDataset(object):
                             for r in self._datapackage.resources}
         self.__tabular_resources = {k: sanitize_resource_schema(r)
                                     for (k, r) in self.__resources.items()
-                                    if type(r) is TabularResource and
+                                    if r.tabular and
                                     r.descriptor['path'].startswith('data')}
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
@@ -126,7 +125,7 @@ class LocalDataset(object):
         upcast_resource = datapackage.Resource(
             self.__resources[resource_name].descriptor,
             default_base_path=self.__base_path)
-        return upcast_resource.data
+        return upcast_resource.raw_read()
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
@@ -143,11 +142,11 @@ class LocalDataset(object):
             if 'schema' in tabular_resource.descriptor:
                 fields = [f['name'] for f in
                           tabular_resource.descriptor['schema']['fields']]
-            elif len(tabular_resource.data) > 0:
-                fields = tabular_resource.data[0].keys()
+            elif len(tabular_resource.read(keyed=True)) > 0:
+                fields = tabular_resource.read(keyed=True)[0].keys()
 
             return [order_columns_in_row(fields, row) for row in
-                    tabular_resource.data]
+                    tabular_resource.read(keyed=True)]
         except (SchemaValidationError, ValueError, TypeError) as e:
             warnings.warn(
                 'Unable to set column types automatically using {} schema. '
