@@ -21,7 +21,10 @@ import copy
 import os
 import warnings
 import io
-from collections import OrderedDict
+try:
+    from collections.abc import OrderedDict
+except ImportError:
+    from collections import OrderedDict
 
 import datapackage
 from tableschema.exceptions import SchemaValidationError

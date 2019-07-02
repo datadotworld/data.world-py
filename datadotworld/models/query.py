@@ -19,7 +19,10 @@
 
 from __future__ import absolute_import
 
-from collections import OrderedDict
+try:
+    from collections.abc import OrderedDict
+except ImportError:
+    from collections import OrderedDict
 
 from tableschema import Schema
 
