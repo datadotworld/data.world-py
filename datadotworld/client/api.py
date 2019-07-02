@@ -47,7 +47,6 @@ class RestApiClient(object):
 
     def __init__(self, config):
         self._config = config
-        self._protocol = 'https'
 
         self._host = "{}/v0".format(API_HOST)
         swagger_client = _swagger.ApiClient(
