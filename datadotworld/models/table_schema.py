@@ -17,7 +17,10 @@
 # This product includes software developed at
 # data.world, Inc.(http://data.world/).
 
-from collections import OrderedDict, Counter
+try:
+    from collections.abc import OrderedDict, Counter
+except ImportError:
+    from collections import OrderedDict, Counter
 
 #: Mapping of Table Schema field types to all suitable dtypes (pandas)
 from warnings import warn
@@ -230,7 +233,7 @@ def _sanitize_schema(schema_descriptor):
     """
     missing_type_support = False
     try:
-        from jsontableschema import YearType, YearMonthType, DurationType  # noqa
+        from tableschema import YearType, YearMonthType, DurationType  # noqa
     except ImportError:
         missing_type_support = True
 

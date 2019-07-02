@@ -282,7 +282,7 @@ class DataDotWorld(object):
             raise RestApiError(cause=e)
 
 
-class UriParam():
+class UriParam:
     """Represents a URI value as a parameter to a SPARQL query"""
     def __init__(self, uri):
         """

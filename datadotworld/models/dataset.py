@@ -25,10 +25,10 @@ try:
     from collections.abc import OrderedDict
 except ImportError:
     from collections import OrderedDict
+from os import path
 
 import datapackage
 from tableschema.exceptions import SchemaValidationError
-from os import path
 from tabulator import Stream
 
 from datadotworld.models.table_schema import (sanitize_resource_schema,
@@ -65,7 +65,7 @@ class LocalDataset(object):
 
     def __init__(self, descriptor_file):
 
-        self._datapackage = datapackage.DataPackage(descriptor_file)
+        self._datapackage = datapackage.Package(descriptor_file)
 
         self.__descriptor_file = descriptor_file
         self.__base_path = os.path.dirname(
@@ -74,10 +74,11 @@ class LocalDataset(object):
         # Index resources by name
         self.__resources = {r.descriptor['name']: r
                             for r in self._datapackage.resources}
-        self.__tabular_resources = {k: sanitize_resource_schema(r)
+        self.__tabular_resources = {k: self._prep_resource(k)
                                     for (k, r) in self.__resources.items()
                                     if r.tabular and
                                     r.descriptor['path'].startswith('data')}
+
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
         # All formats
@@ -116,6 +117,19 @@ class LocalDataset(object):
             return simple_descriptor
         else:
             return self.__resources[resource].descriptor
+
+    @memoized(key_mapper=lambda self, resource_name: resource_name)
+    def _prep_resource(self, resource_name):
+        """Sanitize table schema for increased compatibility
+
+        :param resource_name:
+        """
+        r = self.__resources[resource_name]
+        if 'encoding' not in r.descriptor:
+            r.descriptor['encoding'] = 'utf-8'
+        r.commit()
+
+        return sanitize_resource_schema(r)
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_raw_data(self, resource_name):
