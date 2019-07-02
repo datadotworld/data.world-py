@@ -33,8 +33,8 @@ Configure
 
 This library requires a data.world API authentication token to work.
 
-Your authentication token can be obtained on data.world under
-`Settings > Advanced <https://data.world/settings/advanced>`_
+Your authentication token can be obtained on data.world once you enable Python under
+`Integrations > Python <https://data.world/integrations/python>`_
 
 To configure the library, run the following command::
 
@@ -283,12 +283,12 @@ Additional API Features
 For a complete list of available API operations, see
 `official documentation <https://docs.data.world/documentation/api/>`_.
 
-Python wrappers are implemented by the ``ApiClient`` class. To obtain an instance, simply call ``api_client()``.
+Python wrappers are implemented by the ``ApiClient`` class. To obtain an instance, simply call ``api_client``.
 For example:
 
 .. code-block:: python
 
-    client = dw.api_client()
+    client = dw.api_client
 
 The client currently implements the following functions:
 
@@ -338,7 +338,7 @@ For example:
 
 .. code-block:: python
 
-    >>> client = dw.api_client()
+    >>> client = dw.api_client
     >>> client.add_files_via_url('username/test-dataset', files={'sample.xls': {'url':'http://www.sample.com/sample.xls', 'description': 'sample doc', 'labels': ['raw data']}})
 
 Append records to stream
@@ -350,7 +350,7 @@ For example:
 
 .. code-block:: python
 
-    >>> client = dw.api_client()
+    >>> client = dw.api_client
     >>> client.append_records('username/test-dataset','streamId', {'data': 'data'})
 
 Contents of a stream will appear as part of the respective dataset as a .jsonl file.

@@ -73,7 +73,7 @@ setup(
         'python-dateutil>=2.6.0,<3.0a',
         'requests>=2.0.0,<3.0a',
         'six>=1.5.0,<2.0a',
-        'tabulator<=1.4.1',
+        'tabulator<=1.19.3',
         'urllib3>=1.15,<2.0a',
         'flake8>=2.6.0,<3.4.1a',
     ],
@@ -81,11 +81,11 @@ setup(
         'pytest-runner>=2.11,<3.0a',
     ],
     tests_require=[
-        'coverage>=4.4.2',
+        'coverage>=4.4.2,<=4.5.1',
         'doublex>=1.8.4,<2.0a',
         'pyhamcrest>=1.9.0,<2.0a',
         'responses>=0.5.1,<1.0a',
-        'pytest>=3.0.7,<4.0a',
+        'pytest>=3.2.0,<4.0a',
         'pandas<1.0a',
     ],
     extras_require={
