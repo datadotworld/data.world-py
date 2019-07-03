@@ -77,11 +77,11 @@ class TestLocalDataset:
     def test_raw_data(self, simpsons_dataset, simpsons_datapackage,
                       simpsons_descriptor_path):
         for r in simpsons_datapackage.resources:
-            resource = Resource(r.descriptor, default_base_path=path.dirname(
+            resource = Resource(r.descriptor, base_path=path.dirname(
                 simpsons_descriptor_path))
             once = simpsons_dataset.raw_data[r.descriptor['name']]
             twice = simpsons_dataset.raw_data[r.descriptor['name']]
-            assert_that(once, equal_to(resource.read(keyed=True)))
+            assert_that(once, equal_to(resource.raw_read()))
             # Not a generator
             for _ in once:
                 pass  # Consume iterable

@@ -140,7 +140,7 @@ class LocalDataset(object):
         # ``data`` will be returned as bytes.
         upcast_resource = datapackage.Resource(
             self.__resources[resource_name].descriptor,
-            default_base_path=self.__base_path)
+            base_path=self.__base_path)
         return upcast_resource.raw_read()
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
