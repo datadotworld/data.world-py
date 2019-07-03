@@ -18,22 +18,22 @@
 # data.world, Inc.(http://data.world/).
 
 from os import environ
-from urllib.parse import urlparse
 
 # define constants for the various hosts the SDK may need to connect to
 # for connecting to the public data.world server, the defaults are fine -
 # to connect to a separate data.world environment, the environment variables
 # can be specified.
 
-def create_url(endpoint, environment):
-  parsed_url = urlparse(endpoint)
-  subdomain = parsed_url.netloc.split('.')[0]
-  if environment:
-    return endpoint.replace(subdomain, subdomain + '.' + environment)
 
-  return endpoint
+def create_url(subdomain, environment):
+    if environment:
+        subdomain = subdomain + '.' + environment
+
+    return 'https://{}.data.world'.format(subdomain)
+
 
 DW_ENVIRONMENT = environ.get('DW_ENVIRONMENT', '')
-API_HOST = environ.get('DW_API_HOST', create_url('https://api.data.world', DW_ENVIRONMENT))
-DOWNLOAD_HOST = environ.get('DW_DOWNLOAD_HOST', create_url('https://download.data.world', DW_ENVIRONMENT))
-QUERY_HOST = environ.get('DW_QUERY_HOST', create_url('https://query.data.world', DW_ENVIRONMENT))
+API_HOST = environ.get('DW_API_HOST', create_url('api', DW_ENVIRONMENT))
+DOWNLOAD_HOST = environ.get(
+    'DW_DOWNLOAD_HOST', create_url('download', DW_ENVIRONMENT))
+QUERY_HOST = environ.get('DW_QUERY_HOST', create_url('query', DW_ENVIRONMENT))

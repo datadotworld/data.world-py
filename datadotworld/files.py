@@ -28,8 +28,10 @@ from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.client.api import RestApiError
 from datadotworld.hosts import API_HOST, QUERY_HOST
 
+
 class RemoteFile:
     """ """
+
     def __init__(self, config, dataset_key, file_name,
                  mode='w', **kwargs):
         """
@@ -226,6 +228,7 @@ class RemoteFile:
 
 class RemoteFileException(Exception):
     """ """
+
     def __init__(self, *args, **kwargs):
         self.cause = kwargs.pop('cause', None)
         super(RemoteFileException, self).__init__(*args, **kwargs)

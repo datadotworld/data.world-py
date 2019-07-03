@@ -38,6 +38,7 @@ from datadotworld.client.content_negotiating_api_client import (
 from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
 
+
 class RestApiClient(object):
     """REST API client
 
