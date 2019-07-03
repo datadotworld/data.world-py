@@ -28,7 +28,6 @@ from doublex import assert_that, is_
 from hamcrest import equal_to, contains, calling, not_, raises, not_none
 
 from datadotworld.models.dataset import LocalDataset
-from datadotworld.models.table_schema import sanitize_resource_schema
 
 
 class TestLocalDataset:
@@ -41,7 +40,8 @@ class TestLocalDataset:
     def simpsons_datapackage(self, simpsons_descriptor_path):
         datapackage = Package(descriptor=simpsons_descriptor_path)
         for r in datapackage.resources:
-            sanitize_resource_schema(r)
+            if 'schema' in r.descriptor:
+                LocalDataset._sanitize_resource(r)
         return datapackage
 
     @pytest.fixture()
@@ -92,7 +92,7 @@ class TestLocalDataset:
             if r.descriptor['name'] in simpsons_dataset.tables:
                 once = simpsons_dataset.tables[r.descriptor['name']]
                 twice = simpsons_dataset.tables[r.descriptor['name']]
-                assert_that(once, equal_to(r.data))
+                assert_that(once, equal_to(r.read(keyed=True)))
                 # Same keys and values in consistent order
                 first_row_fields = once[0].keys()
                 for row in once:

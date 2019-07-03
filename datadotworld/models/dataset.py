@@ -74,7 +74,7 @@ class LocalDataset(object):
         # Index resources by name
         self.__resources = {r.descriptor['name']: r
                             for r in self._datapackage.resources}
-        self.__tabular_resources = {k: self._prep_resource(k)
+        self.__tabular_resources = {k: self._sanitize_resource(r)
                                     for (k, r) in self.__resources.items()
                                     if r.tabular and
                                     r.descriptor['path'].startswith('data')}
@@ -118,13 +118,12 @@ class LocalDataset(object):
         else:
             return self.__resources[resource].descriptor
 
-    @memoized(key_mapper=lambda self, resource_name: resource_name)
-    def _prep_resource(self, resource_name):
-        """Sanitize table schema for increased compatibility
+    @staticmethod
+    def _sanitize_resource(r):
+        """Explicitly sets the encoding if it's missing & sanitizes the schema
 
-        :param resource_name:
+        :param r: resource
         """
-        r = self.__resources[resource_name]
         if 'encoding' not in r.descriptor:
             r.descriptor['encoding'] = 'utf-8'
         r.commit()
