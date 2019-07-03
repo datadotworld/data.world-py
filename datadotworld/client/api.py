@@ -36,6 +36,7 @@ from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
 from datadotworld.util import parse_dataset_key, _user_agent
+from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
 
 
 class RestApiClient(object):
@@ -47,11 +48,8 @@ class RestApiClient(object):
 
     def __init__(self, config):
         self._config = config
-        self._protocol = 'https'
-        self._download_host = 'download.data.world'
 
-        api_host = 'api.data.world'
-        self._host = "{}://{}/v0".format(self._protocol, api_host)
+        self._host = "{}/v0".format(API_HOST)
         swagger_client = _swagger.ApiClient(
             host=self._host,
             header_name='Authorization',
@@ -457,8 +455,8 @@ class RestApiClient(object):
                              'but {} already exists'.format(dest_dir))
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
-        url = "{0}://{1}/datapackage/{2}/{3}".format(
-            self._protocol, self._download_host, owner_id, dataset_id)
+        url = "{0}/datapackage/{1}/{2}".format(
+            DOWNLOAD_HOST, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)

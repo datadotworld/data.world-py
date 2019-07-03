@@ -33,6 +33,7 @@ from datadotworld.models.dataset import LocalDataset
 from datadotworld.models.query import QueryResults
 from datadotworld.util import _user_agent, parse_dataset_key
 from datadotworld.files import RemoteFile
+from datadotworld.hosts import QUERY_HOST
 
 
 class DataDotWorld(object):
@@ -52,9 +53,6 @@ class DataDotWorld(object):
     """
 
     def __init__(self, config=None):
-        self._protocol = 'https'
-        self._query_host = 'query.data.world'
-        self._download_host = 'download.data.world'
         self._config = config or ChainedConfig()
         self.api_client = RestApiClient(self._config)
 
@@ -100,8 +98,8 @@ class DataDotWorld(object):
             params["parameters"] = ",".join(["{}={}".format(
                 k, convert_to_sparql_literal(parameters[k]))
                 for k in parameters.keys()])
-        url = "{0}://{1}/{2}/{3}/{4}".format(self._protocol, self._query_host,
-                                             query_type, owner_id, dataset_id)
+        url = "{0}/{1}/{2}/{3}".format(QUERY_HOST,
+                                       query_type, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
             'Accept': 'application/sparql-results+json',
