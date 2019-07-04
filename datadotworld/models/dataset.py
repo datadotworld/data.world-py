@@ -163,7 +163,8 @@ class LocalDataset(object):
 
             return [order_columns_in_row(fields, row) for row in
                     tabular_resource.read(keyed=True)]
-        except (AttributeError, SchemaValidationError, ValueError, TypeError) as e:
+        except (AttributeError, SchemaValidationError, ValueError, TypeError) \
+                as e:
             warnings.warn(
                 'Unable to set column types automatically using {} schema. '
                 'Data types may need to be adjusted manually. '

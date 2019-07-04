@@ -83,6 +83,7 @@ setup(
         'coverage>=4.4.2,<=4.5.3',
         'doublex>=1.8.4,<2.0a',
         'flake8>=2.6.0,<=3.7.7',
+        'numpy<=1.16.4',
         'pandas<1.0a',
         'pyhamcrest>=1.9.0,<2.0a',
         'pytest>=4.6.3,<5.0a',
@@ -90,6 +91,7 @@ setup(
     ],
     extras_require={
         'pandas': [
+            'numpy<=1.16.4',
             'pandas<1.0a',
         ],
     },
