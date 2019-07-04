@@ -2,7 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: dataworld/pyenv-tox
+      - image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:latest
+        aws_auth:
+          aws_access_key_id: $DEV_AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $DEV_AWS_SECRET_ACCESS_KEY
 
     working_directory: /root/data.world-py
 

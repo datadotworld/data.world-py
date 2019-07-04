@@ -25,7 +25,6 @@ try:
     from collections.abc import OrderedDict
 except ImportError:
     from collections import OrderedDict
-from os import path
 
 import datapackage
 from tableschema.exceptions import SchemaValidationError
@@ -197,7 +196,7 @@ class LocalDataset(object):
 
         try:
             return pandas.read_csv(
-                path.join(
+                os.path.join(
                     self.__base_path,
                     tabular_resource.descriptor['path']),
                 dtype=field_dtypes['other'],
@@ -209,7 +208,7 @@ class LocalDataset(object):
                 'schema. Data types may need to be adjusted manually. '
                 'Error: {}'.format(resource_name, e))
             return pandas.read_csv(
-                path.join(
+                os.path.join(
                     self.__base_path,
                     tabular_resource.descriptor['path']))
 
