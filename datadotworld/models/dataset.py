@@ -126,7 +126,7 @@ class LocalDataset(object):
         """
         if 'encoding' not in r.descriptor:
             r.descriptor['encoding'] = 'utf-8'
-        r.commit()
+            r.commit()
 
         return sanitize_resource_schema(r)
 
