@@ -23,11 +23,11 @@ import copy
 from os import path
 
 import pytest
-from datadotworld.models.dataset import LocalDataset
-from datadotworld.models.table_schema import sanitize_resource_schema
-from datapackage import DataPackage, Resource
+from datapackage import Package, Resource
 from doublex import assert_that, is_
 from hamcrest import equal_to, contains, calling, not_, raises, not_none
+
+from datadotworld.models.dataset import LocalDataset
 
 
 class TestLocalDataset:
@@ -38,9 +38,10 @@ class TestLocalDataset:
 
     @pytest.fixture()
     def simpsons_datapackage(self, simpsons_descriptor_path):
-        datapackage = DataPackage(descriptor=simpsons_descriptor_path)
+        datapackage = Package(descriptor=simpsons_descriptor_path)
         for r in datapackage.resources:
-            sanitize_resource_schema(r)
+            if 'schema' in r.descriptor:
+                LocalDataset._sanitize_resource(r)
         return datapackage
 
     @pytest.fixture()
@@ -55,7 +56,7 @@ class TestLocalDataset:
 
     @pytest.fixture()
     def simpsons_broken_datapackage(self, simpsons_broken_descriptor_path):
-        return DataPackage(descriptor=simpsons_broken_descriptor_path)
+        return Package(descriptor=simpsons_broken_descriptor_path)
 
     @pytest.fixture()
     def simpsons_broken_dataset(self, simpsons_broken_descriptor_path):
@@ -76,11 +77,11 @@ class TestLocalDataset:
     def test_raw_data(self, simpsons_dataset, simpsons_datapackage,
                       simpsons_descriptor_path):
         for r in simpsons_datapackage.resources:
-            resource = Resource(r.descriptor, default_base_path=path.dirname(
+            resource = Resource(r.descriptor, base_path=path.dirname(
                 simpsons_descriptor_path))
             once = simpsons_dataset.raw_data[r.descriptor['name']]
             twice = simpsons_dataset.raw_data[r.descriptor['name']]
-            assert_that(once, equal_to(resource.data))
+            assert_that(once, equal_to(resource.raw_read()))
             # Not a generator
             for _ in once:
                 pass  # Consume iterable
@@ -91,7 +92,7 @@ class TestLocalDataset:
             if r.descriptor['name'] in simpsons_dataset.tables:
                 once = simpsons_dataset.tables[r.descriptor['name']]
                 twice = simpsons_dataset.tables[r.descriptor['name']]
-                assert_that(once, equal_to(r.data))
+                assert_that(once, equal_to(r.read(keyed=True)))
                 # Same keys and values in consistent order
                 first_row_fields = once[0].keys()
                 for row in once:

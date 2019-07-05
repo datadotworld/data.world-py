@@ -1,6 +1,7 @@
 # Contributing Guidelines
 
 ### Issues
+
 Issue reports are a great way to contribute to this project.
 To the extent possible, make sure that your issue is detailed and not a duplicate.
 
@@ -39,6 +40,7 @@ $ git checkout -b my-feature-branch
 ```
 
 ### Write Tests
+
 Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add tests to spec.
 
 We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
@@ -48,9 +50,11 @@ We definitely appreciate pull requests that highlight or reproduce a problem, ev
 Implement your feature or bug fix. Make sure that all tests pass without errors.
 
 Also, to make sure that your code follows our coding style guide and best practises, run the command;
+
 ```sh
 $ flake8
 ```
+
 Make sure to fix any errors that appear if any.
 
 ### Write Documentation
@@ -67,6 +71,7 @@ git config --global user.email "contributor@example.com"
 ```
 
 Writing good commit logs is important. A commit log should describe what changed and why.
+
 ```sh
 git add ...
 git commit
@@ -79,6 +84,7 @@ git push origin my-feature-branch
 ```
 
 ### Make a Pull Request
+
 Go to https://github.com/[YOUR_GITHUB_NAME]/data.world-py.git and select your feature branch. Click the 'Pull Request' button and fill out the form. Pull requests are usually reviewed within a few days.
 
 # Release (for maintainers)
@@ -95,4 +101,5 @@ Release process:
 2. Push respective tag to `release` branch (i.e. `git push origin [tag]^{}:release`)
 
 # Thank you!
+
 Thank you in advance, for contributing to this project!

@@ -21,12 +21,13 @@ import copy
 import os
 import warnings
 import io
-from collections import OrderedDict
+try:
+    from collections.abc import OrderedDict
+except ImportError:
+    from collections import OrderedDict
 
 import datapackage
-from datapackage.resource import TabularResource
-from jsontableschema.exceptions import SchemaValidationError
-from os import path
+from tableschema.exceptions import SchemaValidationError
 from tabulator import Stream
 
 from datadotworld.models.table_schema import (sanitize_resource_schema,
@@ -63,7 +64,7 @@ class LocalDataset(object):
 
     def __init__(self, descriptor_file):
 
-        self._datapackage = datapackage.DataPackage(descriptor_file)
+        self._datapackage = datapackage.Package(descriptor_file)
 
         self.__descriptor_file = descriptor_file
         self.__base_path = os.path.dirname(
@@ -72,10 +73,11 @@ class LocalDataset(object):
         # Index resources by name
         self.__resources = {r.descriptor['name']: r
                             for r in self._datapackage.resources}
-        self.__tabular_resources = {k: sanitize_resource_schema(r)
+        self.__tabular_resources = {k: self._sanitize_resource(r)
                                     for (k, r) in self.__resources.items()
-                                    if type(r) is TabularResource and
+                                    if r.tabular and
                                     r.descriptor['path'].startswith('data')}
+
         self.__invalid_schemas = []  # Resource names with invalid schemas
 
         # All formats
@@ -115,6 +117,18 @@ class LocalDataset(object):
         else:
             return self.__resources[resource].descriptor
 
+    @staticmethod
+    def _sanitize_resource(r):
+        """Explicitly sets the encoding if it's missing & sanitizes the schema
+
+        :param r: resource
+        """
+        if 'encoding' not in r.descriptor:
+            r.descriptor['encoding'] = 'utf-8'
+            r.commit()
+
+        return sanitize_resource_schema(r)
+
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_raw_data(self, resource_name):
         """Extract raw data from resource
@@ -125,8 +139,8 @@ class LocalDataset(object):
         # ``data`` will be returned as bytes.
         upcast_resource = datapackage.Resource(
             self.__resources[resource_name].descriptor,
-            default_base_path=self.__base_path)
-        return upcast_resource.data
+            base_path=self.__base_path)
+        return upcast_resource.raw_read()
 
     @memoized(key_mapper=lambda self, resource_name: resource_name)
     def _load_table(self, resource_name):
@@ -143,12 +157,13 @@ class LocalDataset(object):
             if 'schema' in tabular_resource.descriptor:
                 fields = [f['name'] for f in
                           tabular_resource.descriptor['schema']['fields']]
-            elif len(tabular_resource.data) > 0:
-                fields = tabular_resource.data[0].keys()
+            elif len(tabular_resource.read(keyed=True)) > 0:
+                fields = tabular_resource.read(keyed=True)[0].keys()
 
             return [order_columns_in_row(fields, row) for row in
-                    tabular_resource.data]
-        except (SchemaValidationError, ValueError, TypeError) as e:
+                    tabular_resource.read(keyed=True)]
+        except (AttributeError, SchemaValidationError, ValueError, TypeError) \
+                as e:
             warnings.warn(
                 'Unable to set column types automatically using {} schema. '
                 'Data types may need to be adjusted manually. '
@@ -181,7 +196,7 @@ class LocalDataset(object):
 
         try:
             return pandas.read_csv(
-                path.join(
+                os.path.join(
                     self.__base_path,
                     tabular_resource.descriptor['path']),
                 dtype=field_dtypes['other'],
@@ -193,7 +208,7 @@ class LocalDataset(object):
                 'schema. Data types may need to be adjusted manually. '
                 'Error: {}'.format(resource_name, e))
             return pandas.read_csv(
-                path.join(
+                os.path.join(
                     self.__base_path,
                     tabular_resource.descriptor['path']))
 
