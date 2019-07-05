@@ -84,7 +84,7 @@ setup(
         'doublex>=1.8.4,<2.0a',
         'flake8>=2.6.0,<=3.7.7',
         'numpy<=1.16.4',
-        'pandas<1.0a',
+        'pandas<0.25',
         'pyhamcrest>=1.9.0,<2.0a',
         'pytest>=4.6.3,<5.0a',
         'responses>=0.5.1,<1.0a',
@@ -92,7 +92,7 @@ setup(
     extras_require={
         'pandas': [
             'numpy<=1.16.4',
-            'pandas<1.0a',
+            'pandas<0.25',
         ],
     },
     entry_points={
