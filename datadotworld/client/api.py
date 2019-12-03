@@ -36,7 +36,6 @@ from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
 from datadotworld.util import parse_dataset_key, _user_agent
-from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
 
 
 class RestApiClient(object):
@@ -48,8 +47,11 @@ class RestApiClient(object):
 
     def __init__(self, config):
         self._config = config
+        self._protocol = 'https'
+        self._download_host = 'download.data.world'
 
-        self._host = "{}/v0".format(API_HOST)
+        api_host = 'api.data.world'
+        self._host = "{}://{}/v0".format(self._protocol, api_host)
         swagger_client = _swagger.ApiClient(
             host=self._host,
             header_name='Authorization',
@@ -119,7 +121,7 @@ class RestApiClient(object):
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File name as dict, source URLs, description and labels()
-        as properties
+            as properties
         :type files: dict, optional
             *Description and labels are optional*
         :returns: Newly created dataset key
@@ -258,7 +260,7 @@ class RestApiClient(object):
     def delete_dataset(self, dataset_key):
         """Deletes a dataset and all associated data
 
-        :params dataset_key: Dataset identifier, in the form of owner/id
+        :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
 
@@ -343,10 +345,10 @@ class RestApiClient(object):
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :param files: The list of names/paths for files stored in the
-        local filesystem
+            local filesystem
         :type files: list of str
         :param expand_archives: Boolean value to indicate files should be
-        expanded upon upload
+            expanded upon upload
         :type expand_archive: bool optional
         :param files_metadata: Dict containing the name of files and metadata
             Uses file name as a dict containing File description, labels and
@@ -379,11 +381,11 @@ class RestApiClient(object):
         :param name: Name/path for files stored in the local filesystem
         :type name: str
         :param expand_archives: Boolean value to indicate files should be
-        expanded upon upload
+            expanded upon upload
         :type expand_archive: bool optional
         :param files_metadata: Dict containing the name of files and metadata
-        Uses file name as a dict containing File description, labels and
-        source URLs to add or update
+            Uses file name as a dict containing File description, labels and
+            source URLs to add or update
         :type files_metadata: dict optional
         :raises RestApiException: If a server error occurs
 
@@ -455,8 +457,8 @@ class RestApiClient(object):
                              'but {} already exists'.format(dest_dir))
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
-        url = "{0}/datapackage/{1}/{2}".format(
-            DOWNLOAD_HOST, owner_id, dataset_id)
+        url = "{0}://{1}/datapackage/{2}/{3}".format(
+            self._protocol, self._download_host, owner_id, dataset_id)
         headers = {
             'User-Agent': _user_agent(),
             'Authorization': 'Bearer {0}'.format(self._config.auth_token)
@@ -728,7 +730,7 @@ class RestApiClient(object):
     def download_dataset(self, dataset_key):
         """Return a .zip containing all files within the dataset as uploaded.
 
-        :param dataset_key : Dataset identifier, in the form of owner/id
+        :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :returns: .zip file contain files within dataset
         :rtype: file object
@@ -850,7 +852,7 @@ class RestApiClient(object):
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File name as dict, source URLs, description and labels()
-        as properties
+            as properties
         :type files: dict, optional
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
@@ -908,7 +910,7 @@ class RestApiClient(object):
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File name as dict, source URLs, description and labels()
-        as properties
+            as properties
         :type files: dict, optional
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
@@ -966,7 +968,7 @@ class RestApiClient(object):
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
         :param files: File name as dict, source URLs, description and labels()
-        as properties
+            as properties
         :type files: dict, optional
             *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
@@ -1066,7 +1068,7 @@ class RestApiClient(object):
     def delete_project(self, project_key):
         """Deletes a project and all associated data
 
-        :params project_key: Project identifier, in the form of owner/id
+        :param project_key: Project identifier, in the form of owner/id
         :type project_key: str
         :raises RestApiException: If a server error occurs
 
@@ -1089,7 +1091,7 @@ class RestApiClient(object):
         """Retrieve an insight
 
         :param project_key: Project identifier, in the form of
-        projectOwner/projectid
+            projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
         :type insight_id: str
@@ -1121,7 +1123,7 @@ class RestApiClient(object):
         """Get insights for a project.
 
         :param project_key: Project identifier, in the form of
-        projectOwner/projectid
+            projectOwner/projectid
         :type project_key: str
         :returns: Insight results
         :rtype: object
@@ -1148,7 +1150,6 @@ class RestApiClient(object):
         """Create a new insight
 
         :param project_key: Project identifier, in the form of
-        projectOwner/projectid
         :type project_key: str
         :param title: Insight title
         :type title: str
@@ -1158,13 +1159,11 @@ class RestApiClient(object):
         :type image_url: str
         :param embed_url: If embed-based, the embeddable URL
         :type embed_url: str
-        :param source_link: Permalink to source code or platform this insight
-        was generated with. Allows others to replicate the steps originally
-        used to produce the insight.
+        :param source_link: Permalink to source code or platform this insight was generated with. 
+            Allows others to replicate the steps originally used to produce the insight.
         :type source_link: str, optional
-        :param data_source_links: One or more permalinks to the data sources
-        used to generate this insight. Allows others to access the data
-        originally used to produce the insight.
+        :param data_source_links: One or more permalinks to the data sources used to generate this insight. 
+            Allows others to access the data originally used to produce the insight.
         :type data_source_links: array
         :returns: Insight with message and uri object
         :rtype: object
@@ -1203,7 +1202,7 @@ class RestApiClient(object):
         """Replace an insight.
 
         :param project_key: Projrct identifier, in the form of
-        projectOwner/projectid
+            projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
         :type insight_id: str
@@ -1216,12 +1215,12 @@ class RestApiClient(object):
         :param embed_url: If embed-based, the embeddable URL
         :type embed_url: str
         :param source_link: Permalink to source code or platform this insight
-        was generated with. Allows others to replicate the steps originally
-        used to produce the insight.
+            was generated with. Allows others to replicate the steps originally
+            used to produce the insight.
         :type source_link: str, optional
         :param data_source_links: One or more permalinks to the data sources
-        used to generate this insight. Allows others to access the data
-        originally used to produce the insight.
+            used to generate this insight. Allows others to access the data
+            originally used to produce the insight.
         :type data_source_links: array
         :returns: message object
         :rtype: object
@@ -1259,9 +1258,10 @@ class RestApiClient(object):
         """Update an insight.
 
         **Note that only elements included in the request will be updated. All
-        omitted elements will remain untouched.
+        omitted elements will remain untouched.**
+
         :param project_key: Projrct identifier, in the form of
-        projectOwner/projectid
+            projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
         :type insight_id: str
@@ -1274,12 +1274,12 @@ class RestApiClient(object):
         :param embed_url: If embed-based, the embeddable URL
         :type embed_url: str
         :param source_link: Permalink to source code or platform this insight
-        was generated with. Allows others to replicate the steps originally
-        used to produce the insight.
+            was generated with. Allows others to replicate the steps originally
+            used to produce the insight.
         :type source_link: str, optional
         :param data_source_links: One or more permalinks to the data sources
-        used to generate this insight. Allows others to access the data
-        originally used to produce the insight.
+            used to generate this insight. Allows others to access the data
+            originally used to produce the insight.
         :type data_source_links: array
         :returns: message object
         :rtype: object
@@ -1306,10 +1306,10 @@ class RestApiClient(object):
     def delete_insight(self, project_key, insight_id):
         """Delete an existing insight.
 
-        :params project_key: Project identifier, in the form of
-        projectOwner/projectId
+        :param project_key: Project identifier, in the form of
+            projectOwner/projectId
         :type project_key: str
-        :params insight_id: Insight unique id
+        :param insight_id: Insight unique id
         :type insight_id: str
         :raises RestApiException: If a server error occurs
 
