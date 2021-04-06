@@ -64,13 +64,12 @@ class RestApiClient(object):
             user_agent=_user_agent())
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
-        self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
-        self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
         self._projects_api = _swagger.ProjectsApi(swagger_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
-
+        self._files_api = _swagger.FilesApi(swagger_client)
+        self._queries_api = _swagger.QueriesApi(swagger_client  )
     # Dataset Operations
 
     def get_dataset(self, dataset_key):
@@ -312,7 +311,7 @@ class RestApiClient(object):
         ) for file_name, file_info in files.items()]
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.add_files_by_source(
+            self._files_api.add_files_by_source(
                 owner_id, dataset_id,
                 _swagger.FileBatchUpdateRequest(files=file_requests))
         except _swagger.rest.ApiException as e:
@@ -333,7 +332,7 @@ class RestApiClient(object):
         >>> api_client.sync_files('username/test-dataset')  # doctest: +SKIP
         """
         try:
-            self._datasets_api.sync(*(parse_dataset_key(dataset_key)))
+            self._files_api.sync(*(parse_dataset_key(dataset_key)))
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -364,7 +363,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files,
+            self._files_api.upload_files(owner_id, dataset_id, files,
                                            **kwargs)
             if files_metadata:
                 self.update_dataset(dataset_key, files=files_metadata)
@@ -397,7 +396,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
+            self._files_api.upload_file(owner_id, dataset_id, name, **kwargs)
             if file_metadata:
                 self.update_dataset(dataset_key, files=file_metadata)
         except _swagger.rest.ApiException as e:
@@ -421,7 +420,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.delete_files_and_sync_sources(
+            self._files_api.delete_files_and_sync_sources(
                 owner_id, dataset_id, names)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
@@ -680,10 +679,10 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(api_client))
+        queries_api = kwargs.get('queries_api_mock', _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sql_api.sql_post(
+            response = queries_api.sql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -713,11 +712,11 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sparql_api = kwargs.get('sparql_api_mock',
-                                _swagger.SparqlApi(api_client))
+        query_api = kwargs.get('queries_api_mock',
+                                _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sparql_api.sparql_post(
+            response = query_api.sparql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -743,7 +742,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_dataset(owner_id, dataset_id)
+            return self._datasets_api.download_dataset(owner_id, dataset_id)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -767,21 +766,21 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_file(owner_id, dataset_id, file)
+            return self._files_api.download_file(owner_id, dataset_id, file)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
     # Streams Operation
 
-    def append_records(self, dataset_key, stream_id, body):
+    def append_records(self, dataset_key, stream_id, **kwargs):
         """Append records to a stream.
 
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :param stream_id: Stream unique identifier.
         :type stream_id: str
-        :param body: Object body
-        :type body: obj
+        // TODO:  probably need to put the type of the StreamsResource object.
+
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -791,10 +790,11 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId',
         ...     {'content':'content'})  # doctest: +SKIP
         """
+        body = {'type': ''}
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return self._streams_api.append_records(owner_id, dataset_id,
-                                                    stream_id, body)
+                                                    stream_id, body=body)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 

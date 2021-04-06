@@ -30,14 +30,12 @@ from hamcrest import (equal_to, has_entries, has_properties, is_, described_as,
 
 from datadotworld.client._swagger import (
     DatasetsApi,
-    DownloadApi,
-    SparqlApi,
-    SqlApi,
-    UploadsApi,
     UserApi,
     StreamsApi,
     ProjectsApi,
-    InsightsApi
+    InsightsApi,
+    FilesApi,
+    QueriesApi
 )
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
@@ -58,6 +56,7 @@ class TestApiClient:
     @pytest.fixture()
     def datasets_api(self):
         with Spy(DatasetsApi) as api:
+            api.download_dataset
             api.get_dataset = lambda o, d: DatasetSummaryResponse(
                                 owner=o,
                                 id=d,
@@ -67,21 +66,10 @@ class TestApiClient:
                                 created='2018-02-01T01:03:26.879Z',
                                 updated='2018-02-01T01:03:28.211Z',
                                 access_level='ADMIN',
-                                is_project=False)
+                                is_project=False,
+                                version='1')
             api.create_dataset_with_http_info = lambda o, b, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/datasetid'})
-            return api
-
-    @pytest.fixture()
-    def uploads_api(self):
-        with Spy(UploadsApi) as api:
-            return api
-
-    @pytest.fixture()
-    def download_api(self):
-        with Spy(DownloadApi) as api:
-            api.download_dataset
-            api.download_file
             return api
 
     @pytest.fixture()
@@ -89,20 +77,6 @@ class TestApiClient:
         with Mock() as response:
             response.data = 'result'.encode()
             return response
-
-    @pytest.fixture()
-    def sql_api(self, query_resp):
-        with Spy(SqlApi) as api:
-            api.sql_post = \
-                lambda o, d, q, sql_api_mock, _preload_content: query_resp
-            return api
-
-    @pytest.fixture()
-    def sparql_api(self, query_resp):
-        with Spy(SparqlApi) as api:
-            api.sparql_post = \
-                lambda o, d, q, sparql_api_mock, _preload_content: query_resp
-            return api
 
     @pytest.fixture()
     def user_api(self):
@@ -146,7 +120,8 @@ class TestApiClient:
                                 status='LOADED',
                                 created='2018-02-01T01:03:26.879Z',
                                 updated='2018-02-01T01:03:28.211Z',
-                                access_level='ADMIN')
+                                access_level='ADMIN',
+                                version='1')
             api.create_project_with_http_info = lambda o, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/projectid'})
             return api
@@ -160,25 +135,40 @@ class TestApiClient:
                                 body={},
                                 author=o,
                                 created='2018-02-01T01:03:26.879Z',
-                                updated='2018-02-01T01:03:28.211Z')
+                                updated='2018-02-01T01:03:28.211Z',
+                                version='1')
             api.create_insight_with_http_info = lambda o, d, **kwargs: (
                 {}, 200, {'Location': 'https://data.world/agentid/projectid'})
             return api
 
     @pytest.fixture()
-    def api_client(self, config, datasets_api, uploads_api, download_api,
-                   sql_api, sparql_api, user_api, streams_api, projects_api,
-                   insights_api):
+    def files_api(self):
+        with Spy(FilesApi) as api:
+            api.download_file
+            return api
+
+    @pytest.fixture()
+    def queries_api(self, query_resp):
+        with Spy(QueriesApi) as api:
+            api.sparql_post = \
+                lambda o, d, q, queries_api_mock, _preload_content: query_resp
+            api.sql_post = \
+                lambda o, d, q, queries_api_mock, _preload_content: query_resp
+            return api
+
+
+    @pytest.fixture()
+    def api_client(self, config, datasets_api,
+                    user_api, streams_api, projects_api,
+                   insights_api, files_api, queries_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
-        client._uploads_api = uploads_api
-        client._download_api = download_api
-        client._sql_api = sql_api
-        client._sparql_api = sparql_api
         client._user_api = user_api
         client._streams_api = streams_api
         client._projects_api = projects_api
         client._insights_api = insights_api
+        client._files_api = files_api
+        client._queries_api = queries_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -216,7 +206,7 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid')))
 
-    def test_add_files_via_url(self, api_client, datasets_api, dataset_key):
+    def test_add_files_via_url(self, api_client, files_api, dataset_key):
         file_update_request = {'filename.ext':
                                {'url': 'https://acme.inc/filename.ext'}}
         file_update_object = FileBatchUpdateRequest(
@@ -226,36 +216,36 @@ class TestApiClient:
                     url='https://acme.inc/filename.ext'))])
 
         api_client.add_files_via_url(dataset_key, file_update_request)
-        assert_that(datasets_api.add_files_by_source,
+        assert_that(files_api.add_files_by_source,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(file_update_object)))
 
-    def test_sync_files(self, api_client, datasets_api, dataset_key):
+    def test_sync_files(self, api_client, files_api, dataset_key):
         api_client.sync_files(dataset_key)
-        assert_that(datasets_api.sync,
+        assert_that(files_api.sync,
                     called().times(1).with_args('agentid', 'datasetid'))
 
-    def test_upload_files(self, api_client, uploads_api, dataset_key):
+    def test_upload_files(self, api_client, files_api, dataset_key):
         files = ['filename.ext']
         api_client.upload_files(dataset_key, files)
-        assert_that(uploads_api.upload_files,
+        assert_that(files_api.upload_files,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
 
-    def test_upload_file(self, api_client, uploads_api, dataset_key):
+    def test_upload_file(self, api_client, files_api, dataset_key):
         name = 'filename.ext'
         api_client.upload_file(dataset_key, name)
-        assert_that(uploads_api.upload_file,
+        assert_that(files_api.upload_file,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(name)))
 
-    def test_delete_files(self, api_client, datasets_api, dataset_key):
+    def test_delete_files(self, api_client, files_api, dataset_key):
         files = ['filename.ext']
         api_client.delete_files(dataset_key, files)
-        assert_that(datasets_api.delete_files_and_sync_sources,
+        assert_that(files_api.delete_files_and_sync_sources,
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('datasetid'),
                                                 equal_to(files)))
@@ -330,24 +320,24 @@ class TestApiClient:
                 dataset_key, config.cache_dir),
             raises(ValueError))
 
-    def test_download_dataset(self, api_client, dataset_key, download_api):
+    def test_download_dataset(self, api_client, dataset_key, datasets_api):
         api_client.download_dataset(dataset_key)
-        assert_that(download_api.download_dataset,
+        assert_that(datasets_api.download_dataset,
                     called().times(1).with_args('agentid', 'datasetid'))
 
-    def test_download_file(self, api_client, dataset_key, download_api):
+    def test_download_file(self, api_client, dataset_key, files_api):
         api_client.download_file(dataset_key, 'file')
-        assert_that(download_api.download_file,
+        assert_that(files_api.download_file,
                     called().times(1).with_args('agentid', 'datasetid',
                                                 'file'))
 
-    def test_sql(self, api_client, dataset_key, sql_api):
-        result = api_client.sql(dataset_key, 'query', sql_api_mock=sql_api)
+    def test_sql(self, api_client, dataset_key, queries_api):
+        result = api_client.sql(dataset_key, 'query', queries_api_mock=queries_api)
         assert_that(result.read().decode('utf-8'), equal_to('result'))
 
-    def test_sparql(self, api_client, dataset_key, sparql_api):
+    def test_sparql(self, api_client, dataset_key, queries_api):
         result = api_client.sparql(dataset_key, 'query',
-                                   sparql_api_mock=sparql_api)
+                                   queries_api_mock=queries_api)
         assert_that(result.read().decode('utf-8'), equal_to('result'))
 
     def test_get_user_data(self, api_client):
@@ -385,11 +375,11 @@ class TestApiClient:
         assert_that(user_api.fetch_projects(), has_properties(projects))
 
     def test_append_records(self, api_client, dataset_key, streams_api):
-        body = {'content': 'content'}
-        api_client.append_records(dataset_key, 'streamid', body)
+        # Todo: Revisit this
+        api_client.append_records(dataset_key, 'streamid')
         assert_that(streams_api.append_records,
                     called().times(1).with_args('agentid', 'datasetid',
-                                                'streamid', body))
+                                                'streamid', body = {'type': ''}))
 
     def test_get_project(self, api_client, project_key):
         project = api_client.get_project(project_key)
