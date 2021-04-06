@@ -143,7 +143,7 @@ class TablesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/tables', 'POST',
                                         path_params,

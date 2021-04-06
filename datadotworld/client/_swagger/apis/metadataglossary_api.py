@@ -138,7 +138,7 @@ class MetadataglossaryApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}', 'POST',
                                         path_params,
@@ -249,7 +249,7 @@ class MetadataglossaryApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -360,7 +360,7 @@ class MetadataglossaryApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}/{id}', 'GET',
                                         path_params,
@@ -484,7 +484,7 @@ class MetadataglossaryApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}', 'GET',
                                         path_params,
@@ -606,7 +606,7 @@ class MetadataglossaryApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}/{id}', 'PATCH',
                                         path_params,
@@ -728,7 +728,7 @@ class MetadataglossaryApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/glossary/{owner}/{id}', 'PUT',
                                         path_params,

@@ -153,7 +153,7 @@ class StreamsApi(object):
             select_header_content_type(['application/json-l', 'application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/streams/{owner}/{id}/{streamId}', 'POST',
                                         path_params,
@@ -275,7 +275,7 @@ class StreamsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/streams/{owner}/{id}/{streamId}/records', 'DELETE',
                                         path_params,
@@ -397,7 +397,7 @@ class StreamsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/streams/{owner}/{id}/{streamId}/schema', 'GET',
                                         path_params,
@@ -530,7 +530,7 @@ class StreamsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/streams/{owner}/{id}/{streamId}/schema', 'PATCH',
                                         path_params,

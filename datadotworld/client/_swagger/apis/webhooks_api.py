@@ -136,7 +136,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/datasets/{owner}/{id}', 'GET',
                                         path_params,
@@ -249,7 +249,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/projects/{owner}/{id}', 'GET',
                                         path_params,
@@ -353,7 +353,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/users/{account}', 'GET',
                                         path_params,
@@ -456,7 +456,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks', 'GET',
                                         path_params,
@@ -580,7 +580,7 @@ class WebhooksApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/datasets/{owner}/{id}', 'PUT',
                                         path_params,
@@ -704,7 +704,7 @@ class WebhooksApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/projects/{owner}/{id}', 'PUT',
                                         path_params,
@@ -819,7 +819,7 @@ class WebhooksApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/users/{account}', 'PUT',
                                         path_params,
@@ -932,7 +932,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/datasets/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -1045,7 +1045,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/projects/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -1149,7 +1149,7 @@ class WebhooksApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/user/webhooks/users/{account}', 'DELETE',
                                         path_params,

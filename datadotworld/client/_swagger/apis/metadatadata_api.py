@@ -150,7 +150,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns', 'POST',
                                         path_params,
@@ -270,7 +270,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables', 'POST',
                                         path_params,
@@ -393,7 +393,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns/{columnid}', 'DELETE',
                                         path_params,
@@ -509,7 +509,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}', 'DELETE',
                                         path_params,
@@ -618,7 +618,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}', 'GET',
                                         path_params,
@@ -732,7 +732,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}', 'GET',
                                         path_params,
@@ -848,7 +848,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}', 'GET',
                                         path_params,
@@ -971,7 +971,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns/{columnid}', 'GET',
                                         path_params,
@@ -1099,7 +1099,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns', 'GET',
                                         path_params,
@@ -1228,7 +1228,7 @@ class MetadatadataApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables', 'GET',
                                         path_params,
@@ -1362,7 +1362,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns/{columnid}', 'PATCH',
                                         path_params,
@@ -1489,7 +1489,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}', 'PATCH',
                                         path_params,
@@ -1623,7 +1623,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}/columns/{columnid}', 'PUT',
                                         path_params,
@@ -1750,7 +1750,7 @@ class MetadatadataApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/data/sources/{owner}/{sourceid}/tables/{tableid}', 'PUT',
                                         path_params,

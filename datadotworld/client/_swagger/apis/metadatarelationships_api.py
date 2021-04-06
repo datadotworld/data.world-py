@@ -134,7 +134,7 @@ class MetadatarelationshipsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/relationships/{owner}', 'POST',
                                         path_params,
@@ -245,7 +245,7 @@ class MetadatarelationshipsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/relationships/{owner}/delete', 'POST',
                                         path_params,
@@ -375,7 +375,7 @@ class MetadatarelationshipsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/relationships/{owner}/resource/{resourceId}', 'POST',
                                         path_params,
@@ -509,7 +509,7 @@ class MetadatarelationshipsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/metadata/relationships/{owner}/table/{sourceId}/{tableId}', 'POST',
                                         path_params,

@@ -127,7 +127,7 @@ class UsersApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['oauth']
+        auth_settings = ['token']
 
         return self.api_client.call_api('/users/{account}', 'GET',
                                         path_params,
