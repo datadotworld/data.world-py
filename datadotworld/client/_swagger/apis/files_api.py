@@ -147,7 +147,7 @@ class FilesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/files', 'POST',
                                         path_params,
@@ -267,7 +267,7 @@ class FilesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/files/{file}', 'DELETE',
                                         path_params,
@@ -388,7 +388,7 @@ class FilesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/files', 'DELETE',
                                         path_params,
@@ -504,7 +504,7 @@ class FilesApi(object):
 
         body_params = None
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/file_download/{owner}/{id}/{file}', 'GET',
                                         path_params,
@@ -617,7 +617,7 @@ class FilesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/sync', 'POST',
                                         path_params,
@@ -730,7 +730,7 @@ class FilesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/sync', 'GET',
                                         path_params,
@@ -858,7 +858,7 @@ class FilesApi(object):
             select_header_content_type(['application/octet-stream', '*/*'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/uploads/{owner}/{id}/files/{file}', 'PUT',
                                         path_params,
@@ -986,7 +986,7 @@ class FilesApi(object):
             select_header_content_type(['multipart/form-data'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/uploads/{owner}/{id}/files', 'POST',
                                         path_params,

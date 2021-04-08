@@ -137,7 +137,7 @@ class SearchApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/search/resources', 'POST',
                                         path_params,
@@ -251,7 +251,7 @@ class SearchApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/search', 'POST',
                                         path_params,

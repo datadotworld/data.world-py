@@ -136,7 +136,7 @@ class MetadatacollectionsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}', 'POST',
                                         path_params,
@@ -249,7 +249,7 @@ class MetadatacollectionsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -358,7 +358,7 @@ class MetadatacollectionsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}/{id}', 'GET',
                                         path_params,
@@ -472,7 +472,7 @@ class MetadatacollectionsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}', 'GET',
                                         path_params,
@@ -592,7 +592,7 @@ class MetadatacollectionsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}/{id}', 'PUT',
                                         path_params,
@@ -712,7 +712,7 @@ class MetadatacollectionsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/collections/{owner}/{id}', 'PATCH',
                                         path_params,

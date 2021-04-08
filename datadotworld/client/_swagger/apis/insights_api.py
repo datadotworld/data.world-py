@@ -144,7 +144,7 @@ class InsightsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}', 'POST',
                                         path_params,
@@ -264,7 +264,7 @@ class InsightsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}/{id}', 'DELETE',
                                         path_params,
@@ -384,7 +384,7 @@ class InsightsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}/{id}', 'GET',
                                         path_params,
@@ -511,7 +511,7 @@ class InsightsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}/{id}/v/{versionId}', 'GET',
                                         path_params,
@@ -632,7 +632,7 @@ class InsightsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}', 'GET',
                                         path_params,
@@ -760,7 +760,7 @@ class InsightsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}/{id}', 'PUT',
                                         path_params,
@@ -888,7 +888,7 @@ class InsightsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/insights/{projectOwner}/{projectId}/{id}', 'PATCH',
                                         path_params,

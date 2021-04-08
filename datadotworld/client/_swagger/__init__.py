@@ -101,6 +101,7 @@ from .models.sql_query_request import SqlQueryRequest
 from .models.ssh_tunnel import SshTunnel
 from .models.stream_schema import StreamSchema
 from .models.stream_schema_patch_request import StreamSchemaPatchRequest
+from .models.streams_resource import StreamsResource
 from .models.subscription import Subscription
 from .models.subscription_api_links import SubscriptionApiLinks
 from .models.subscription_create_request import SubscriptionCreateRequest
@@ -126,6 +127,7 @@ from .apis.metadataanalysis_api import MetadataanalysisApi
 from .apis.metadatacollections_api import MetadatacollectionsApi
 from .apis.metadatadata_api import MetadatadataApi
 from .apis.metadataglossary_api import MetadataglossaryApi
+from .apis.metadataproperties_api import MetadatapropertiesApi
 from .apis.metadatarelationships_api import MetadatarelationshipsApi
 from .apis.projects_api import ProjectsApi
 from .apis.queries_api import QueriesApi

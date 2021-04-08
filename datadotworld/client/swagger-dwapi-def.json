@@ -3141,7 +3141,6 @@
         "tableType": {
           "description": "Table type",
           "enum": [
-            "EXTRACT",
             "VIRTUAL"
           ],
           "type": "string"
@@ -3314,6 +3313,9 @@
       "required": [
         "updateMethod"
       ]
+    },
+    "StreamsResource": {
+      "type": "object"
     },
     "Subscription": {
       "type": "object",
@@ -5772,8 +5774,8 @@
         "tags": [
           "tables"
         ],
-        "summary": "Add live or extracted tables from a virtual connection",
-        "description": "Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help protal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).",
+        "summary": "Add live tables from a virtual connection",
+        "description": "Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help portal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).",
         "operationId": "createNewTables",
         "consumes": [
           "application/json"
@@ -5901,8 +5903,7 @@
               "user_api_enterprise_admin"
             ]
           }
-        ],
-        "x-private": true
+        ]
       }
     },
     "/datasets/{owner}/{id}/v/{versionId}": {
@@ -6037,6 +6038,102 @@
         "summary": "Retrieve a dataset version",
         "tags": [
           "datasets"
+        ]
+      }
+    },
+    "/properties/{owner}": {
+      "get": {
+        "tags": [
+          "metadata/properties"
+        ],
+        "summary": "Get supported metadata properties by owner",
+        "description": "Get supported metadata properties by owner.\n\nThis endpoint can be used to obtain a reference list of supported custom metadata properties for your organization's catalog. Custom properties for resources in your catalog require an ApiBinding to be configured for use in the public API. For more information about how to correctly configure ApiBindings, please reach out to your data.world support representative or message help@data.world.",
+        "operationId": "getPropertiesByOwner",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "User or organization id that owns the catalog you would like to get properties for."
+          },
+          {
+            "name": "categorylabel",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Resource category filter. example: “Business Term” or \"Report\""
+          },
+          {
+            "name": "typelabel",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Custom resource type. filter example: “PowerBI Dashboard”"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved properties",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "categoryLabel": "Report",
+                  "label": "Experts",
+                  "multivalued": false
+                },
+                {
+                  "categoryLabel": "Report",
+                  "label": "Impact Potential",
+                  "multivalued": false
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth": []
+          }
         ]
       }
     },
@@ -14202,6 +14299,9 @@
     },
     {
       "name": "metadata/glossary"
+    },
+    {
+      "name": "metadata/properties"
     },
     {
       "name": "metadata/relationships"

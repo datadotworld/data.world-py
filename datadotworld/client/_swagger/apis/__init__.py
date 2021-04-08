@@ -10,6 +10,7 @@ from .metadataanalysis_api import MetadataanalysisApi
 from .metadatacollections_api import MetadatacollectionsApi
 from .metadatadata_api import MetadatadataApi
 from .metadataglossary_api import MetadataglossaryApi
+from .metadataproperties_api import MetadatapropertiesApi
 from .metadatarelationships_api import MetadatarelationshipsApi
 from .projects_api import ProjectsApi
 from .queries_api import QueriesApi

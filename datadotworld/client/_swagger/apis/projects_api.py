@@ -150,7 +150,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/linkedDatasets/{linkedDatasetOwner}/{linkedDatasetId}', 'PUT',
                                         path_params,
@@ -262,7 +262,7 @@ class ProjectsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}', 'POST',
                                         path_params,
@@ -375,7 +375,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -488,7 +488,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}', 'GET',
                                         path_params,
@@ -608,7 +608,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/v/{versionId}', 'GET',
                                         path_params,
@@ -720,7 +720,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}', 'GET',
                                         path_params,
@@ -841,7 +841,7 @@ class ProjectsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}', 'PATCH',
                                         path_params,
@@ -968,7 +968,7 @@ class ProjectsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/linkedDatasets/{linkedDatasetOwner}/{linkedDatasetId}', 'DELETE',
                                         path_params,
@@ -1089,7 +1089,7 @@ class ProjectsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}', 'PUT',
                                         path_params,

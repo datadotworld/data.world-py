@@ -138,7 +138,7 @@ class MetadataanalysisApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}', 'POST',
                                         path_params,
@@ -249,7 +249,7 @@ class MetadataanalysisApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -360,7 +360,7 @@ class MetadataanalysisApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}/{id}', 'GET',
                                         path_params,
@@ -484,7 +484,7 @@ class MetadataanalysisApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}', 'GET',
                                         path_params,
@@ -606,7 +606,7 @@ class MetadataanalysisApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}/{id}', 'PATCH',
                                         path_params,
@@ -728,7 +728,7 @@ class MetadataanalysisApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/metadata/analysis/{owner}/{id}', 'PUT',
                                         path_params,

@@ -138,7 +138,7 @@ class DatasetsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}', 'POST',
                                         path_params,
@@ -251,7 +251,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -364,7 +364,7 @@ class DatasetsApi(object):
             select_header_accept(['application/zip'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/download/{owner}/{id}', 'GET',
                                         path_params,
@@ -467,7 +467,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/datasets/own', 'GET',
                                         path_params,
@@ -580,7 +580,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}', 'GET',
                                         path_params,
@@ -700,7 +700,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/v/{versionId}', 'GET',
                                         path_params,
@@ -812,7 +812,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}', 'GET',
                                         path_params,
@@ -936,7 +936,7 @@ class DatasetsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}', 'PATCH',
                                         path_params,
@@ -1060,7 +1060,7 @@ class DatasetsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}', 'PUT',
                                         path_params,
@@ -1171,7 +1171,7 @@ class DatasetsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/search', 'GET',
                                         path_params,

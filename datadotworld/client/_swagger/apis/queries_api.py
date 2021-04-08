@@ -147,7 +147,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/queries', 'POST',
                                         path_params,
@@ -271,7 +271,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/queries', 'POST',
                                         path_params,
@@ -393,7 +393,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/queries/{queryId}', 'DELETE',
                                         path_params,
@@ -515,7 +515,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/queries/{queryId}', 'DELETE',
                                         path_params,
@@ -623,7 +623,7 @@ class QueriesApi(object):
             select_header_accept(['application/json', 'text/csv', 'application/sparql-results+xml', 'application/sparql-results+json', 'text/tab-separated-values', 'application/rdf+json', 'text/turtle', 'application/rdf+xml', 'application/json-l', 'application/x-ndjson'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/queries/{id}/results', 'GET',
                                         path_params,
@@ -735,7 +735,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/queries/{id}/results', 'POST',
                                         path_params,
@@ -856,7 +856,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/queries', 'GET',
                                         path_params,
@@ -977,7 +977,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/queries', 'GET',
                                         path_params,
@@ -1081,7 +1081,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/queries/{id}', 'GET',
                                         path_params,
@@ -1192,7 +1192,7 @@ class QueriesApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/queries/{id}/v/{versionId}', 'GET',
                                         path_params,
@@ -1312,7 +1312,7 @@ class QueriesApi(object):
             select_header_accept(['application/sparql-results+json', 'application/sparql-results+xml', 'application/rdf+json', 'application/rdf+xml', 'text/tab-separated-values', 'text/turtle', 'text/csv'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/sparql/{owner}/{id}', 'GET',
                                         path_params,
@@ -1436,7 +1436,7 @@ class QueriesApi(object):
             select_header_content_type(['application/x-www-form-urlencoded'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/sparql/{owner}/{id}', 'POST',
                                         path_params,
@@ -1560,7 +1560,7 @@ class QueriesApi(object):
             select_header_accept(['application/json', 'application/json-l', 'application/x-ndjson', 'text/csv'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/sql/{owner}/{id}', 'GET',
                                         path_params,
@@ -1681,7 +1681,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/sql/{owner}/{id}', 'POST',
                                         path_params,
@@ -1814,7 +1814,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/queries/{queryId}', 'PUT',
                                         path_params,
@@ -1947,7 +1947,7 @@ class QueriesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/projects/{owner}/{id}/queries/{queryId}', 'PUT',
                                         path_params,

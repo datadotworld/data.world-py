@@ -194,6 +194,11 @@ class Configuration(object):
         elif self.api_key.get(identifier):
             return self.api_key[identifier]
 
+    # Manually added this function to avoid wiping the auth token when access_token does not exist.
+    def get_access_token(self, access_token):
+        if (access_token):
+            return 'Bearer' + access_token
+
     def get_basic_auth_token(self):
         """
         Gets HTTP basic authentication header (string).
@@ -216,7 +221,7 @@ class Configuration(object):
                     'type': 'oauth2',
                     'in': 'header',
                     'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
+                    'value': self.get_access_token(self.access_token)
                 },
 
         }

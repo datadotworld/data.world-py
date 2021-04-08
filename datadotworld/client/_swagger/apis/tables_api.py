@@ -42,8 +42,8 @@ class TablesApi(object):
 
     def create_new_tables(self, owner, id, body, **kwargs):
         """
-        Add live or extracted tables from a virtual connection
-        Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help protal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).
+        Add live tables from a virtual connection
+        Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help portal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -70,8 +70,8 @@ class TablesApi(object):
 
     def create_new_tables_with_http_info(self, owner, id, body, **kwargs):
         """
-        Add live or extracted tables from a virtual connection
-        Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help protal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).
+        Add live tables from a virtual connection
+        Add tables from an established virtual connection. For increased security, endpoints that interact with external connection sources require an Enterprise Admin Token. This token can be found under [Advanced Settings](https://data.world/settings/advanced). To learn more about the virtual connections data.world supports, please visit our [help portal](https://help.data.world/hc/en-us/sections/360009504254-Create-and-manage-virtual-connections).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please define a `callback` function
         to be invoked when receiving the response.
@@ -143,7 +143,7 @@ class TablesApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/tables', 'POST',
                                         path_params,

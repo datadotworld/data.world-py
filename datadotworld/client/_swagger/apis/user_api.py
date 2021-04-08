@@ -126,7 +126,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/datasets/contributing', 'GET',
                                         path_params,
@@ -229,7 +229,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/projects/contributing', 'GET',
                                         path_params,
@@ -332,7 +332,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/datasets/liked', 'GET',
                                         path_params,
@@ -435,7 +435,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/projects/liked', 'GET',
                                         path_params,
@@ -538,7 +538,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user/projects/own', 'GET',
                                         path_params,
@@ -632,7 +632,7 @@ class UserApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/user', 'GET',
                                         path_params,

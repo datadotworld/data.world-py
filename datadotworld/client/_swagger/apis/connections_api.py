@@ -136,7 +136,7 @@ class ConnectionsApi(object):
             select_header_content_type(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/connections/{owner}', 'POST',
                                         path_params,
@@ -245,7 +245,7 @@ class ConnectionsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/connections/{owner}/{id}', 'DELETE',
                                         path_params,
@@ -354,7 +354,7 @@ class ConnectionsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/connections/{owner}/{id}', 'GET',
                                         path_params,
@@ -468,7 +468,7 @@ class ConnectionsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/connections/{owner}', 'GET',
                                         path_params,

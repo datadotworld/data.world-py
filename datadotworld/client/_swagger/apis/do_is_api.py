@@ -145,7 +145,7 @@ class DOIsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/dois/{doi}', 'PUT',
                                         path_params,
@@ -274,7 +274,7 @@ class DOIsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/v/{versionId}/dois/{doi}', 'PUT',
                                         path_params,
@@ -396,7 +396,7 @@ class DOIsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/dois/{doi}', 'DELETE',
                                         path_params,
@@ -525,7 +525,7 @@ class DOIsApi(object):
             select_header_accept(['application/json'])
 
         # Authentication setting
-        auth_settings = ['token']
+        auth_settings = ['oauth']
 
         return self.api_client.call_api('/datasets/{owner}/{id}/v/{versionId}/dois/{doi}', 'DELETE',
                                         path_params,

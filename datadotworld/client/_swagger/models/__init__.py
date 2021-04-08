@@ -101,6 +101,7 @@ from .sql_query_request import SqlQueryRequest
 from .ssh_tunnel import SshTunnel
 from .stream_schema import StreamSchema
 from .stream_schema_patch_request import StreamSchemaPatchRequest
+from .streams_resource import StreamsResource
 from .subscription import Subscription
 from .subscription_api_links import SubscriptionApiLinks
 from .subscription_create_request import SubscriptionCreateRequest

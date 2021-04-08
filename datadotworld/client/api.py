@@ -790,11 +790,14 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId',
         ...     {'content':'content'})  # doctest: +SKIP
         """
-        body = {'type': ''}
+
+        request = self.__build_streams_obj(
+            lambda: _swagger.StreamsResource(),
+            kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return self._streams_api.append_records(owner_id, dataset_id,
-                                                    stream_id, body=body)
+                                                    stream_id, body=request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -1406,6 +1409,9 @@ class RestApiClient(object):
             insight.data_source_links = args['data_source_links']
         return insight
 
+    @staticmethod
+    def __build_streams_obj(streams_constructor,args):
+        return streams_constructor()
 
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by

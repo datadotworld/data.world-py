@@ -164,7 +164,7 @@ class SingleTableMetadataSpec(object):
         :param table_type: The table_type of this SingleTableMetadataSpec.
         :type: str
         """
-        allowed_values = ["EXTRACT", "VIRTUAL"]
+        allowed_values = ["VIRTUAL"]
         if table_type not in allowed_values:
             raise ValueError(
                 "Invalid value for `table_type` ({0}), must be one of {1}"
