@@ -1353,7 +1353,7 @@ class RestApiClient(object):
             dataset.visibility = args['visibility']
 
         dataset.files = files
-
+        print('test')
         return dataset
 
     @staticmethod
