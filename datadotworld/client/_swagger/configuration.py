@@ -195,6 +195,7 @@ class Configuration(object):
             return self.api_key[identifier]
 
     # Manually added this function to avoid wiping the auth token when access_token does not exist.
+    # https://github.com/swagger-api/swagger-codegen/issues/10968
     def get_access_token(self, access_token):
         if (access_token):
             return 'Bearer' + access_token
