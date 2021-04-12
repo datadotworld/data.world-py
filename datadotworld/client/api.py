@@ -69,7 +69,9 @@ class RestApiClient(object):
         self._projects_api = _swagger.ProjectsApi(swagger_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
         self._files_api = _swagger.FilesApi(swagger_client)
-        self._queries_api = _swagger.QueriesApi(swagger_client  )
+        self._queries_api = _swagger.QueriesApi(swagger_client)
+        self._search_api = _swagger.SearchApi(swagger_client)
+
     # Dataset Operations
 
     def get_dataset(self, dataset_key):
@@ -779,7 +781,6 @@ class RestApiClient(object):
         :type dataset_key: str
         :param stream_id: Stream unique identifier.
         :type stream_id: str
-        // TODO:  probably need to put the type of the StreamsResource object.
 
         :raises RestApiException: If a server error occurs
 
@@ -1263,7 +1264,7 @@ class RestApiClient(object):
 
         **Note that only elements included in the request will be updated. All
         omitted elements will remain untouched.
-        :param project_key: Projrct identifier, in the form of
+        :param project_key: Project identifier, in the form of
         projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
@@ -1328,6 +1329,70 @@ class RestApiClient(object):
             self._insights_api.delete_insight(projectOwner,
                                               projectId,
                                               insight_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Search Operations
+
+    def search_resources(self, **kwargs):
+        """Advanced search on resources.
+
+        :params query: the query of this search request
+        :type query: str
+        :params category: Filter by categories
+        :type category: {"catalogAnalysis", "catalogBusinessTerm", "catalogDataset", "catalogDataType", "catalogTable",
+         "collection", "comment", "dataset", "datatable", "file", "insight", "integration", "project", "query"}, array, optional, 
+        :params resource_id: Filter by resource IDs
+        :type resource_id: array, optional
+        :params type: Filter by type of metadata resource. Both IRI and label are accepted
+        :type type: array, optional
+        :params owner: Filter by owners. Owners are identified by their IDs
+        :type owner: array, optional
+        :params min_access_level: Minimum access level to filter by
+        :type min_access_level: {"NONE", "SAML_GATED", "DISCOVER", "READ", "WRITE", "ADMIN"}, optional
+        :params tag: Filter by tags.
+        :type tag: array, optional
+        :params visibility: Filter by visibility
+        :type visibility: {"DISCOVERABLE", "OPEN", "PRIVATE"}, optional
+        :params created_start_date: Filter by range of date that the resource was created by start date
+        :type created_start_date: str, optional, YYYY-MM-DD
+        :params created_end_date: Filter by range of date that the resource was created by end date
+        :type created_end_date: str, optional, YYYY-MM-DD
+        :params created_range: Filter by range of date that the resource was created
+        :type created_range: Object containing "start_date" or "end_date' keys
+        :params updated_range: Filter by range of date that the resource was updated.
+        :type updated_range: Object containing "start_date" or "end_date' keys
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> search_results = api_client.search_resources(
+        ...     query="intro")  # doctest: +SKIP
+        """
+        request = self.__build_search_obj(
+            lambda: _swagger.SearchRequest(
+                query=kwargs.get('query'),
+                category=kwargs.get('category'),
+                resource_id=kwargs.get('resource_id'),
+                type=kwargs.get('type'),
+                owner=kwargs.get('owner'),
+                min_access_level=kwargs.get('min_access_level'),
+                tag=kwargs.get('tag'),
+                visibility=kwargs.get('visibility'),
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date') ,
+                end_date=kwargs.get('created_end_date')   
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date') ,
+                end_date=kwargs.get('created_end_date')   
+            ),
+            kwargs)
+        try:
+           return self._search_api.search_resources_advanced(request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -1412,6 +1477,40 @@ class RestApiClient(object):
     @staticmethod
     def __build_streams_obj(streams_constructor,args):
         return streams_constructor()
+
+    @staticmethod
+    def __build_search_obj(search_constructor, created_range_constructor, updated_range_constructor, args):
+        search = search_constructor()
+        created_range = created_range_constructor()
+        updated_range = updated_range_constructor()
+        if 'query' in args:
+            search.query = args['query']
+        if 'owner' in args:
+            search.owner = args['owner']
+        if 'category' in args:
+            search.category = args['category']
+        if 'resource_id' in args:
+            search.resource_id = args['resource_id']
+        if 'type' in args:
+            search.type = args['type']
+        if 'min_access_level' in args:
+            search.min_access_level = args['min_access_level']
+        if 'tag' in args:
+            search.tag = args['tag']
+        if 'visibility' in args:
+            search.visibility = args['visibility']
+        if 'created_start_date' in args:
+            created_range.start_date = args['created_start_date']
+        if 'created_end_date' in args:
+            created_range.end_date = args['created_end_date']
+        if 'updated_start_date' in args:
+            updated_range.start_date = args['updated_start_date']
+        if 'updated_end_date' in args:
+            updated_range.end_date = args['updated_end_date']
+
+        search.created_range = created_range
+        search.updated_range = updated_range
+        return search
 
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by

@@ -35,7 +35,8 @@ from datadotworld.client._swagger import (
     ProjectsApi,
     InsightsApi,
     FilesApi,
-    QueriesApi
+    QueriesApi,
+    SearchApi
 )
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
@@ -47,7 +48,8 @@ from datadotworld.client._swagger.models import (
     UserDataResponse,
     ProjectSummaryResponse,
     InsightSummaryResponse,
-    PaginatedProjectResults
+    PaginatedProjectResults,
+    PaginatedSearchResultsDto
 )
 from datadotworld.client.api import RestApiClient, RestApiError
 
@@ -156,11 +158,19 @@ class TestApiClient:
                 lambda o, d, q, queries_api_mock, _preload_content: query_resp
             return api
 
+    @pytest.fixture()
+    def search_api(self):
+        with Spy(SearchApi) as api:
+            api.search_resources_advanced = lambda b: PaginatedSearchResultsDto(
+                count=1,
+                records=[]
+            ) 
+            return api
 
     @pytest.fixture()
     def api_client(self, config, datasets_api,
                     user_api, streams_api, projects_api,
-                   insights_api, files_api, queries_api):
+                   insights_api, files_api, queries_api, search_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._user_api = user_api
@@ -169,6 +179,7 @@ class TestApiClient:
         client._insights_api = insights_api
         client._files_api = files_api
         client._queries_api = queries_api
+        client._search_api = search_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -375,11 +386,9 @@ class TestApiClient:
         assert_that(user_api.fetch_projects(), has_properties(projects))
 
     def test_append_records(self, api_client, dataset_key, streams_api):
-        # Todo: Revisit this
         api_client.append_records(dataset_key, 'streamid')
         assert_that(streams_api.append_records,
-                    called().times(1).with_args('agentid', 'datasetid',
-                                                'streamid', body = {'type': ''}))
+                    called().times(1))
 
     def test_get_project(self, api_client, project_key):
         project = api_client.get_project(project_key)
@@ -471,3 +480,8 @@ class TestApiClient:
                     called().times(1).with_args(equal_to('agentid'),
                                                 equal_to('projectid'),
                                                 equal_to(insight_id)))
+
+    def test_search(self, api_client, search_api, project_key):
+        search_results = api_client.search_resources(query="test")
+        assert_that(search_results,has_properties({'count': 1, 'facets': None, 'hydrations': None, 'next': None, 'records': []}))
+        
