@@ -161,15 +161,15 @@ class TestApiClient:
     @pytest.fixture()
     def search_api(self):
         with Spy(SearchApi) as api:
-            api.search_resources_advanced = lambda b: PaginatedSearchResultsDto(
-                count=1,
-                records=[]
-            ) 
+            api.search_resources_advanced = \
+                lambda b: PaginatedSearchResultsDto(
+                    count=1,
+                    records=[])
             return api
 
     @pytest.fixture()
     def api_client(self, config, datasets_api,
-                    user_api, streams_api, projects_api,
+                   user_api, streams_api, projects_api,
                    insights_api, files_api, queries_api, search_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
@@ -343,7 +343,8 @@ class TestApiClient:
                                                 'file'))
 
     def test_sql(self, api_client, dataset_key, queries_api):
-        result = api_client.sql(dataset_key, 'query', queries_api_mock=queries_api)
+        result = api_client.sql(dataset_key, 'query',
+                                queries_api_mock=queries_api)
         assert_that(result.read().decode('utf-8'), equal_to('result'))
 
     def test_sparql(self, api_client, dataset_key, queries_api):
@@ -483,5 +484,5 @@ class TestApiClient:
 
     def test_search(self, api_client, search_api, project_key):
         search_results = api_client.search_resources(query="test")
-        assert_that(search_results,has_properties({'count': 1, 'facets': None, 'hydrations': None, 'next': None, 'records': []}))
-        
+        assert_that(search_results, has_properties({'count': 1, 'facets': None,
+                    'hydrations': None, 'next': None, 'records': []}))

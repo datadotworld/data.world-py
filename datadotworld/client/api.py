@@ -365,8 +365,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._files_api.upload_files(owner_id, dataset_id, files,
-                                           **kwargs)
+            self._files_api.upload_files(owner_id, dataset_id, files, **kwargs)
             if files_metadata:
                 self.update_dataset(dataset_key, files=files_metadata)
         except _swagger.rest.ApiException as e:
@@ -681,7 +680,8 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        queries_api = kwargs.get('queries_api_mock', _swagger.QueriesApi(api_client))
+        queries_api = kwargs.get('queries_api_mock',
+                                 _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             response = queries_api.sql_post(
@@ -715,7 +715,7 @@ class RestApiClient(object):
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
         query_api = kwargs.get('queries_api_mock',
-                                _swagger.QueriesApi(api_client))
+                               _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             response = query_api.sparql_post(
@@ -1340,27 +1340,35 @@ class RestApiClient(object):
         :params query: the query of this search request
         :type query: str
         :params category: Filter by categories
-        :type category: {"catalogAnalysis", "catalogBusinessTerm", "catalogDataset", "catalogDataType", "catalogTable",
-         "collection", "comment", "dataset", "datatable", "file", "insight", "integration", "project", "query"}, array, optional, 
+        :type category: {"catalogAnalysis", "catalogBusinessTerm",
+         "catalogDataset", "catalogDataType", "catalogTable", "collection",
+         "comment", "dataset", "datatable", "file", "insight", "integration",
+         "project", "query"}, array, optional
         :params resource_id: Filter by resource IDs
         :type resource_id: array, optional
-        :params type: Filter by type of metadata resource. Both IRI and label are accepted
+        :params type: Filter by type of metadata resource. Both IRI and
+         label are accepted
         :type type: array, optional
         :params owner: Filter by owners. Owners are identified by their IDs
         :type owner: array, optional
         :params min_access_level: Minimum access level to filter by
-        :type min_access_level: {"NONE", "SAML_GATED", "DISCOVER", "READ", "WRITE", "ADMIN"}, optional
+        :type min_access_level: {"NONE", "SAML_GATED", "DISCOVER", "READ",
+         "WRITE", "ADMIN"}, optional
         :params tag: Filter by tags.
         :type tag: array, optional
         :params visibility: Filter by visibility
         :type visibility: {"DISCOVERABLE", "OPEN", "PRIVATE"}, optional
-        :params created_start_date: Filter by range of date that the resource was created by start date
+        :params created_start_date: Filter by range of date that the resource
+         was created by start date
         :type created_start_date: str, optional, YYYY-MM-DD
-        :params created_end_date: Filter by range of date that the resource was created by end date
+        :params created_end_date: Filter by range of date that
+         the resource was created by end date
         :type created_end_date: str, optional, YYYY-MM-DD
-        :params created_range: Filter by range of date that the resource was created
+        :params created_range: Filter by range of date that the resource
+         was created
         :type created_range: Object containing "start_date" or "end_date' keys
-        :params updated_range: Filter by range of date that the resource was updated.
+        :params updated_range: Filter by range of date that the resource
+         was updated.
         :type updated_range: Object containing "start_date" or "end_date' keys
         :raises RestApiException: If a server error occurs
 
@@ -1383,16 +1391,16 @@ class RestApiClient(object):
                 visibility=kwargs.get('visibility'),
             ),
             lambda: _swagger.Range(
-                start_date=kwargs.get('created_start_date') ,
-                end_date=kwargs.get('created_end_date')   
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
             ),
             lambda: _swagger.Range(
-                start_date=kwargs.get('created_start_date') ,
-                end_date=kwargs.get('created_end_date')   
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
             ),
             kwargs)
         try:
-           return self._search_api.search_resources_advanced(request)
+            return self._search_api.search_resources_advanced(request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -1475,11 +1483,12 @@ class RestApiClient(object):
         return insight
 
     @staticmethod
-    def __build_streams_obj(streams_constructor,args):
+    def __build_streams_obj(streams_constructor, args):
         return streams_constructor()
 
     @staticmethod
-    def __build_search_obj(search_constructor, created_range_constructor, updated_range_constructor, args):
+    def __build_search_obj(search_constructor, created_range_constructor,
+                           updated_range_constructor, args):
         search = search_constructor()
         created_range = created_range_constructor()
         updated_range = updated_range_constructor()
@@ -1511,6 +1520,7 @@ class RestApiClient(object):
         search.created_range = created_range
         search.updated_range = updated_range
         return search
+
 
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by
