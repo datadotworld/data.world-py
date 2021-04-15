@@ -64,12 +64,13 @@ class RestApiClient(object):
             user_agent=_user_agent())
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
-        self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
-        self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
         self._projects_api = _swagger.ProjectsApi(swagger_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
+        self._files_api = _swagger.FilesApi(swagger_client)
+        self._queries_api = _swagger.QueriesApi(swagger_client)
+        self._search_api = _swagger.SearchApi(swagger_client)
 
     # Dataset Operations
 
@@ -312,7 +313,7 @@ class RestApiClient(object):
         ) for file_name, file_info in files.items()]
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.add_files_by_source(
+            self._files_api.add_files_by_source(
                 owner_id, dataset_id,
                 _swagger.FileBatchUpdateRequest(files=file_requests))
         except _swagger.rest.ApiException as e:
@@ -333,7 +334,7 @@ class RestApiClient(object):
         >>> api_client.sync_files('username/test-dataset')  # doctest: +SKIP
         """
         try:
-            self._datasets_api.sync(*(parse_dataset_key(dataset_key)))
+            self._files_api.sync(*(parse_dataset_key(dataset_key)))
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -364,8 +365,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files,
-                                           **kwargs)
+            self._files_api.upload_files(owner_id, dataset_id, files, **kwargs)
             if files_metadata:
                 self.update_dataset(dataset_key, files=files_metadata)
         except _swagger.rest.ApiException as e:
@@ -397,7 +397,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
+            self._files_api.upload_file(owner_id, dataset_id, name, **kwargs)
             if file_metadata:
                 self.update_dataset(dataset_key, files=file_metadata)
         except _swagger.rest.ApiException as e:
@@ -421,7 +421,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.delete_files_and_sync_sources(
+            self._files_api.delete_files_and_sync_sources(
                 owner_id, dataset_id, names)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
@@ -680,10 +680,11 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(api_client))
+        queries_api = kwargs.get('queries_api_mock',
+                                 _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sql_api.sql_post(
+            response = queries_api.sql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -713,11 +714,11 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sparql_api = kwargs.get('sparql_api_mock',
-                                _swagger.SparqlApi(api_client))
+        query_api = kwargs.get('queries_api_mock',
+                               _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sparql_api.sparql_post(
+            response = query_api.sparql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -743,7 +744,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_dataset(owner_id, dataset_id)
+            return self._datasets_api.download_dataset(owner_id, dataset_id)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -767,21 +768,20 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_file(owner_id, dataset_id, file)
+            return self._files_api.download_file(owner_id, dataset_id, file)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
     # Streams Operation
 
-    def append_records(self, dataset_key, stream_id, body):
+    def append_records(self, dataset_key, stream_id, **kwargs):
         """Append records to a stream.
 
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :param stream_id: Stream unique identifier.
         :type stream_id: str
-        :param body: Object body
-        :type body: obj
+
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -791,10 +791,14 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId',
         ...     {'content':'content'})  # doctest: +SKIP
         """
+
+        request = self.__build_streams_obj(
+            lambda: _swagger.StreamsResource(),
+            kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return self._streams_api.append_records(owner_id, dataset_id,
-                                                    stream_id, body)
+                                                    stream_id, body=request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -1260,7 +1264,7 @@ class RestApiClient(object):
 
         **Note that only elements included in the request will be updated. All
         omitted elements will remain untouched.
-        :param project_key: Projrct identifier, in the form of
+        :param project_key: Project identifier, in the form of
         projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
@@ -1325,6 +1329,78 @@ class RestApiClient(object):
             self._insights_api.delete_insight(projectOwner,
                                               projectId,
                                               insight_id)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Search Operations
+
+    def search_resources(self, **kwargs):
+        """Advanced search on resources.
+
+        :params query: the query of this search request
+        :type query: str
+        :params category: Filter by categories
+        :type category: {"catalogAnalysis", "catalogBusinessTerm",
+         "catalogDataset", "catalogDataType", "catalogTable", "collection",
+         "comment", "dataset", "datatable", "file", "insight", "integration",
+         "project", "query"}, array, optional
+        :params resource_id: Filter by resource IDs
+        :type resource_id: array, optional
+        :params type: Filter by type of metadata resource. Both IRI and
+         label are accepted
+        :type type: array, optional
+        :params owner: Filter by owners. Owners are identified by their IDs
+        :type owner: array, optional
+        :params min_access_level: Minimum access level to filter by
+        :type min_access_level: {"NONE", "SAML_GATED", "DISCOVER", "READ",
+         "WRITE", "ADMIN"}, optional
+        :params tag: Filter by tags.
+        :type tag: array, optional
+        :params visibility: Filter by visibility
+        :type visibility: {"DISCOVERABLE", "OPEN", "PRIVATE"}, optional
+        :params created_start_date: Filter by range of date that the resource
+         was created by start date
+        :type created_start_date: str, optional, YYYY-MM-DD
+        :params created_end_date: Filter by range of date that
+         the resource was created by end date
+        :type created_end_date: str, optional, YYYY-MM-DD
+        :params created_range: Filter by range of date that the resource
+         was created
+        :type created_range: Object containing "start_date" or "end_date' keys
+        :params updated_range: Filter by range of date that the resource
+         was updated.
+        :type updated_range: Object containing "start_date" or "end_date' keys
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> search_results = api_client.search_resources(
+        ...     query="intro")  # doctest: +SKIP
+        """
+        request = self.__build_search_obj(
+            lambda: _swagger.SearchRequest(
+                query=kwargs.get('query'),
+                category=kwargs.get('category'),
+                resource_id=kwargs.get('resource_id'),
+                type=kwargs.get('type'),
+                owner=kwargs.get('owner'),
+                min_access_level=kwargs.get('min_access_level'),
+                tag=kwargs.get('tag'),
+                visibility=kwargs.get('visibility'),
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
+            ),
+            kwargs)
+        try:
+            return self._search_api.search_resources_advanced(request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -1405,6 +1481,45 @@ class RestApiClient(object):
         if 'data_source_links' in args:
             insight.data_source_links = args['data_source_links']
         return insight
+
+    @staticmethod
+    def __build_streams_obj(streams_constructor, args):
+        return streams_constructor()
+
+    @staticmethod
+    def __build_search_obj(search_constructor, created_range_constructor,
+                           updated_range_constructor, args):
+        search = search_constructor()
+        created_range = created_range_constructor()
+        updated_range = updated_range_constructor()
+        if 'query' in args:
+            search.query = args['query']
+        if 'owner' in args:
+            search.owner = args['owner']
+        if 'category' in args:
+            search.category = args['category']
+        if 'resource_id' in args:
+            search.resource_id = args['resource_id']
+        if 'type' in args:
+            search.type = args['type']
+        if 'min_access_level' in args:
+            search.min_access_level = args['min_access_level']
+        if 'tag' in args:
+            search.tag = args['tag']
+        if 'visibility' in args:
+            search.visibility = args['visibility']
+        if 'created_start_date' in args:
+            created_range.start_date = args['created_start_date']
+        if 'created_end_date' in args:
+            created_range.end_date = args['created_end_date']
+        if 'updated_start_date' in args:
+            updated_range.start_date = args['updated_start_date']
+        if 'updated_end_date' in args:
+            updated_range.end_date = args['updated_end_date']
+
+        search.created_range = created_range
+        search.updated_range = updated_range
+        return search
 
 
 class RestApiError(Exception):

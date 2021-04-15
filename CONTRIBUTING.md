@@ -16,8 +16,12 @@ $ git clone https://github.com/[YOUR_GITHUB_NAME]/data.world-py.git
 $ cd data.world-py
 $ git remote add upstream https://github.com/datadotworld/data.world-py.git
 ```
-
 ### Install and Test
+#### Python Version Support
+The following list of python versions have been tested and have been found to work with the SDK.
+This is not a conclusive list and should be amended to include other versions that have worked for others:
+ -  3.5.9
+
 
 Run the command below to install packages required:
 
@@ -38,7 +42,10 @@ $ git checkout master
 $ git pull upstream master
 $ git checkout -b my-feature-branch
 ```
-
+### Running Swagger-codegen
+Should you find the need to run swagger-codegen, you will need to make changes to some generated code in order to address an issue with OAuth.
+You can refer to the issue for more details: https://github.com/swagger-api/swagger-codegen/issues/10968
+After running swagger-codegen, you will need to update the `configurations.py` file by adding this [function](https://github.com/datadotworld/data.world-py/pull/120/files#diff-097089a848b0e5d38d7a980e2d1ffea3e687f544e286573cf79ef0297ba1e118R197-R202), and using it in the `auth_settings` function over [here](https://github.com/datadotworld/data.world-py/pull/120/files#diff-097089a848b0e5d38d7a980e2d1ffea3e687f544e286573cf79ef0297ba1e118R225).
 ### Write Tests
 
 Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add tests to spec.
