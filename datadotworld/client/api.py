@@ -71,6 +71,8 @@ class RestApiClient(object):
         self._files_api = _swagger.FilesApi(swagger_client)
         self._queries_api = _swagger.QueriesApi(swagger_client)
         self._search_api = _swagger.SearchApi(swagger_client)
+        self._tables_api = _swagger.TablesApi(swagger_client)
+        self._connections_api = _swagger.ConnectionsApi(swagger_client)
 
     # Dataset Operations
 
@@ -1404,6 +1406,153 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    # Table Operations
+
+    def create_new_tables(self, owner, id, **kwargs):
+        """Add tables from an established virtual connection. 
+           For increased security, endpoints that interact with external
+           connection sources require an Enterprise Admin Token.
+
+        :params owner
+        :type owner: str
+        :params id: Virtual connection Id
+        :type id: str
+        :params tables: list of tables to add
+        :type tables: object with following properties,
+            :params name: Table name
+            :type name: str
+            :params description: Table description
+            :type description: str
+            :params source:
+            :Type source: object with following properties
+                :params databaseSource: 
+                :type databaseSource: object with following properties
+                    :params owner: Owner agent
+                    :type owner: str
+                    :params id: data.world database connection identifier
+                    :type id: str
+                :params tableSpec: Virtual or extracted table details
+                :type tableSpec: object with following properties
+                    :params database: Database name
+                    :type database: str
+                    :params schema: Schema name
+                    :type schema: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> tables = api_client.create_new_tables(
+        ...     'username', 'datasetid', tables=[{
+            'name':'virtualTable1', 'source': {
+                'databaseSource':{
+                    'owner': 'connectionOwner',
+                    'id': 'virtualConnectionId'
+                },
+                'tableSpec': {
+                    'database':'databaseName',
+                    'schema': 'databaseSchema',
+                    'table':'tableName',
+                    'tableType':'VIRTUAL'
+                }
+            }
+        }])  # doctest: +SKIP
+        """
+        request = self.__build_tables_obj(
+            lambda: _swagger.TableBatchUpdateRequest(),
+            lambda name, description, database_source_owner, database_source_id, table_source_database, table_source_schema, table_source_table, table_source_table_type:
+            _swagger.TableCreateOrUpdateRequest(
+                name=name,
+                source=_swagger.TableSourceCreateOrUpdateRequest(
+                    database_source=_swagger.DatabaseSourceReference(
+                        owner=database_source_owner,
+                        id = database_source_id
+                    ),
+                    table_spec=_swagger.SingleTableMetadataSpec(
+                        database=table_source_database,
+                        schema=table_source_schema,
+                        table=table_source_table,
+                        table_type=table_source_table_type
+                    )),
+                description=description), kwargs)
+        
+        try:
+            return self._tables_api.create_new_tables(owner,id,request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+            
+    # Connection Operations
+
+    def create_new_connections(self, owner, **kwargs):
+        """Create a new virtual connection. For increased security,
+        connection endpoints require an Enterprise Admin Token.
+
+        :params owner: 
+        :type owner: str
+        :params name: Connection name
+        :type name: str
+        :params type: Database Type
+        :type type: str
+        :params host: Database Host
+        :type host: str
+        :params port: Database Port
+        :type port: int
+        :params sslRequired: Is ssl required
+        :type sslRequired: boolean
+        :params verifyServerCertificate: Should server certificate be verified
+        :type verifyServerCertificate: boolean
+        :params properties: Properties such as auto commit, isolation level, etc.
+        :type properties: object
+        :params advancedProperties: Advanced Properties
+        :type advancedProperties: object
+        :params credentials:
+        :type credentials: object with following properties
+            :params user: user name
+            :type user: str
+            :params password: password
+            :type password: str
+        :params sshTunnel:
+        :type sshTunnel: object with following properties:
+            :params host: ssh tunnel host
+            :type host: str
+            :params port: Tunnel Port
+            :type port: int
+            :params user: User name
+            :type user: str
+            :params userKeyPair: whether authentication is required
+            :type userKeyPair: boolean
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> virtual_connection = api_client.create_new_connections(
+        ...     'username', type='SQLSERVER', port=1234, name='connectionName', host='hostUrl', credentials={'user':'username','password:'password'})  # doctest: +SKIP
+        """
+        request = self.__build_connection_obj(
+            lambda: _swagger.ConnectionDto(
+                type=kwargs.get('type'),
+                host=kwargs.get('host')),
+            lambda user, password: 
+                _swagger.DatabaseCredentials(
+                    user=user,
+                    password=password
+                ),
+            lambda host, port, user, user_key_pair:
+                _swagger.SshTunnel(
+                    host=host,
+                    port=port,
+                    user=user,
+                    user_key_pair=user_key_par
+                ), kwargs)
+        try:
+            return self._connections_api.create_connection(owner,request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+        
+
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
@@ -1521,7 +1670,56 @@ class RestApiClient(object):
         search.updated_range = updated_range
         return search
 
+    @staticmethod
+    def __build_tables_obj(table_constructor, table_create_update_constructor, args):
+        table = table_constructor()
 
+        if 'tables' in args:
+            table_create_update = []
+            for table in args['tables']:
+                table_create_update.append(table_create_update_constructor(
+                    name=table.get('name'),
+                    description=table.get('description'),
+                    database_source_owner=table.get('source').get('databaseSource').get('owner'),
+                    database_source_id=table.get('source').get('databaseSource').get('id'),
+                    table_source_database=table.get('source').get('tableSpec').get('database'),
+                    table_source_schema=table.get('source').get('tableSpec').get('schema'),
+                    table_source_table=table.get('source').get('tableSpec').get('table'),
+                    table_source_table_type=table.get('source').get('tableSpec').get('tableType')))
+            table.tables = table_create_update
+
+        return table
+
+    @staticmethod
+    def __build_connection_obj(connection_constructor, database_credentials_constructor, ssh_tunnel_constructor, args):
+        connection = connection_constructor()
+        if 'credentials' in args:
+            database_credentials = database_credentials_constructor(user=args['credentials']['user'], password=args['credentials']['password'])
+            connection.credentials = database_credentials
+        if 'sshTunnel' in args:
+            ssh_tunnel = ssh_tunnel_constructor(host=args['sshTunnel']['host'], port=args['sshTunnel']['port'], user=args['sshTunnel']['user'], user_key_pair=args['sshTunnel']['userKeyPair'])
+            connection.ssh_tunnel = ssh_tunnel
+        if 'name' in args:
+            connection.name = args['name']
+        if 'type' in args:
+            connection.type = args['type']
+        if 'host' in args:
+            connection.host = args['host']
+        if 'port' in args:
+            connection.port = args['port']
+        if 'database' in args:
+            connection.database = args['database']
+        if 'sslRequired' in args:
+            connection.ssl_required = args['sslRequired']
+        if 'verifyServerCertificate' in args:
+            connection.verify_server_certificate = args['verifyServerCertificate']
+        if 'trustedServerCertificates' in args:
+            connection.trusted_server_certificates = args['trustedServerCertificates']
+        if 'properties' in args:
+            connection.properties = args['properties']
+        if 'advancedProperties' in args:
+            connection.advanced_properties = args['advancedProperties']
+        return connection
 class RestApiError(Exception):
     """Exception wrapper for errors raised by requests or by
     the swagger client"""

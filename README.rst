@@ -326,6 +326,8 @@ The client currently implements the following functions:
 * ``update_insight``
 * ``delete_insight``
 * ``search_resources``
+* ``create_new_tables``
+* ``create_new_connections``
 
 For a few examples of what the ``ApiClient`` can be used for, see below.
 

@@ -36,7 +36,8 @@ from datadotworld.client._swagger import (
     InsightsApi,
     FilesApi,
     QueriesApi,
-    SearchApi
+    SearchApi,
+    TablesApi
 )
 from datadotworld.client._swagger.rest import ApiException
 from datadotworld.client._swagger.models import (
@@ -49,7 +50,8 @@ from datadotworld.client._swagger.models import (
     ProjectSummaryResponse,
     InsightSummaryResponse,
     PaginatedProjectResults,
-    PaginatedSearchResultsDto
+    PaginatedSearchResultsDto,
+    SuccessMessage
 )
 from datadotworld.client.api import RestApiClient, RestApiError
 
@@ -168,9 +170,17 @@ class TestApiClient:
             return api
 
     @pytest.fixture()
+    def tables_api(self):
+        with Spy(TablesApi) as api:
+            api.create_new_tables = lambda o, i, b: SuccessMessage(
+                "success"    
+            )
+            return api
+
+    @pytest.fixture()
     def api_client(self, config, datasets_api,
                    user_api, streams_api, projects_api,
-                   insights_api, files_api, queries_api, search_api):
+                   insights_api, files_api, queries_api, search_api, tables_api):
         client = RestApiClient(config)
         client._datasets_api = datasets_api
         client._user_api = user_api
@@ -180,6 +190,7 @@ class TestApiClient:
         client._files_api = files_api
         client._queries_api = queries_api
         client._search_api = search_api
+        client._tables_api = tables_api
         return client
 
     def test_get_dataset(self, api_client, dataset_key):
@@ -486,3 +497,7 @@ class TestApiClient:
         search_results = api_client.search_resources(query="test")
         assert_that(search_results, has_properties({'count': 1, 'facets': None,
                     'hydrations': None, 'next': None, 'records': []}))
+        
+    def test_create_table(self, api_client, tables_api):
+        result = api_client.create_new_tables('owner','id')
+        assert_that(result,has_properties({'message': 'success'}))
