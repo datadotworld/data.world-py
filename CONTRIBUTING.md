@@ -38,8 +38,8 @@ $ python setup.py test
 ### Create a Feature Branch
 
 ```sh
-$ git checkout master
-$ git pull upstream master
+$ git checkout main
+$ git pull upstream main
 $ git checkout -b my-feature-branch
 ```
 ### Running Swagger-codegen
@@ -66,7 +66,7 @@ Make sure to fix any errors that appear if any.
 
 ### Write Documentation
 
-Document any external behavior in the [README](https://github.com/datadotworld/data.world-py/blob/master/README.rst).
+Document any external behavior in the [README](https://github.com/datadotworld/data.world-py/blob/main/README.rst).
 
 ### Commit Changes
 
