@@ -1346,11 +1346,6 @@ class RestApiClient(object):
          "catalogDataset", "catalogDataType", "catalogTable", "collection",
          "comment", "dataset", "datatable", "file", "insight", "integration",
          "project", "query"}, array, optional
-        :params resource_id: Filter by resource IDs
-        :type resource_id: array, optional
-        :params type: Filter by type of metadata resource. Both IRI and
-         label are accepted
-        :type type: array, optional
         :params owner: Filter by owners. Owners are identified by their IDs
         :type owner: array, optional
         :params min_access_level: Minimum access level to filter by
