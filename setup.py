@@ -86,7 +86,7 @@ setup(
         'pandas<=1.3.5',
         'pyhamcrest>=1.9.0,<2.0a',
         'pytest>=6.2.5,<7',
-        'responses>=0.17.0,<1a',
+        'responses>=0.17.0,<1',
     ],
     extras_require={
         'pandas': [
