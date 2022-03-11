@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:latest
+      - image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:1.0.0
         aws_auth:
           aws_access_key_id: $DEV_AWS_ACCESS_KEY_ID
           aws_secret_access_key: $DEV_AWS_SECRET_ACCESS_KEY
@@ -22,7 +22,7 @@ jobs:
 
       - run:
           name: pyenv setup
-          command: pyenv local 2.7.16 3.5.7 3.6.8 3.7.3
+          command: pyenv local 2.7.16 3.5.7 3.6.8 3.7.12 3.8.12 3.9.10 3.10.2
 
       - run:
           name: tox

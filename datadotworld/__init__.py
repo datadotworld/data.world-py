@@ -35,7 +35,7 @@ from datadotworld.config import (
 )
 from datadotworld.datadotworld import DataDotWorld, UriParam  # noqa: F401
 
-__version__ = '1.8.0'
+__version__ = '1.8.1'
 
 # Convenience top-level functions
 
