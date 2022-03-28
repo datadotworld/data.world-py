@@ -65,7 +65,7 @@ setup(
     ],
     install_requires=[
         'certifi>=2017.04.17',
-        'click>=6.0,<7.0a',
+        'click>=8.0,<9.0a',
         'configparser>=3.5.0,<4.0a',
         'datapackage>=1.6.2,<2.0a',
         'tableschema>=1.5.2,<2.0a',
