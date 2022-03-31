@@ -1346,8 +1346,6 @@ class RestApiClient(object):
          "catalogDataset", "catalogDataType", "catalogTable", "collection",
          "comment", "dataset", "datatable", "file", "insight", "integration",
          "project", "query"}, array, optional
-        :params resource_id: Filter by resource IDs
-        :type resource_id: array, optional
         :params type: Filter by type of metadata resource. Both IRI and
          label are accepted
         :type type: array, optional
@@ -1385,7 +1383,6 @@ class RestApiClient(object):
             lambda: _swagger.SearchRequest(
                 query=kwargs.get('query'),
                 category=kwargs.get('category'),
-                resource_id=kwargs.get('resource_id'),
                 type=kwargs.get('type'),
                 owner=kwargs.get('owner'),
                 min_access_level=kwargs.get('min_access_level'),
@@ -1651,8 +1648,6 @@ class RestApiClient(object):
             search.owner = args['owner']
         if 'category' in args:
             search.category = args['category']
-        if 'resource_id' in args:
-            search.resource_id = args['resource_id']
         if 'type' in args:
             search.type = args['type']
         if 'min_access_level' in args:
