@@ -174,8 +174,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}, optional
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -190,15 +188,7 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(
-                    url=url,
-                    expand_archive=expand_archive)
-                if url is not None else None,
-                description=description,
-                labels=labels),
+            lambda x: x,
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -222,8 +212,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -242,14 +230,7 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
+            lambda x: x,
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -913,10 +894,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: message object
@@ -933,12 +910,7 @@ class RestApiClient(object):
         """
         request = self.__build_project_obj(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda name, url, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
+            lambda x: x,
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -971,10 +943,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: project object
@@ -996,12 +964,7 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
+            lambda x: x,
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1578,7 +1541,8 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        dataset.files = files
+        if files:
+            dataset.files = files
 
         return dataset
 
@@ -1608,7 +1572,8 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        project.files = files
+        if files:
+            project.files = files
         return project
 
     @staticmethod
