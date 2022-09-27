@@ -143,14 +143,6 @@ class RestApiClient(object):
             lambda: _swagger.DatasetCreateRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
             kwargs)
         try:
             (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
@@ -188,7 +180,6 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda x: x,
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -230,7 +221,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda x: x,
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -861,12 +851,7 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels), kwargs)
+            kwargs)
         try:
             (_, _, headers) = self._projects_api.create_project_with_http_info(
                 owner_id, body=request, _return_http_data_only=False)
@@ -910,7 +895,6 @@ class RestApiClient(object):
         """
         request = self.__build_project_obj(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda x: x,
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -964,7 +948,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda x: x,
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1518,15 +1501,7 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     @staticmethod
-    def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(
-            name,
-            url=file_info.get('url'),
-            expand_archive=file_info.get('expand_archive', False),
-            description=file_info.get('description'),
-            labels=file_info.get('labels'))
-                     for name, file_info in args['files'].items()]
-                 if 'files' in args else None)
+    def __build_dataset_obj(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']
@@ -1541,21 +1516,11 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        if files:
-            dataset.files = files
-
         return dataset
 
     @staticmethod
-    def __build_project_obj(project_constructor, file_constructor, args):
+    def __build_project_obj(project_constructor, args):
 
-        files = ([file_constructor(
-            name,
-            url=file_info.get('url'),
-            description=file_info.get('description'),
-            labels=file_info.get('labels'))
-                     for name, file_info in args['files'].items()]
-                 if 'files' in args else None)
         project = project_constructor()
         if 'title' in args:
             project.title = args['title']
@@ -1572,8 +1537,6 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        if files:
-            project.files = files
         return project
 
     @staticmethod
