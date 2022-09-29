@@ -143,14 +143,6 @@ class RestApiClient(object):
             lambda: _swagger.DatasetCreateRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
             kwargs)
         try:
             (_, _, headers) = self._datasets_api.create_dataset_with_http_info(
@@ -174,8 +166,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}, optional
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -190,15 +180,6 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(
-                    url=url,
-                    expand_archive=expand_archive)
-                if url is not None else None,
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -222,8 +203,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -242,14 +221,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -880,12 +851,7 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels), kwargs)
+            kwargs)
         try:
             (_, _, headers) = self._projects_api.create_project_with_http_info(
                 owner_id, body=request, _return_http_data_only=False)
@@ -913,10 +879,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: message object
@@ -933,12 +895,6 @@ class RestApiClient(object):
         """
         request = self.__build_project_obj(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda name, url, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -971,10 +927,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: project object
@@ -996,12 +948,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1555,15 +1501,7 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     @staticmethod
-    def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(
-            name,
-            url=file_info.get('url'),
-            expand_archive=file_info.get('expand_archive', False),
-            description=file_info.get('description'),
-            labels=file_info.get('labels'))
-                     for name, file_info in args['files'].items()]
-                 if 'files' in args else None)
+    def __build_dataset_obj(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']
@@ -1578,20 +1516,11 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        dataset.files = files
-
         return dataset
 
     @staticmethod
-    def __build_project_obj(project_constructor, file_constructor, args):
+    def __build_project_obj(project_constructor, args):
 
-        files = ([file_constructor(
-            name,
-            url=file_info.get('url'),
-            description=file_info.get('description'),
-            labels=file_info.get('labels'))
-                     for name, file_info in args['files'].items()]
-                 if 'files' in args else None)
         project = project_constructor()
         if 'title' in args:
             project.title = args['title']
@@ -1608,7 +1537,6 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        project.files = files
         return project
 
     @staticmethod
