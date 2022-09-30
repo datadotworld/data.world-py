@@ -944,9 +944,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels() as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: project object
@@ -968,12 +965,7 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
+            lambda x: x,
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
