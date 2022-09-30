@@ -26,6 +26,7 @@ import os
 import shutil
 import uuid
 import zipfile
+from multipledispatch import dispatch
 from os import path
 
 import requests
@@ -1515,6 +1516,7 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     @staticmethod
+    @dispatch(object, object, object)
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
             name,
@@ -1545,6 +1547,7 @@ class RestApiClient(object):
         return dataset
 
     @staticmethod
+    @dispatch(object, object)
     def __build_dataset_obj(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
@@ -1563,6 +1566,7 @@ class RestApiClient(object):
         return dataset
 
     @staticmethod
+    @dispatch(object, object, object)
     def __build_project_obj(project_constructor, file_constructor, args):
         files = ([file_constructor(
             name,
@@ -1594,6 +1598,7 @@ class RestApiClient(object):
         return project
 
     @staticmethod
+    @dispatch(object, object)
     def __build_project_obj(project_constructor, args):
         project = project_constructor()
         if 'title' in args:
