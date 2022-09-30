@@ -812,84 +812,60 @@
         }
       }
     },
-    "DatasetCreateRequest": {
-      "properties": {
-        "description": {
-          "description": "Short dataset description.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
+    "DatasetCreateRequest" : {
+      "type" : "object",
+      "required" : [ "title", "visibility" ],
+      "properties" : {
+        "assetStatusIri" : {
+          "type" : "string"
         },
-        "files": {
-          "description": "Initial set of files. At dataset creation time, file uploads are not supported. However, this property can be used to add files via URL.",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
+        "autoSyncInterval" : {
+          "type" : "string",
+          "description" : "Interval in which files should be synced",
+          "enum" : [ "NEVER", "HOURLY", "DAILY", "WEEKLY" ]
         },
-        "license": {
-          "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 120
         },
-        "summary": {
-          "description": "Long-form dataset summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
+        "files" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FileCreateRequest"
+          }
         },
-        "tags": {
-          "description": "Dataset tags. Letters numbers and spaces only (max 25 characters).",
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
-          },
-          "type": "array",
-          "uniqueItems": true
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
         },
-        "title": {
-          "description": "Dataset name.",
-          "maxLength": 60,
-          "minLength": 1,
-          "type": "string"
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         },
-        "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
-          "enum": [
-            "OPEN",
-            "DISCOVERABLE",
-            "PRIVATE"
-          ],
-          "type": "string"
+        "summary" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 25000
         },
-        "properties": {
-          "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
+        },
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
         }
-      },
-      "required": [
-        "title",
-        "visibility"
-      ],
-      "title": "Dataset Create Request",
-      "type": "object"
+      }
     },
     "DatasetHydrationDto": {
       "type": "object",
@@ -951,159 +927,93 @@
         "owner"
       ]
     },
-    "DatasetPatchRequest": {
-      "properties": {
-        "description": {
-          "description": "Short dataset description.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
+    "DatasetPatchRequest" : {
+      "type" : "object",
+      "properties" : {
+        "assetStatusIri" : {
+          "type" : "string"
         },
-        "files": {
-          "description": "Updated set of files. At dataset update time, file uploads are not supported. However, this property can be used to add files from URL or update metadata related to existing files.",
-          "items": {
-            "$ref": "#/definitions/FileCreateOrUpdateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
+        "autoSyncInterval" : {
+          "type" : "string",
+          "description" : "Interval in which files should be synced",
+          "enum" : [ "NEVER", "HOURLY", "DAILY", "WEEKLY" ]
         },
-        "license": {
-          "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
+        "description" : {
+          "type" : "string"
         },
-        "summary": {
-          "description": "Long-form dataset summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
         },
-        "tags": {
-          "description": "Dataset tags. Letters numbers and spaces only (max 25 characters).",
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
-          },
-          "type": "array",
-          "uniqueItems": true
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         },
-        "title": {
-          "description": "Dataset name.",
-          "maxLength": 60,
-          "minLength": 0,
-          "type": "string"
+        "summary" : {
+          "type" : "string"
         },
-        "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
-          "enum": [
-            "OPEN",
-            "DISCOVERABLE",
-            "PRIVATE"
-          ],
-          "type": "string"
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
-        "properties": {
-          "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
+        },
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
         }
-      },
-      "title": "Dataset Update Request",
-      "type": "object"
+      }
     },
-    "DatasetPutRequest": {
-      "properties": {
-        "description": {
-          "description": "Short dataset description.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
+    "DatasetPutRequest" : {
+      "type" : "object",
+      "required" : [ "title", "visibility" ],
+      "properties" : {
+        "assetStatusIri" : {
+          "type" : "string"
         },
-        "files": {
-          "description": "Initial set of files. At dataset creation time, file uploads are not supported. However, this property can be used to add files via URL.",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 120
         },
-        "license": {
-          "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
         },
-        "summary": {
-          "description": "Long-form dataset summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         },
-        "tags": {
-          "description": "Dataset tags. Letters numbers and spaces only (max 25 characters).",
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
-          },
-          "type": "array",
-          "uniqueItems": true
+        "summary" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 25000
         },
-        "title": {
-          "description": "Dataset name.",
-          "maxLength": 60,
-          "minLength": 1,
-          "type": "string"
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
-        "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
-          "enum": [
-            "OPEN",
-            "DISCOVERABLE",
-            "PRIVATE"
-          ],
-          "type": "string"
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
         },
-        "properties": {
-          "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
         }
-      },
-      "required": [
-        "title",
-        "visibility"
-      ],
-      "title": "Dataset Replace Request",
-      "type": "object"
+      }
     },
     "DatasetSummaryResponse": {
       "properties": {
@@ -2349,241 +2259,147 @@
         "records"
       ]
     },
-    "ProjectCreateRequest": {
-      "properties": {
-        "files": {
-          "description": "Initial set of files. At project creation time, file uploads are not supported. However, this property can be used to add files from URL.",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
-        },
-        "license": {
-          "description": "Project license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
-        },
-        "linkedDatasets": {
-          "description": "Initial set of linked datasets.",
-          "items": {
-            "$ref": "#/definitions/LinkedDatasetCreateOrUpdateRequest"
-          },
-          "type": "array"
-        },
-        "objective": {
-          "description": "Short project objective.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
-        },
-        "summary": {
-          "description": "Long-form project summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
-        },
-        "tags": {
-          "description": "Project tags. Letters numbers and spaces only (max 25 characters).",
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
-          },
-          "type": "array",
-          "uniqueItems": true
-        },
-        "title": {
-          "description": "Project title.",
-          "maxLength": 60,
-          "minLength": 0,
-          "type": "string"
-        },
-        "visibility": {
-          "description": "Project visibility. `OPEN` if the project can be seen by any member of data.world. `PRIVATE` if the project can be seen by its owner and authorized collaborators.",
-          "enum": [
-            "OPEN",
-            "PRIVATE"
-          ],
-          "type": "string"
-        }
-      },
-      "required": [
-        "title",
-        "visibility"
-      ],
-      "title": "Project Create Request",
-      "type": "object"
-    },
-    "ProjectPatchRequest": {
-      "type": "object",
-      "title": "Project Update Request",
-      "properties": {
-        "files": {
-          "description": "Updated set of files. At project update time, file uploads are not supported. However, this property can be used to add files from URL or update metadata related to existing files. Files included in this request will be added. Previously added files will be preserved without modification.",
-          "type": "array",
-          "uniqueItems": false,
-          "items": {
-            "$ref": "#/definitions/FileCreateOrUpdateRequest"
+    "ProjectCreateRequest" : {
+      "type" : "object",
+      "required" : [ "title", "visibility" ],
+      "properties" : {
+        "files" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FileCreateRequest"
           }
         },
-        "license": {
-          "description": "Project license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
         },
-        "linkedDatasets": {
-          "type": "array",
-          "description": "Updated set of linked datasets. Datasets linked in this request will be added. Previously linked datasets will be preserved without modification.",
-          "items": {
-            "$ref": "#/definitions/LinkedDatasetCreateOrUpdateRequest"
+        "linkedDatasets" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LinkedDatasetCreateOrUpdateRequest"
           }
         },
-        "objective": {
-          "description": "Short project objective.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
+        "objective" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 120
         },
-        "summary": {
-          "description": "Long-form project summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
-        },
-        "tags": {
-          "description": "Project tags. Letters numbers and spaces only (max 25 characters).",
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
           }
         },
-        "title": {
-          "description": "Project title.",
-          "maxLength": 60,
-          "minLength": 0,
-          "type": "string"
+        "summary" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 25000
         },
-        "visibility": {
-          "description": "Project visibility. `OPEN` if the project can be seen by any member of data.world. `PRIVATE` if the project can be seen by its owner and authorized collaborators.",
-          "enum": [
-            "OPEN",
-            "PRIVATE"
-          ],
-          "type": "string"
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
+        },
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
         }
       }
     },
-    "ProjectPutRequest": {
-      "title": "Project Create or Update Request",
-      "type": "object",
-      "properties": {
-        "files": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
+    "ProjectPatchRequest" : {
+      "type" : "object",
+      "properties" : {
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
+        },
+        "linkedDatasets" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LinkedDatasetCreateOrUpdateRequest"
           }
         },
-        "license": {
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
+        "objective" : {
+          "type" : "string"
         },
-        "linkedDatasets": {
-          "description": "Updated set of linked datasets. Datasets linked in this request will be added. Previously linked datasets will be preserved without modification.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/LinkedDatasetCreateOrUpdateRequest"
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
           }
         },
-        "objective": {
-          "description": "Short project objective.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
+        "summary" : {
+          "type" : "string"
         },
-        "summary": {
-          "description": "Long-form project summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
-        },
-        "tags": {
-          "description": "Project tags. Letters numbers and spaces only (max 25 characters).",
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
           }
         },
-        "title": {
-          "type": "string",
-          "description": "Project title.",
-          "maxLength": 60,
-          "minLength": 1
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
         },
-        "visibility": {
-          "type": "string",
-          "description": "Project visibility. `OPEN` if the project can be seen by any member of data.world. `PRIVATE` if the project can be seen by its owner and authorized collaborators.",
-          "enum": [
-            "OPEN",
-            "PRIVATE"
-          ]
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
         }
-      },
-      "required": [
-        "title",
-        "visibility"
-      ]
+      }
+    },
+    "ProjectPutRequest" : {
+      "type" : "object",
+      "required" : [ "title", "visibility" ],
+      "properties" : {
+        "license" : {
+          "type" : "string",
+          "enum" : [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ]
+        },
+        "linkedDatasets" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LinkedDatasetCreateOrUpdateRequest"
+          }
+        },
+        "objective" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 120
+        },
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
+        },
+        "summary" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 25000
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "title" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 60
+        },
+        "visibility" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "PRIVATE" ]
+        }
+      }
     },
     "ProjectSummaryResponse": {
       "properties": {
