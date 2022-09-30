@@ -188,7 +188,6 @@ class RestApiClient(object):
         """
         request = self.__build_dataset_obj(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda x: x,
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -230,7 +229,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda x: x,
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -911,7 +909,6 @@ class RestApiClient(object):
         """
         request = self.__build_project_obj(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda x: x,
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -965,7 +962,6 @@ class RestApiClient(object):
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda x: x,
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1549,6 +1545,24 @@ class RestApiClient(object):
         return dataset
 
     @staticmethod
+    def __build_dataset_obj(dataset_constructor, args):
+        dataset = dataset_constructor()
+        if 'title' in args:
+            dataset.title = args['title']
+        if 'description' in args:
+            dataset.description = args['description']
+        if 'summary' in args:
+            dataset.summary = args['summary']
+        if 'tags' in args:
+            dataset.tags = args['tags']
+        if 'license' in args:
+            dataset.license = args.get('license')
+        if 'visibility' in args:
+            dataset.visibility = args['visibility']
+
+        return dataset
+
+    @staticmethod
     def __build_project_obj(project_constructor, file_constructor, args):
         files = ([file_constructor(
             name,
@@ -1576,6 +1590,26 @@ class RestApiClient(object):
 
         if files:
             project.files = files
+
+        return project
+
+    @staticmethod
+    def __build_project_obj(project_constructor, args):
+        project = project_constructor()
+        if 'title' in args:
+            project.title = args['title']
+        if 'summary' in args:
+            project.summary = args['summary']
+        if 'tags' in args:
+            project.tags = args['tags']
+        if 'license' in args:
+            project.license = args['license']
+        if 'visibility' in args:
+            project.visibility = args['visibility']
+        if 'objective' in args:
+            project.objective = args['objective']
+        if 'linked_datasets' in args:
+            project.linked_datasets = args['linked_datasets']
 
         return project
 
