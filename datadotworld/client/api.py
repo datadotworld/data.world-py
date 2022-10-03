@@ -1516,7 +1516,9 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(
+        dataset = __build_dataset_obj_no_files(dataset_constructor, args)
+
+        dataset.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             expand_archive=file_info.get('expand_archive', False),
@@ -1524,22 +1526,6 @@ class RestApiClient(object):
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
-
-        dataset = dataset_constructor()
-        if 'title' in args:
-            dataset.title = args['title']
-        if 'description' in args:
-            dataset.description = args['description']
-        if 'summary' in args:
-            dataset.summary = args['summary']
-        if 'tags' in args:
-            dataset.tags = args['tags']
-        if 'license' in args:
-            dataset.license = args.get('license')
-        if 'visibility' in args:
-            dataset.visibility = args['visibility']
-
-        dataset.files = files
 
         return dataset
 
@@ -1563,31 +1549,15 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_project_obj(project_constructor, file_constructor, args):
-        files = ([file_constructor(
+        project = __build_project_obj_no_files(project_constructor, args)
+
+        project.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             description=file_info.get('description'),
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
-
-        project = project_constructor()
-        if 'title' in args:
-            project.title = args['title']
-        if 'summary' in args:
-            project.summary = args['summary']
-        if 'tags' in args:
-            project.tags = args['tags']
-        if 'license' in args:
-            project.license = args['license']
-        if 'visibility' in args:
-            project.visibility = args['visibility']
-        if 'objective' in args:
-            project.objective = args['objective']
-        if 'linked_datasets' in args:
-            project.linked_datasets = args['linked_datasets']
-
-        project.files = files
 
         return project
 
