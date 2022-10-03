@@ -26,7 +26,6 @@ import os
 import shutil
 import uuid
 import zipfile
-from multipledispatch import dispatch
 from os import path
 
 import requests
@@ -36,8 +35,8 @@ from datadotworld.client import _swagger
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
-from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
+from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient(object):
@@ -187,7 +186,7 @@ class RestApiClient(object):
         ...    'username/test-dataset',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPatchRequest(),
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -225,7 +224,7 @@ class RestApiClient(object):
         ...    visibility='PRIVATE', license='Public Domain',
         ...    description='A better description')  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPutRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
@@ -908,7 +907,7 @@ class RestApiClient(object):
         ...    'username/test-project',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectPatchRequest(),
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
@@ -958,7 +957,7 @@ class RestApiClient(object):
         ...    objective='A better objective',
         ...    title='Replace project')  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectCreateRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
@@ -1516,7 +1515,6 @@ class RestApiClient(object):
             raise RestApiError(cause=e)
 
     @staticmethod
-    @dispatch(object, object, object)
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
         files = ([file_constructor(
             name,
@@ -1547,8 +1545,7 @@ class RestApiClient(object):
         return dataset
 
     @staticmethod
-    @dispatch(object, object)
-    def __build_dataset_obj(dataset_constructor, args):
+    def __build_dataset_obj_no_files(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']
@@ -1566,7 +1563,6 @@ class RestApiClient(object):
         return dataset
 
     @staticmethod
-    @dispatch(object, object, object)
     def __build_project_obj(project_constructor, file_constructor, args):
         files = ([file_constructor(
             name,
@@ -1598,8 +1594,7 @@ class RestApiClient(object):
         return project
 
     @staticmethod
-    @dispatch(object, object)
-    def __build_project_obj(project_constructor, args):
+    def __build_project_obj_no_files(project_constructor, args):
         project = project_constructor()
         if 'title' in args:
             project.title = args['title']
