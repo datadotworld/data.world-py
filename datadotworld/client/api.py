@@ -1516,7 +1516,7 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        dataset = __build_dataset_obj_no_files(dataset_constructor, args)
+        dataset = dataset_constructor.__build_dataset_obj_no_files(dataset_constructor, args)
 
         dataset.files = ([file_constructor(
             name,
@@ -1549,7 +1549,7 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_project_obj(project_constructor, file_constructor, args):
-        project = __build_project_obj_no_files(project_constructor, args)
+        project = project_constructor.__build_project_obj_no_files(project_constructor, args)
 
         project.files = ([file_constructor(
             name,
