@@ -856,9 +856,10 @@
           "type": "string"
         },
         "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators.",
+          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
           "enum": [
             "OPEN",
+            "DISCOVERABLE",
             "PRIVATE"
           ],
           "type": "string"
@@ -974,9 +975,10 @@
           "type": "string"
         },
         "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators.",
+          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
           "enum": [
             "OPEN",
+            "DISCOVERABLE",
             "PRIVATE"
           ],
           "type": "string"
@@ -1028,9 +1030,10 @@
           "type": "string"
         },
         "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators.",
+          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
           "enum": [
             "OPEN",
+            "DISCOVERABLE",
             "PRIVATE"
           ],
           "type": "string"
