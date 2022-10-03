@@ -1539,8 +1539,7 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        if files:
-            dataset.files = files
+        dataset.files = files
 
         return dataset
 
@@ -1588,8 +1587,7 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        if files:
-            project.files = files
+        project.files = files
 
         return project
 
