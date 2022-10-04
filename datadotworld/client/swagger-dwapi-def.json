@@ -830,22 +830,7 @@
         },
         "license": {
           "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
           "type": "string"
         },
         "summary": {
@@ -881,7 +866,10 @@
         },
         "properties": {
           "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
+          "type": "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         }
       },
       "required": [
@@ -959,107 +947,9 @@
           "minLength": 0,
           "type": "string"
         },
-        "files": {
-          "description": "Updated set of files. At dataset update time, file uploads are not supported. However, this property can be used to add files from URL or update metadata related to existing files.",
-          "items": {
-            "$ref": "#/definitions/FileCreateOrUpdateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
-        },
         "license": {
           "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
-          "type": "string"
-        },
-        "summary": {
-          "description": "Long-form dataset summary (Markdown supported).",
-          "maxLength": 25000,
-          "minLength": 0,
-          "type": "string"
-        },
-        "tags": {
-          "description": "Dataset tags. Letters numbers and spaces only (max 25 characters).",
-          "items": {
-            "maxLength": 25,
-            "pattern": "^[a-zA-Z0-9\\s]*",
-            "type": "string"
-          },
-          "type": "array",
-          "uniqueItems": true
-        },
-        "title": {
-          "description": "Dataset name.",
-          "maxLength": 60,
-          "minLength": 0,
-          "type": "string"
-        },
-        "visibility": {
-          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
-          "enum": [
-            "OPEN",
-            "DISCOVERABLE",
-            "PRIVATE"
-          ],
-          "type": "string"
-        },
-        "properties": {
-          "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
-        }
-      },
-      "title": "Dataset Update Request",
-      "type": "object"
-    },
-    "DatasetPutRequest": {
-      "properties": {
-        "description": {
-          "description": "Short dataset description.",
-          "maxLength": 120,
-          "minLength": 0,
-          "type": "string"
-        },
-        "files": {
-          "description": "Initial set of files. At dataset creation time, file uploads are not supported. However, this property can be used to add files via URL.",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
-          },
-          "type": "array",
-          "uniqueItems": false
-        },
-        "license": {
-          "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
           "type": "string"
         },
         "summary": {
@@ -1095,7 +985,65 @@
         },
         "properties": {
           "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
-          "type": "object"
+          "type": "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
+        }
+      },
+      "title": "Dataset Update Request",
+      "type": "object"
+    },
+    "DatasetPutRequest": {
+      "properties": {
+        "description": {
+          "description": "Short dataset description.",
+          "maxLength": 120,
+          "minLength": 0,
+          "type": "string"
+        },
+        "license": {
+          "description": "Dataset license. Find additional info for allowed values [here](https://data.world/license-help).",
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
+          "type": "string"
+        },
+        "summary": {
+          "description": "Long-form dataset summary (Markdown supported).",
+          "maxLength": 25000,
+          "minLength": 0,
+          "type": "string"
+        },
+        "tags": {
+          "description": "Dataset tags. Letters numbers and spaces only (max 25 characters).",
+          "items": {
+            "maxLength": 25,
+            "pattern": "^[a-zA-Z0-9\\s]*",
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "title": {
+          "description": "Dataset name.",
+          "maxLength": 60,
+          "minLength": 1,
+          "type": "string"
+        },
+        "visibility": {
+          "description": "Dataset visibility. `OPEN` if the dataset can be seen by any member of data.world. `PRIVATE` if the dataset can be seen by its owner and authorized collaborators. `DISCOVERABLE` if the dataset can be seen by any member of data.world, but only files marked `sample` or `preview` are visible",
+          "enum": [
+            "OPEN",
+            "DISCOVERABLE",
+            "PRIVATE"
+          ],
+          "type": "string"
+        },
+        "properties": {
+          "description": "Custom metadata properties. See [/toolkit/custom-metadata](/toolkit/custom-metadata) for more information.",
+          "type": "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         }
       },
       "required": [
@@ -2361,22 +2309,7 @@
         },
         "license": {
           "description": "Project license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
           "type": "string"
         },
         "linkedDatasets": {
@@ -2411,7 +2344,7 @@
         "title": {
           "description": "Project title.",
           "maxLength": 60,
-          "minLength": 0,
+          "minLength": 1,
           "type": "string"
         },
         "visibility": {
@@ -2421,6 +2354,12 @@
             "PRIVATE"
           ],
           "type": "string"
+        },
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         }
       },
       "required": [
@@ -2434,32 +2373,9 @@
       "type": "object",
       "title": "Project Update Request",
       "properties": {
-        "files": {
-          "description": "Updated set of files. At project update time, file uploads are not supported. However, this property can be used to add files from URL or update metadata related to existing files. Files included in this request will be added. Previously added files will be preserved without modification.",
-          "type": "array",
-          "uniqueItems": false,
-          "items": {
-            "$ref": "#/definitions/FileCreateOrUpdateRequest"
-          }
-        },
         "license": {
           "description": "Project license. Find additional info for allowed values [here](https://data.world/license-help).",
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
           "type": "string"
         },
         "linkedDatasets": {
@@ -2474,6 +2390,12 @@
           "maxLength": 120,
           "minLength": 0,
           "type": "string"
+        },
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         },
         "summary": {
           "description": "Long-form project summary (Markdown supported).",
@@ -2494,7 +2416,7 @@
         "title": {
           "description": "Project title.",
           "maxLength": 60,
-          "minLength": 0,
+          "minLength": 1,
           "type": "string"
         },
         "visibility": {
@@ -2511,29 +2433,8 @@
       "title": "Project Create or Update Request",
       "type": "object",
       "properties": {
-        "files": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/FileCreateRequest"
-          }
-        },
         "license": {
-          "enum": [
-            "Public Domain",
-            "PDDL",
-            "CC-0",
-            "CC-BY",
-            "CDLA-Permissive-1.0",
-            "ODC-BY",
-            "CC-BY-SA",
-            "CDLA-Sharing-1.0",
-            "ODC-ODbL",
-            "CC BY-NC",
-            "CC BY-ND",
-            "CC BY-NC-ND",
-            "CC BY-NC-SA",
-            "Other"
-          ],
+          "enum": [ "Public Domain", "PDDL", "CC-0", "CC-BY", "CDLA-Permissive-1.0", "CC-BY-IGO", "CC-BY 3.0", "CC-BY 3.0 AU", "CC-BY 3.0 IGO", "CC-BY-SA", "CC-BY-SA 3.0", "CDLA-Sharing-1.0", "CC BY-NC", "CC BY-ND", "CC BY-ND 3.0", "CC-BY 3.0 NZ", "CC-BY-NC 3.0", "CC-BY-SA 3.0", "CC BY-NC-ND", "CC-BY-NC-SA 3.0", "CC-BY-SA 3.0 NZ", "CC-BY-NC-SA 3.0 NZ", "CC-BY-NC 3.0 NZ", "CC-BY-NC-ND-NZ-3.0", "CC BY-NC-SA", "CC-BY-NC-SA 3.0", "Italian-ODL", "MIT License", "OGL", "OGL-Canada", "OGL-Nova Scotia", "OGL-UK", "OSODL", "ODC-BY", "ODC-ODbL", "Other" ],
           "type": "string"
         },
         "linkedDatasets": {
@@ -2548,6 +2449,12 @@
           "maxLength": 120,
           "minLength": 0,
           "type": "string"
+        },
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
         },
         "summary": {
           "description": "Long-form project summary (Markdown supported).",

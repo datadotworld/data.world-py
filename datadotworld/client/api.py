@@ -35,8 +35,8 @@ from datadotworld.client import _swagger
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
-from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
+from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient(object):
@@ -174,8 +174,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}, optional
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -188,17 +186,8 @@ class RestApiClient(object):
         ...    'username/test-dataset',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(
-                    url=url,
-                    expand_archive=expand_archive)
-                if url is not None else None,
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -222,8 +211,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -237,19 +224,11 @@ class RestApiClient(object):
         ...    visibility='PRIVATE', license='Public Domain',
         ...    description='A better description')  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPutRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -848,7 +827,7 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
@@ -885,7 +864,8 @@ class RestApiClient(object):
                 name=name,
                 source=_swagger.FileSourceCreateRequest(url=url),
                 description=description,
-                labels=labels), kwargs)
+                labels=labels),
+            kwargs)
         try:
             (_, _, headers) = self._projects_api.create_project_with_http_info(
                 owner_id, body=request, _return_http_data_only=False)
@@ -906,17 +886,13 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: message object
@@ -931,14 +907,8 @@ class RestApiClient(object):
         ...    'username/test-project',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda name, url, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -964,17 +934,13 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: project object
@@ -991,17 +957,11 @@ class RestApiClient(object):
         ...    objective='A better objective',
         ...    title='Replace project')  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectCreateRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1366,10 +1326,10 @@ class RestApiClient(object):
         :type created_end_date: str, optional, YYYY-MM-DD
         :params created_range: Filter by range of date that the resource
          was created
-        :type created_range: Object containing "start_date" or "end_date' keys
+        :type created_range: Object containing "start_date" or "end_date" keys
         :params updated_range: Filter by range of date that the resource
          was updated.
-        :type updated_range: Object containing "start_date" or "end_date' keys
+        :type updated_range: Object containing "start_date" or "end_date" keys
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -1412,7 +1372,7 @@ class RestApiClient(object):
 
         :params owner
         :type owner: str
-        :params id: Virtual connection Id
+        :params id: Virtual connection id
         :type id: str
         :params tables: list of tables to add
         :type tables: object with following properties,
@@ -1556,7 +1516,10 @@ class RestApiClient(object):
 
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(
+        dataset = RestApiClient.__build_dataset_obj_no_files(
+            dataset_constructor, args)
+
+        dataset.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             expand_archive=file_info.get('expand_archive', False),
@@ -1564,6 +1527,11 @@ class RestApiClient(object):
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
+
+        return dataset
+
+    @staticmethod
+    def __build_dataset_obj_no_files(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']
@@ -1578,20 +1546,25 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        dataset.files = files
-
         return dataset
 
     @staticmethod
     def __build_project_obj(project_constructor, file_constructor, args):
+        project = RestApiClient.__build_project_obj_no_files(
+            project_constructor, args)
 
-        files = ([file_constructor(
+        project.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             description=file_info.get('description'),
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
+
+        return project
+
+    @staticmethod
+    def __build_project_obj_no_files(project_constructor, args):
         project = project_constructor()
         if 'title' in args:
             project.title = args['title']
@@ -1608,7 +1581,6 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        project.files = files
         return project
 
     @staticmethod
