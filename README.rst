@@ -325,6 +325,9 @@ The client currently implements the following functions:
 * ``replace_insight``
 * ``update_insight``
 * ``delete_insight``
+* ``search_resources``
+* ``create_new_tables``
+* ``create_new_connections``
 
 For a few examples of what the ``ApiClient`` can be used for, see below.
 
@@ -338,7 +341,7 @@ For example:
 
 .. code-block:: python
 
-    >>> client = dw.api_client
+    >>> client = dw.api_client()
     >>> client.add_files_via_url('username/test-dataset', files={'sample.xls': {'url':'http://www.sample.com/sample.xls', 'description': 'sample doc', 'labels': ['raw data']}})
 
 Append records to stream
@@ -350,7 +353,7 @@ For example:
 
 .. code-block:: python
 
-    >>> client = dw.api_client
+    >>> client = dw.api_client()
     >>> client.append_records('username/test-dataset','streamId', {'data': 'data'})
 
 Contents of a stream will appear as part of the respective dataset as a .jsonl file.

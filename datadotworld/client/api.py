@@ -35,8 +35,8 @@ from datadotworld.client import _swagger
 from datadotworld.client.content_negotiating_api_client import (
     ContentNegotiatingApiClient
 )
-from datadotworld.util import parse_dataset_key, _user_agent
 from datadotworld.hosts import API_HOST, DOWNLOAD_HOST
+from datadotworld.util import parse_dataset_key, _user_agent
 
 
 class RestApiClient(object):
@@ -64,12 +64,15 @@ class RestApiClient(object):
             user_agent=_user_agent())
 
         self._datasets_api = _swagger.DatasetsApi(swagger_client)
-        self._uploads_api = _swagger.UploadsApi(swagger_client)
         self._user_api = _swagger.UserApi(swagger_client)
-        self._download_api = _swagger.DownloadApi(swagger_client)
         self._streams_api = _swagger.StreamsApi(swagger_client)
         self._projects_api = _swagger.ProjectsApi(swagger_client)
         self._insights_api = _swagger.InsightsApi(swagger_client)
+        self._files_api = _swagger.FilesApi(swagger_client)
+        self._queries_api = _swagger.QueriesApi(swagger_client)
+        self._search_api = _swagger.SearchApi(swagger_client)
+        self._tables_api = _swagger.TablesApi(swagger_client)
+        self._connections_api = _swagger.ConnectionsApi(swagger_client)
 
     # Dataset Operations
 
@@ -171,8 +174,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}, optional
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -185,17 +186,8 @@ class RestApiClient(object):
         ...    'username/test-dataset',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPatchRequest(),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(
-                    url=url,
-                    expand_archive=expand_archive)
-                if url is not None else None,
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
@@ -219,8 +211,6 @@ class RestApiClient(object):
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Dataset visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File names and source URLs to add or update
-        :type files: dict, optional
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :raises RestApiException: If a server error occurs
@@ -234,19 +224,11 @@ class RestApiClient(object):
         ...    visibility='PRIVATE', license='Public Domain',
         ...    description='A better description')  # doctest: +SKIP
         """
-        request = self.__build_dataset_obj(
+        request = self.__build_dataset_obj_no_files(
             lambda: _swagger.DatasetPutRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, expand_archive, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(
-                    url=url,
-                    expand_archive=expand_archive),
-                description=description,
-                labels=labels),
             kwargs)
 
         owner_id, dataset_id = parse_dataset_key(dataset_key)
@@ -312,7 +294,7 @@ class RestApiClient(object):
         ) for file_name, file_info in files.items()]
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.add_files_by_source(
+            self._files_api.add_files_by_source(
                 owner_id, dataset_id,
                 _swagger.FileBatchUpdateRequest(files=file_requests))
         except _swagger.rest.ApiException as e:
@@ -333,7 +315,7 @@ class RestApiClient(object):
         >>> api_client.sync_files('username/test-dataset')  # doctest: +SKIP
         """
         try:
-            self._datasets_api.sync(*(parse_dataset_key(dataset_key)))
+            self._files_api.sync(*(parse_dataset_key(dataset_key)))
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -364,8 +346,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_files(owner_id, dataset_id, files,
-                                           **kwargs)
+            self._files_api.upload_files(owner_id, dataset_id, files, **kwargs)
             if files_metadata:
                 self.update_dataset(dataset_key, files=files_metadata)
         except _swagger.rest.ApiException as e:
@@ -397,7 +378,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._uploads_api.upload_file(owner_id, dataset_id, name, **kwargs)
+            self._files_api.upload_file(owner_id, dataset_id, name, **kwargs)
             if file_metadata:
                 self.update_dataset(dataset_key, files=file_metadata)
         except _swagger.rest.ApiException as e:
@@ -421,7 +402,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            self._datasets_api.delete_files_and_sync_sources(
+            self._files_api.delete_files_and_sync_sources(
                 owner_id, dataset_id, names)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
@@ -680,10 +661,11 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sql_api = kwargs.get('sql_api_mock', _swagger.SqlApi(api_client))
+        queries_api = kwargs.get('queries_api_mock',
+                                 _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sql_api.sql_post(
+            response = queries_api.sql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -713,11 +695,11 @@ class RestApiClient(object):
         """
         api_client = self._build_api_client(
             default_mimetype_header_accept=desired_mimetype)
-        sparql_api = kwargs.get('sparql_api_mock',
-                                _swagger.SparqlApi(api_client))
+        query_api = kwargs.get('queries_api_mock',
+                               _swagger.QueriesApi(api_client))
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            response = sparql_api.sparql_post(
+            response = query_api.sparql_post(
                 owner_id, dataset_id, query, _preload_content=False, **kwargs)
             return six.BytesIO(response.data)
         except _swagger.rest.ApiException as e:
@@ -743,7 +725,7 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_dataset(owner_id, dataset_id)
+            return self._datasets_api.download_dataset(owner_id, dataset_id)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -767,21 +749,20 @@ class RestApiClient(object):
         """
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
-            return self._download_api.download_file(owner_id, dataset_id, file)
+            return self._files_api.download_file(owner_id, dataset_id, file)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
     # Streams Operation
 
-    def append_records(self, dataset_key, stream_id, body):
+    def append_records(self, dataset_key, stream_id, **kwargs):
         """Append records to a stream.
 
         :param dataset_key: Dataset identifier, in the form of owner/id
         :type dataset_key: str
         :param stream_id: Stream unique identifier.
         :type stream_id: str
-        :param body: Object body
-        :type body: obj
+
         :raises RestApiException: If a server error occurs
 
         Examples
@@ -791,10 +772,14 @@ class RestApiClient(object):
         >>> api_client.append_records('username/test-dataset','streamId',
         ...     {'content':'content'})  # doctest: +SKIP
         """
+
+        request = self.__build_streams_obj(
+            lambda: _swagger.StreamsResource(),
+            kwargs)
         owner_id, dataset_id = parse_dataset_key(dataset_key)
         try:
             return self._streams_api.append_records(owner_id, dataset_id,
-                                                    stream_id, body)
+                                                    stream_id, body=request)
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
@@ -842,7 +827,7 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
@@ -879,7 +864,8 @@ class RestApiClient(object):
                 name=name,
                 source=_swagger.FileSourceCreateRequest(url=url),
                 description=description,
-                labels=labels), kwargs)
+                labels=labels),
+            kwargs)
         try:
             (_, _, headers) = self._projects_api.create_project_with_http_info(
                 owner_id, body=request, _return_http_data_only=False)
@@ -900,17 +886,13 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: message object
@@ -925,14 +907,8 @@ class RestApiClient(object):
         ...    'username/test-project',
         ...    tags=['demo', 'datadotworld'])  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectPatchRequest(),
-            lambda name, url, description, labels:
-            _swagger.FileCreateOrUpdateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateOrUpdateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         owner_id, project_id = parse_dataset_key(project_key)
         try:
@@ -958,17 +934,13 @@ class RestApiClient(object):
         :type objective: str, optional
         :param summary: Long-form project summary.
         :type summary: str, optional
-        :param tags: Project tags. Letters numbers and spaces
+        :param tags: Project tags. Letters, numbers, and spaces
         :type tags: list, optional
         :param license: Project license
         :type license: {'Public Domain', 'PDDL', 'CC-0', 'CC-BY', 'ODC-BY',
             'CC-BY-SA', 'ODC-ODbL', 'CC BY-NC', 'CC BY-NC-SA', 'Other'}
         :param visibility: Project visibility
         :type visibility: {'OPEN', 'PRIVATE'}
-        :param files: File name as dict, source URLs, description and labels()
-        as properties
-        :type files: dict, optional
-            *Description and labels are optional*
         :param linked_datasets: Initial set of linked datasets.
         :type linked_datasets: list of object, optional
         :returns: project object
@@ -985,17 +957,11 @@ class RestApiClient(object):
         ...    objective='A better objective',
         ...    title='Replace project')  # doctest: +SKIP
         """
-        request = self.__build_project_obj(
+        request = self.__build_project_obj_no_files(
             lambda: _swagger.ProjectCreateRequest(
                 title=kwargs.get('title'),
                 visibility=kwargs.get('visibility')
             ),
-            lambda name, url, description, labels:
-            _swagger.FileCreateRequest(
-                name=name,
-                source=_swagger.FileSourceCreateRequest(url=url),
-                description=description,
-                labels=labels),
             kwargs)
         try:
             project_owner_id, project_id = parse_dataset_key(project_key)
@@ -1260,7 +1226,7 @@ class RestApiClient(object):
 
         **Note that only elements included in the request will be updated. All
         omitted elements will remain untouched.
-        :param project_key: Projrct identifier, in the form of
+        :param project_key: Project identifier, in the form of
         projectOwner/projectid
         :type project_key: str
         :param insight_id: Insight unique identifier.
@@ -1328,9 +1294,232 @@ class RestApiClient(object):
         except _swagger.rest.ApiException as e:
             raise RestApiError(cause=e)
 
+    # Search Operations
+
+    def search_resources(self, **kwargs):
+        """Advanced search on resources.
+
+        :params query: the query of this search request
+        :type query: str
+        :params category: Filter by categories
+        :type category: {"catalogAnalysis", "catalogBusinessTerm",
+         "catalogDataset", "catalogDataType", "catalogTable", "collection",
+         "comment", "dataset", "datatable", "file", "insight", "integration",
+         "project", "query"}, array, optional
+        :params type: Filter by type of metadata resource. Both IRI and
+         label are accepted
+        :type type: array, optional
+        :params owner: Filter by owners. Owners are identified by their IDs
+        :type owner: array, optional
+        :params min_access_level: Minimum access level to filter by
+        :type min_access_level: {"NONE", "SAML_GATED", "DISCOVER", "READ",
+         "WRITE", "ADMIN"}, optional
+        :params tag: Filter by tags.
+        :type tag: array, optional
+        :params visibility: Filter by visibility
+        :type visibility: {"DISCOVERABLE", "OPEN", "PRIVATE"}, optional
+        :params created_start_date: Filter by range of date that the resource
+         was created by start date
+        :type created_start_date: str, optional, YYYY-MM-DD
+        :params created_end_date: Filter by range of date that
+         the resource was created by end date
+        :type created_end_date: str, optional, YYYY-MM-DD
+        :params created_range: Filter by range of date that the resource
+         was created
+        :type created_range: Object containing "start_date" or "end_date" keys
+        :params updated_range: Filter by range of date that the resource
+         was updated.
+        :type updated_range: Object containing "start_date" or "end_date" keys
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> search_results = api_client.search_resources(
+        ...     query="intro")  # doctest: +SKIP
+        """
+        request = self.__build_search_obj(
+            lambda: _swagger.SearchRequest(
+                query=kwargs.get('query'),
+                category=kwargs.get('category'),
+                type=kwargs.get('type'),
+                owner=kwargs.get('owner'),
+                min_access_level=kwargs.get('min_access_level'),
+                tag=kwargs.get('tag'),
+                visibility=kwargs.get('visibility'),
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
+            ),
+            lambda: _swagger.Range(
+                start_date=kwargs.get('created_start_date'),
+                end_date=kwargs.get('created_end_date')
+            ),
+            kwargs)
+        try:
+            return self._search_api.search_resources_advanced(request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Table Operations
+
+    def create_new_tables(self, owner, id, **kwargs):
+        """Add tables from an established virtual connection.
+           For increased security, endpoints that interact with external
+           connection sources require an Enterprise Admin Token.
+
+        :params owner
+        :type owner: str
+        :params id: Virtual connection id
+        :type id: str
+        :params tables: list of tables to add
+        :type tables: object with following properties,
+            :params name: Table name
+            :type name: str
+            :params description: Table description
+            :type description: str
+            :params source:
+            :Type source: object with following properties
+                :params databaseSource:
+                :type databaseSource: object with following properties
+                    :params owner: Owner agent
+                    :type owner: str
+                    :params id: data.world database connection identifier
+                    :type id: str
+                :params tableSpec: Virtual or extracted table details
+                :type tableSpec: object with following properties
+                    :params database: Database name
+                    :type database: str
+                    :params schema: Schema name
+                    :type schema: str
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> tables = api_client.create_new_tables(
+        ...     'username', 'datasetid', tables=[{
+            'name':'virtualTable1', 'source': {
+                'databaseSource':{
+                    'owner': 'connectionOwner',
+                    'id': 'virtualConnectionId'
+                },
+                'tableSpec': {
+                    'database':'databaseName',
+                    'schema': 'databaseSchema',
+                    'table':'tableName',
+                    'tableType':'VIRTUAL'
+                }
+            }
+        }])  # doctest: +SKIP
+        """
+        request = self.__build_tables_obj(
+            lambda: _swagger.TableBatchUpdateRequest(),
+            lambda name, description, database_source_owner,
+            database_source_id, table_source_database, table_source_schema,
+            table_source_table, table_source_table_type:
+            _swagger.TableCreateOrUpdateRequest(
+                name=name,
+                source=_swagger.TableSourceCreateOrUpdateRequest(
+                    database_source=_swagger.DatabaseSourceReference(
+                        owner=database_source_owner,
+                        id=database_source_id
+                    ),
+                    table_spec=_swagger.SingleTableMetadataSpec(
+                        database=table_source_database,
+                        schema=table_source_schema,
+                        table=table_source_table,
+                        table_type=table_source_table_type
+                    )),
+                description=description), kwargs)
+
+        try:
+            return self._tables_api.create_new_tables(owner, id, request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
+    # Connection Operations
+
+    def create_new_connections(self, owner, **kwargs):
+        """Create a new virtual connection. For increased security,
+        connection endpoints require an Enterprise Admin Token.
+
+        :params owner:
+        :type owner: str
+        :params name: Connection name
+        :type name: str
+        :params type: Database Type
+        :type type: str
+        :params host: Database Host
+        :type host: str
+        :params port: Database Port
+        :type port: int
+        :params sslRequired: Is ssl required
+        :type sslRequired: boolean
+        :params verifyServerCertificate: Should server certificate be verified
+        :type verifyServerCertificate: boolean
+        :params properties: Properties such as auto commit,
+         isolation level, etc.
+        :type properties: object
+        :params advancedProperties: Advanced Properties
+        :type advancedProperties: object
+        :params credentials:
+        :type credentials: object with following properties
+            :params user: user name
+            :type user: str
+            :params password: password
+            :type password: str
+        :params sshTunnel:
+        :type sshTunnel: object with following properties:
+            :params host: ssh tunnel host
+            :type host: str
+            :params port: Tunnel Port
+            :type port: int
+            :params user: User name
+            :type user: str
+            :params userKeyPair: whether authentication is required
+            :type userKeyPair: boolean
+        :raises RestApiException: If a server error occurs
+
+        Examples
+        --------
+        >>> import datadotworld as dw
+        >>> api_client = dw.api_client()
+        >>> virtual_connection = api_client.create_new_connections(
+        ...     'username', type='SQLSERVER', port=1234, name='connectionName',
+         host='hostUrl', credentials={'user':'username',
+         'password:'password'})  # doctest: +SKIP
+        """
+        request = self.__build_connection_obj(
+            lambda: _swagger.ConnectionDto(
+                type=kwargs.get('type'),
+                host=kwargs.get('host')),
+            lambda user, password:
+                _swagger.DatabaseCredentials(
+                    user=user,
+                    password=password
+                ),
+            lambda host, port, user, user_key_pair:
+                _swagger.SshTunnel(
+                    host=host,
+                    port=port,
+                    user=user,
+                    user_key_pair=user_key_pair
+                ), kwargs)
+        try:
+            return self._connections_api.create_connection(owner, request)
+        except _swagger.rest.ApiException as e:
+            raise RestApiError(cause=e)
+
     @staticmethod
     def __build_dataset_obj(dataset_constructor, file_constructor, args):
-        files = ([file_constructor(
+        dataset = RestApiClient.__build_dataset_obj_no_files(
+            dataset_constructor, args)
+
+        dataset.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             expand_archive=file_info.get('expand_archive', False),
@@ -1338,6 +1527,11 @@ class RestApiClient(object):
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
+
+        return dataset
+
+    @staticmethod
+    def __build_dataset_obj_no_files(dataset_constructor, args):
         dataset = dataset_constructor()
         if 'title' in args:
             dataset.title = args['title']
@@ -1352,20 +1546,25 @@ class RestApiClient(object):
         if 'visibility' in args:
             dataset.visibility = args['visibility']
 
-        dataset.files = files
-
         return dataset
 
     @staticmethod
     def __build_project_obj(project_constructor, file_constructor, args):
+        project = RestApiClient.__build_project_obj_no_files(
+            project_constructor, args)
 
-        files = ([file_constructor(
+        project.files = ([file_constructor(
             name,
             url=file_info.get('url'),
             description=file_info.get('description'),
             labels=file_info.get('labels'))
                      for name, file_info in args['files'].items()]
                  if 'files' in args else None)
+
+        return project
+
+    @staticmethod
+    def __build_project_obj_no_files(project_constructor, args):
         project = project_constructor()
         if 'title' in args:
             project.title = args['title']
@@ -1382,7 +1581,6 @@ class RestApiClient(object):
         if 'linked_datasets' in args:
             project.linked_datasets = args['linked_datasets']
 
-        project.files = files
         return project
 
     @staticmethod
@@ -1405,6 +1603,111 @@ class RestApiClient(object):
         if 'data_source_links' in args:
             insight.data_source_links = args['data_source_links']
         return insight
+
+    @staticmethod
+    def __build_streams_obj(streams_constructor, args):
+        return streams_constructor()
+
+    @staticmethod
+    def __build_search_obj(search_constructor, created_range_constructor,
+                           updated_range_constructor, args):
+        search = search_constructor()
+        created_range = created_range_constructor()
+        updated_range = updated_range_constructor()
+        if 'query' in args:
+            search.query = args['query']
+        if 'owner' in args:
+            search.owner = args['owner']
+        if 'category' in args:
+            search.category = args['category']
+        if 'type' in args:
+            search.type = args['type']
+        if 'min_access_level' in args:
+            search.min_access_level = args['min_access_level']
+        if 'tag' in args:
+            search.tag = args['tag']
+        if 'visibility' in args:
+            search.visibility = args['visibility']
+        if 'created_start_date' in args:
+            created_range.start_date = args['created_start_date']
+        if 'created_end_date' in args:
+            created_range.end_date = args['created_end_date']
+        if 'updated_start_date' in args:
+            updated_range.start_date = args['updated_start_date']
+        if 'updated_end_date' in args:
+            updated_range.end_date = args['updated_end_date']
+
+        search.created_range = created_range
+        search.updated_range = updated_range
+        return search
+
+    @staticmethod
+    def __build_tables_obj(table_constructor, table_create_update_constructor,
+                           args):
+        table = table_constructor()
+
+        if 'tables' in args:
+            table_create_update = []
+            for item in args['tables']:
+                table_create_update.append(table_create_update_constructor(
+                    name=item.get('name'),
+                    description=item.get('description'),
+                    database_source_owner=item.get('source')
+                    .get('databaseSource').get('owner'),
+                    database_source_id=item.get('source')
+                    .get('databaseSource').get('id'),
+                    table_source_database=item.get('source')
+                    .get('tableSpec').get('database'),
+                    table_source_schema=item.get('source')
+                    .get('tableSpec').get('schema'),
+                    table_source_table=item.get('source')
+                    .get('tableSpec').get('table'),
+                    table_source_table_type=item.get('source')
+                    .get('tableSpec').get('tableType')))
+            table.tables = table_create_update
+
+        return table
+
+    @staticmethod
+    def __build_connection_obj(connection_constructor,
+                               database_credentials_constructor,
+                               ssh_tunnel_constructor, args):
+        connection = connection_constructor()
+        if 'credentials' in args:
+            database_credentials = database_credentials_constructor(
+                 user=args['credentials']['user'],
+                 password=args['credentials']['password'])
+            connection.credentials = database_credentials
+        if 'sshTunnel' in args:
+            ssh_tunnel = ssh_tunnel_constructor(
+                 host=args['sshTunnel']['host'],
+                 port=args['sshTunnel']['port'],
+                 user=args['sshTunnel']['user'],
+                 user_key_pair=args['sshTunnel']['userKeyPair'])
+            connection.ssh_tunnel = ssh_tunnel
+        if 'name' in args:
+            connection.name = args['name']
+        if 'type' in args:
+            connection.type = args['type']
+        if 'host' in args:
+            connection.host = args['host']
+        if 'port' in args:
+            connection.port = args['port']
+        if 'database' in args:
+            connection.database = args['database']
+        if 'sslRequired' in args:
+            connection.ssl_required = args['sslRequired']
+        if 'verifyServerCertificate' in args:
+            connection.verify_server_certificate = args[
+                'verifyServerCertificate']
+        if 'trustedServerCertificates' in args:
+            connection.trusted_server_certificates = args[
+                'trustedServerCertificates']
+        if 'properties' in args:
+            connection.properties = args['properties']
+        if 'advancedProperties' in args:
+            connection.advanced_properties = args['advancedProperties']
+        return connection
 
 
 class RestApiError(Exception):
