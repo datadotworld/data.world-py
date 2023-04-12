@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -48,3 +48,15 @@ jobs:
               python setup.py sdist bdist_wheel --universal
               twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
             fi
+
+workflows:
+  release:
+    jobs:
+      - build:
+          context:
+            - aws-dev
+          filters:
+            tags:
+              only: /^release-.+$/
+            branches:
+              ignore: /.*/
