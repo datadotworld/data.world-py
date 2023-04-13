@@ -1,6 +1,110 @@
 version: 2.1
+
+resources:
+  base_docker_image: &base_docker_image
+    image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:1.0.0
+    aws_auth:
+      aws_access_key_id: $DEV_AWS_ACCESS_KEY_ID
+      aws_secret_access_key: $DEV_AWS_SECRET_ACCESS_KEY
+
+  defaults: &defaults
+    docker:
+    - *base_docker_image
+    working_directory: /root/data.world-py
+    environment:
+      PRERELEASE_PREFIX: prerelease
+      RELEASE_PREFIX: release
+
+  ignore_main: &ignore_main
+    filters:
+      branches:
+        ignore:
+          - main
+
+  main_only: &main_only
+    filters:
+      branches:
+        only: main
+
+  release_only: &release_only
+    filters:
+      tags:
+        only: /^release-.+$/
+      branches:
+        ignore: /.*/
+
+  checkout_build_scripts: &checkout_build_scripts
+    run:
+      name: Checkout build-scripts
+      command: git clone git@github.com:datadotworld/build-scripts.git ~/build-scripts
+
+  create_app_version: &create_app_version
+    run:
+      name: Create Application Version $APP_VERSION
+      command: |
+        if [[ -f .app_version ]]; then
+          APP_VERSION=$(cat .app_version)
+        elif [[ "${CIRCLE_TAG}" =~ ^${PRERELEASE_PREFIX}-.+$ ]]; then
+          APP_VERSION="${CIRCLE_TAG/${PRERELEASE_PREFIX}-/}"
+        elif [[ "${CIRCLE_TAG}" =~ ^${RELEASE_PREFIX}-.+$ ]]; then
+          APP_VERSION="${CIRCLE_TAG/${RELEASE_PREFIX}-/}"
+        else
+          APP_VERSION="$(date --utc '+%Y%m%d%H%M%S'_${CIRCLE_SHA1:0:8})"
+        fi
+        echo APP_VERSION=${APP_VERSION} | tee -a ~/.env
+        printf ${APP_VERSION} > .app_version
+
+commands:
+  pyenv_setup: &pyenv_setup
+    description: Restore cache, pyenv setup, tox and saving cache
+    steps:
+      - restore_cache:
+          keys:
+            - tox_cache-{{ checksum "tox.ini" }}
+      - run:
+          name: pyenv setup
+          command: pyenv local 2.7.16 3.5.7 3.6.8 3.7.12 3.8.12 3.9.10 3.10.2
+      - run:
+          name: tox
+          command: tox --pre
+      - save_cache:
+          key: tox_cache-{{ checksum "tox.ini" }}
+          paths:
+            - .eggs
+            - .tox
+
 jobs:
+
   build:
+    <<: *defaults
+    steps:
+      - checkout
+      - pyenv_setup
+
+  prerelease:
+    <<: *defaults
+    steps:
+      - checkout
+      - *checkout_build_scripts
+      - *create_app_version
+      - run:
+          name: Tag prerelease
+          command: ~/build-scripts/cicd/tag_prerelease.sh ${PRERELEASE_PREFIX} ${APP_VERSION}
+
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - pyenv_setup
+      - run:
+          name: Release to pypi
+          command: |
+              python setup.py sdist bdist_wheel --universal
+              twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
+
+
+
+  build_deprecated:  ## keeping this here as a reference while PR in review (CLOUD-264)
     docker:
       - image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:1.0.0
         aws_auth:
@@ -50,13 +154,20 @@ jobs:
             fi
 
 workflows:
-  release:
+  version: 2.1
+
+  build:
     jobs:
       - build:
-          context:
-            - aws-dev
-          filters:
-            tags:
-              only: /^release-.+$/
-            branches:
-              ignore: /.*/
+          <<: *ignore_main
+
+  prerelease:
+    jobs:
+      - prerelease:
+          <<: *main_only
+
+  release:
+    jobs:
+      - release:
+          <<: *release_only
+
