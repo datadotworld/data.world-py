@@ -12,6 +12,7 @@ resources:
     - *base_docker_image
     working_directory: /root/data.world-py
     environment:
+      BASH_ENV: ~/.env
       PRERELEASE_PREFIX: prerelease
       RELEASE_PREFIX: release
 
