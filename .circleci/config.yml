@@ -104,58 +104,7 @@ jobs:
               twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
 
 
-
-  build_deprecated:  ## keeping this here as a reference while PR in review (CLOUD-264)
-    docker:
-      - image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:1.0.0
-        aws_auth:
-          aws_access_key_id: $DEV_AWS_ACCESS_KEY_ID
-          aws_secret_access_key: $DEV_AWS_SECRET_ACCESS_KEY
-
-    working_directory: /root/data.world-py
-
-    environment:
-      PRERELEASE_BRANCH: prerelease
-      RELEASE_BRANCH: release
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-            - tox_cache-{{ checksum "tox.ini" }}
-
-      - run:
-          name: pyenv setup
-          command: pyenv local 2.7.16 3.5.7 3.6.8 3.7.12 3.8.12 3.9.10 3.10.2
-
-      - run:
-          name: tox
-          command: tox --pre
-
-      - save_cache:
-          key: tox_cache-{{ checksum "tox.ini" }}
-          paths:
-            - .eggs
-            - .tox
-
-      - deploy:
-          name: Pre-release to pypi
-          command: |
-            if [[ "${CIRCLE_BRANCH}" =~ ^(${PRERELEASE_BRANCH})$ ]]; then
-              echo 'Do a prerelease with twine here'
-            fi
-
-      - deploy:
-          name: Release to pypi
-          command: |
-            if [[ "${CIRCLE_BRANCH}" =~ ^(${RELEASE_BRANCH})$ ]]; then
-              python setup.py sdist bdist_wheel --universal
-              twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
-            fi
-
 workflows:
-  version: 2.1
 
   build:
     jobs:
@@ -168,6 +117,8 @@ workflows:
     jobs:
       - prerelease:
           <<: *main_only
+          context:
+            - aws-dev
 
   release:
     jobs:
