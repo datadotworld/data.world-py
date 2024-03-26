@@ -46,7 +46,7 @@ setup(
     author='data.world',
     author_email='help@data.world',
     license='Apache 2.0',
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     packages=find_packages(),
     keywords='data.world dataset',
     classifiers=[
