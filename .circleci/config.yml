@@ -2,7 +2,7 @@ version: 2.1
 
 resources:
   base_docker_image: &base_docker_image
-    image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:1.0.0
+    image: 621799806001.dkr.ecr.us-east-1.amazonaws.com/pyenv-tox:2.0.3
     aws_auth:
       aws_access_key_id: $DEV_AWS_ACCESS_KEY_ID
       aws_secret_access_key: $DEV_AWS_SECRET_ACCESS_KEY
@@ -64,10 +64,12 @@ commands:
             - tox_cache-{{ checksum "tox.ini" }}
       - run:
           name: pyenv setup
-          command: pyenv local 2.7.16 3.5.7 3.6.8 3.7.12 3.8.12 3.9.10 3.10.2
+          command: pyenv local 3.8.19 3.9.19 3.10.14 3.11.8 3.12.2
       - run:
           name: tox
           command: tox --pre
+          environment:
+            VIRTUALENV_DISCOVERY: pyenv
       - save_cache:
           key: tox_cache-{{ checksum "tox.ini" }}
           paths:

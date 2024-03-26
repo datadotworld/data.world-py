@@ -32,7 +32,7 @@ $ pip install -e .
 Run tests:
 
 ```sh
-$ python setup.py test
+$ tox --pre
 ```
 
 ### Create a Feature Branch
