@@ -20,7 +20,7 @@ $ git remote add upstream https://github.com/datadotworld/data.world-py.git
 #### Python Version Support
 The following list of python versions have been tested and have been found to work with the SDK.
 This is not a conclusive list and should be amended to include other versions that have worked for others:
- -  3.5.9
+ -  3.12.3
 
 
 Run the command below to install packages required:
