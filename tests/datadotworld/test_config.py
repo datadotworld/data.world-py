@@ -60,7 +60,7 @@ class TestDefaultConfig:
 
     def test_cache_dir(self):
         assert_that(DefaultConfig().cache_dir,
-                    equal_to(path.expanduser('~/.dw/cache')))
+                    equal_to(None))
 
     def test_tmp_dir(self):
         assert_that(DefaultConfig().tmp_dir,
@@ -75,7 +75,7 @@ class TestInlineConfig:
     def test_cache_dir(self):
         config = InlineConfig('inline_token')
         assert_that(config.cache_dir,
-                    equal_to(path.expanduser('~/.dw/cache')))
+                    equal_to(None))
 
     def test_tmp_dir(self):
         config = InlineConfig('inline_token')
@@ -190,6 +190,18 @@ class TestFileConfig:
         config.save()
         config_reloaded = FileConfig(config_file_path=config_file_path)
         assert_that(config_reloaded.auth_token, equal_to('newtoken'))
+
+    @pytest.mark.usefixtures('config_directory', 'default_config_file')
+    def test_invalid_config_file_path(self, config_file_path):
+        config = FileConfig(config_file_path='/foo/bar/baz/')
+
+        with pytest.raises(PermissionError):
+            config.get_config_parser()
+
+    def test_cache_dir(self):
+        config = FileConfig()
+        assert_that(config.cache_dir,
+                    equal_to(path.expanduser('~/.dw/cache')))
 
 
 class TestChainedConfig:

@@ -45,7 +45,7 @@ class DefaultConfig(object):
     def __init__(self):
         self._auth_token = None
         self._tmp_dir = path.expanduser(tempfile.gettempdir())
-        self._cache_dir = path.expanduser('~/.dw/cache')
+        self._cache_dir = None
 
     @property
     def auth_token(self):
@@ -88,6 +88,7 @@ class FileConfig(DefaultConfig):
     :param profile: Name of configuration profile.
     :type profile: str
     """
+    _config_parser = None
 
     def __init__(self, profile='default', **kwargs):
         super(FileConfig, self).__init__()
@@ -95,9 +96,25 @@ class FileConfig(DefaultConfig):
         # Overrides, for testing
         self._config_file_path = path.expanduser(
             kwargs.get('config_file_path', '~/.dw/config'))
-        legacy_file_path = path.expanduser(
+        self.legacy_file_path = path.expanduser(
             kwargs.get('legacy_file_path', '~/.data.world'))
 
+        self._profile = profile
+        self._section = (profile
+                         if profile.lower() != configparser.DEFAULTSECT.lower()
+                         else configparser.DEFAULTSECT)
+
+        self._cache_dir = path.expanduser('~/.dw/cache')
+
+    @property
+    def config_parser(self):
+        if self._config_parser is None:
+            self._config_parser = self.get_config_parser()
+
+        return self._config_parser
+
+    def get_config_parser(self):
+        # FIXME this should probably be a pure function
         if not path.isdir(path.dirname(self._config_file_path)):
             os.makedirs(path.dirname(self._config_file_path))
 
@@ -106,24 +123,23 @@ class FileConfig(DefaultConfig):
 
         if path.isfile(self._config_file_path):
             self._config_parser.read_file(open(self._config_file_path))
+
             if self.__migrate_invalid_defaults(self._config_parser) > 0:
                 self.save()
-        elif path.isfile(legacy_file_path):
-            self._config_parser = self.__migrate_config(legacy_file_path)
-            self.save()
 
-        self._profile = profile
-        self._section = (profile
-                         if profile.lower() != configparser.DEFAULTSECT.lower()
-                         else configparser.DEFAULTSECT)
+        elif path.isfile(self.legacy_file_path):
+            self._config_parser = self.__migrate_config(self.legacy_file_path)
+            self.save()
 
         if not path.isdir(path.dirname(self.cache_dir)):
             os.makedirs(path.dirname(self.cache_dir))
 
+        return self._config_parser
+
     @property
     def auth_token(self):
         self.__validate_config()
-        return self._config_parser.get(self._section, 'auth_token')
+        return self.config_parser.get(self._section, 'auth_token')
 
     @auth_token.setter
     def auth_token(self, auth_token):
@@ -133,22 +149,25 @@ class FileConfig(DefaultConfig):
 
         """
         if (self._section != configparser.DEFAULTSECT and
-                not self._config_parser.has_section(self._section)):
-            self._config_parser.add_section(self._section)
-        self._config_parser.set(self._section, 'auth_token', auth_token)
+                not self.config_parser.has_section(self._section)):
+            self.config_parser.add_section(self._section)
+        self.config_parser.set(self._section, 'auth_token', auth_token)
 
     def save(self):
         """Persist config changes"""
         with open(self._config_file_path, 'w') as file:
-            self._config_parser.write(file)
+            self.config_parser.write(file)
 
     def __validate_config(self):
+        config_parser = self.config_parser
+
         if not path.isfile(self._config_file_path):
             raise RuntimeError(
                 'Configuration file not found at {}.'
                 'To fix this issue, run dw configure'.format(
                     self._config_file_path))
-        if not self._config_parser.has_option(self._section, 'auth_token'):
+
+        if not config_parser.has_option(self._section, 'auth_token'):
             raise RuntimeError(
                 'The {0} profile is not properly configured. '
                 'To fix this issue, run dw -p {0} configure'.format(
