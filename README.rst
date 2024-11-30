@@ -283,12 +283,12 @@ Additional API Features
 For a complete list of available API operations, see
 `official documentation <https://docs.data.world/documentation/api/>`_.
 
-Python wrappers are implemented by the ``ApiClient`` class. To obtain an instance, simply call ``api_client``.
+Python wrappers are implemented by the ``ApiClient`` class. To obtain an instance, simply call ``api_client()``.
 For example:
 
 .. code-block:: python
 
-    client = dw.api_client
+    client = dw.api_client()
 
 The client currently implements the following functions:
 
