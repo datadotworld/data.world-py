@@ -74,7 +74,7 @@ setup(
         'setuptools>=69.2.0,<70.0a',
         'six>=1.5.0,<2.0a',
         'tabulator>=1.22.0',
-        'urllib3>=1.15,<2.0a',
+        'urllib3>=1.26.18,<3.0a',
     ],
     extras_require={
         'pandas': [
